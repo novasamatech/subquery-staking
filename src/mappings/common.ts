@@ -1,14 +1,14 @@
-import {SubstrateBlock} from "@subql/types";
-import {StarterEntity} from "../types";
+import {RewardCalculator} from "./rewards/RewardCalculator";
+import {StakingApy} from "../types";
 
-export async function handleBlock(block: SubstrateBlock, networkGenesis: string): Promise<void> {
-    const blockNumber = block.block.header.number.toNumber();
+export async function handleNewEra(rewardCalculator: RewardCalculator, networkId: string): Promise<void> {
+    let apy = await rewardCalculator.maxApy()
 
-    let record = StarterEntity.create({
-        id: networkGenesis,
-        blockNumber: blockNumber,
-        networkId: networkGenesis
-    });
+    let apyEntity = StakingApy.create({
+        id: networkId,
+        networkId: networkId,
+        maxAPY: apy
+    })
 
-    await record.save();
+    await apyEntity.save()
 }
