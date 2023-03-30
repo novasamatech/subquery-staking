@@ -10,10 +10,26 @@ export function PerbillToNumber(perbill: INumber): number {
     return BigFromINumber(perbill).div(10**9).toNumber()
 }
 
+// Maps perbill to be in the range of [0..1]
+export function BigToPerbillNumber(perbill: Big): number {
+    return perbill.div(10**9).toNumber()
+}
+
+// Maps percent to be in the range of [0..1]
+export function PercentToNumber(perbill: INumber): number {
+    return BigFromINumber(perbill).div(10**2).toNumber()
+}
+
 export function max(array: number[]): number | undefined {
     if (array.length == 0) return undefined
 
     return Math.max.apply(null, array)
+}
+
+export function minBig(array: Big[]): Big | undefined {
+    if (array.length == 0) return undefined
+
+    return Math.min.apply(null, array)
 }
 
 export function associate<T, K extends keyof any, V>(
