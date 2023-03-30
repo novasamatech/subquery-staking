@@ -1,0 +1,27 @@
+specVersion: 1.0.0
+name: nova-wallet-staking
+version: 0.0.1
+runner:
+  node:
+    name: "@subql/node"
+    version: ">=1.0.0"
+  query:
+    name: "@subql/query"
+    version: "*"
+description: >-
+  Project that provides up-to-date information about on-chain staking APY
+repository: "git@github.com:nova-wallet/subquery-staking.git"
+schema:
+  file: ./schema.graphql
+network:
+  chainId: "0xb0a8d493285c2df73290dfb7e61f870f17b41801197a149ca93654499ea3dafe"
+  endpoint: "wss://kusama.api.onfinality.io/public-ws"
+  dictionary: "https://api.subquery.network/sq/subquery/kusama-dictionary"
+dataSources:
+  - kind: substrate/Runtime
+    startBlock: 1
+    mapping:
+      file: ./dist/index.js
+      handlers:
+        - handler: handleKusamaBlock
+          kind: substrate/BlockHandler
