@@ -2,10 +2,10 @@
 # Add the `@index` or `@index(unique: true)` annotation after any non-key field
 # https://academy.subquery.network/build/graphql.html#indexing-by-non-primary-key-field
 
-type StarterEntity @entity {
-  id: ID! #id is a required field
-
-  blockNumber: Int!
+type StakingApy @entity {
+  id: ID!
 
   networkId: String!
+
+  maxAPY: Float!
 }

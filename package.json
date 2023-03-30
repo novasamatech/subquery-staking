@@ -5,7 +5,7 @@
   "main": "dist/index.js",
   "scripts": {
     "build": "subql build",
-    "codegen": "subql codegen",
+    "codegen": "subql codegen -f project-polkadot.yaml",
     "start:docker": "docker-compose pull && docker-compose up --remove-orphans",
     "dev": "subql codegen -f project-polkadot.yaml && subql build && docker-compose pull && docker-compose up --remove-orphans",
     "prepack": "rm -rf dist && npm run build",
