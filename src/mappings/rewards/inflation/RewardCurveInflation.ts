@@ -49,8 +49,6 @@ export class RewardCurveInflation implements Inflation {
             inflation = minInflation + exponentCoefficient * (2.0 ** exponentPower)
         }
 
-        logger.info(`Inflation is ${inflation}`)
-
         return inflation
     }
 

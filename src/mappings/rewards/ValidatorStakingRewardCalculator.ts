@@ -35,8 +35,6 @@ export class ValidatorStakingRewardCalculator implements RewardCalculator {
         averageValidatorRewardPercentage: number,
         averageValidatorStake: Big,
     ): number {
-        logger.info(`averageValidatorRewardPercentage=${averageValidatorRewardPercentage}, averageValidatorStake=${averageValidatorStake}, validatorCommission=${validator.commission}`)
-
         let yearlyRewardPercentage = averageValidatorStake.mul(averageValidatorRewardPercentage).div(validator.totalStake)
 
         return yearlyRewardPercentage.mul(1 - validator.commission).toNumber()
