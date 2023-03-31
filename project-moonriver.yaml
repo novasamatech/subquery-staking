@@ -1,0 +1,30 @@
+specVersion: 1.0.0
+name: nova-wallet-staking
+version: 0.0.1
+runner:
+  node:
+    name: "@subql/node"
+    version: ">=1.0.0"
+  query:
+    name: "@subql/query"
+    version: "*"
+description: >-
+  Project that provides up-to-date information about on-chain staking APY
+repository: "git@github.com:nova-wallet/subquery-staking.git"
+schema:
+  file: ./schema.graphql
+network:
+  chainId: "0x401a1f9dca3da46f5c4091016c8a2f26dcea05865116b286f60f668207d1474b"
+  endpoint: "wss://wss.api.moonriver.moonbeam.network"
+  dictionary: "https://api.subquery.network/sq/subquery/moonriver-dictionary"
+dataSources:
+  - kind: substrate/Runtime
+    startBlock: 3932399
+    mapping:
+      file: ./dist/index.js
+      handlers:
+        - handler: handleMoonriverNewEra
+          kind: substrate/EventHandler
+          filter:
+            module: parachainStaking
+            method: NewRound

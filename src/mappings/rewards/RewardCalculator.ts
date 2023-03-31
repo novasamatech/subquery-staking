@@ -12,3 +12,7 @@ export interface StakerNode {
 
     commission: number
 }
+
+export interface CollatorNode {
+    totalStake: Big
+}
