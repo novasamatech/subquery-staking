@@ -1,15 +1,11 @@
 import {RewardCalculator, StakerNode} from "./RewardCalculator";
-import {Inflation, StakedInfo} from "./inflation/Inflation";
+import {StakedInfo} from "./inflation/Inflation";
 import Big from "big.js";
-import {associate, BigFromINumber, max, PerbillToNumber} from "../utils";
+import {associate, BigFromINumber, PerbillToNumber} from "../utils";
 
-export class ValidatorStakingRewardCalculator implements RewardCalculator {
+export abstract class ValidatorStakingRewardCalculator implements RewardCalculator {
 
-    private readonly inflation: Inflation
-
-    constructor(inflation: Inflation) {
-        this.inflation = inflation
-    }
+    abstract maxApyInternal(stakers: StakerNode[], stakedInfo: StakedInfo): Promise<number>
 
     async maxApy(): Promise<number> {
         let stakers = await this.fetchStakers()
@@ -17,27 +13,7 @@ export class ValidatorStakingRewardCalculator implements RewardCalculator {
 
         let stakedInfo = this.constructStakedInfo(stakers, totalIssuance)
 
-        let inflation = await this.inflation.from(stakedInfo)
-
-        let averageValidatorRewardPercentage = inflation / stakedInfo.stakedPortion
-        let averageValidatorStake = stakedInfo.totalStaked.div(stakers.length)
-
-        let stakersApy = stakers.map(
-            (staker) =>
-                this.calculateValidatorApy(staker, averageValidatorRewardPercentage, averageValidatorStake)
-        )
-
-        return max(stakersApy)
-    }
-
-    private calculateValidatorApy(
-        validator: StakerNode,
-        averageValidatorRewardPercentage: number,
-        averageValidatorStake: Big,
-    ): number {
-        let yearlyRewardPercentage = averageValidatorStake.mul(averageValidatorRewardPercentage).div(validator.totalStake)
-
-        return yearlyRewardPercentage.mul(1 - validator.commission).toNumber()
+        return this.maxApyInternal(stakers, stakedInfo);
     }
 
     private constructStakedInfo(stakers: StakerNode[], totalIssuance: Big): StakedInfo {
@@ -58,10 +34,10 @@ export class ValidatorStakingRewardCalculator implements RewardCalculator {
     private async fetchStakers(): Promise<StakerNode[]> {
         const currentEra = (await api.query.staking.currentEra()).unwrap()
         const exposures = await api.query.staking.erasStakersClipped.entries(currentEra.toNumber())
-        const comissions = await api.query.staking.erasValidatorPrefs.entries(currentEra.toNumber())
+        const commissions = await api.query.staking.erasValidatorPrefs.entries(currentEra.toNumber())
 
-        const comissionByValidatorId = associate(
-            comissions,
+        const commissionByValidatorId = associate(
+            commissions,
             ([storageKey]) => storageKey.args[1].toString(),
             ([, prefs]) => prefs.commission,
         )
@@ -72,7 +48,7 @@ export class ValidatorStakingRewardCalculator implements RewardCalculator {
 
             return {
                 totalStake: BigFromINumber(exposure.total),
-                commission: PerbillToNumber(comissionByValidatorId[validatorIdString])
+                commission: PerbillToNumber(commissionByValidatorId[validatorIdString])
             }
         })
 

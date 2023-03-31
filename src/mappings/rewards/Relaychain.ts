@@ -1,7 +1,10 @@
-import {RewardCalculator} from "./RewardCalculator";
+import {RewardCalculator, StakerNode} from "./RewardCalculator";
 import '@polkadot/api-augment/polkadot'
 import {RewardCurveConfig, RewardCurveInflation} from "./inflation/RewardCurveInflation";
 import {ValidatorStakingRewardCalculator} from "./ValidatorStakingRewardCalculator";
+import {Inflation, StakedInfo} from "./inflation/Inflation";
+import {max} from "../utils";
+import Big from "big.js";
 
 const LOWEST_PUBLIC_ID = 2000
 
@@ -25,5 +28,39 @@ export async function RelaychainRewardCalculator(): Promise<RewardCalculator> {
     }
     let inflation = new RewardCurveInflation(rewardCurveConfig)
 
-    return new ValidatorStakingRewardCalculator(inflation)
+    return new DefaultValidatorStakingRewardCalculator(inflation)
+}
+
+class DefaultValidatorStakingRewardCalculator extends ValidatorStakingRewardCalculator {
+
+    private inflation: Inflation
+
+    constructor(inflation: Inflation) {
+        super();
+        this.inflation = inflation
+    }
+
+    async maxApyInternal(stakers: StakerNode[], stakedInfo: StakedInfo): Promise<number> {
+        let inflation = await this.inflation.from(stakedInfo)
+
+        let averageValidatorRewardPercentage = inflation / stakedInfo.stakedPortion
+        let averageValidatorStake = stakedInfo.totalStaked.div(stakers.length)
+
+        let stakersApy = stakers.map(
+            (staker) =>
+                this.calculateValidatorApy(staker, averageValidatorRewardPercentage, averageValidatorStake)
+        )
+
+        return max(stakersApy)
+    }
+
+    private calculateValidatorApy(
+        validator: StakerNode,
+        averageValidatorRewardPercentage: number,
+        averageValidatorStake: Big,
+    ): number {
+        let yearlyRewardPercentage = averageValidatorStake.mul(averageValidatorRewardPercentage).div(validator.totalStake)
+
+        return yearlyRewardPercentage.mul(1 - validator.commission).toNumber()
+    }
 }
