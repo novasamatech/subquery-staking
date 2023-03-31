@@ -67,6 +67,31 @@ services:
       timeout: 5s
       retries: 10
 
+  subquery-node-aleph-zero:
+    image: onfinality/subql-node:latest
+    depends_on:
+      "postgres":
+        condition: service_healthy
+    restart: always
+    environment:
+      DB_USER: postgres
+      DB_PASS: postgres
+      DB_DATABASE: postgres
+      DB_HOST: postgres
+      DB_PORT: 5432
+    volumes:
+      - ./:/app
+    command:
+      - -f=/app/project-aleph-zero.yaml
+      - --multi-chain
+      - --db-schema=app
+      - --disable-historical
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://subquery-node-aleph-zero:3002/ready" ]
+      interval: 3s
+      timeout: 5s
+      retries: 10
+
   graphql-engine:
     image: onfinality/subql-query:latest
     ports:
