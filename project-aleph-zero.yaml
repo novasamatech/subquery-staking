@@ -1,0 +1,29 @@
+specVersion: 1.0.0
+name: nova-wallet-staking
+version: 0.0.1
+runner:
+  node:
+    name: "@subql/node"
+    version: ">=1.0.0"
+  query:
+    name: "@subql/query"
+    version: "*"
+description: >-
+  Project that provides up-to-date information about on-chain staking APY
+repository: "git@github.com:nova-wallet/subquery-staking.git"
+schema:
+  file: ./schema.graphql
+network:
+  chainId: "0x70255b4d28de0fc4e1a193d7e175ad1ccef431598211c55538f1018651a0344e"
+  endpoint: "wss://ws.azero.dev"
+dataSources:
+  - kind: substrate/Runtime
+    startBlock: 43623900
+    mapping:
+      file: ./dist/index.js
+      handlers:
+        - handler: handleAlephZeroNewEra
+          kind: substrate/EventHandler
+          filter:
+            module: staking
+            method: StakersElected

@@ -50,3 +50,13 @@ export function associateBy<T, K extends keyof any>(
 ): Record<K, T> {
     return associate(array, keyExtractor, (it) => it)
 }
+
+export function toPlanks(amount: Big): Big {
+    let decimals = api.registry.chainDecimals[0]
+
+    return amount.mul(Big(10).pow(decimals))
+}
+
+export function aprToApy(apr: number): number {
+    return Math.exp(apr) - 1.0
+}
