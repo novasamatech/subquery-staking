@@ -5,10 +5,11 @@ import {ValidatorStakingRewardCalculator} from "./ValidatorStakingRewardCalculat
 import {Inflation, StakedInfo} from "./inflation/Inflation";
 import {max} from "../utils";
 import Big from "big.js";
+import {EraInfoDataSource} from "../era/EraInfoDataSource";
 
 const LOWEST_PUBLIC_ID = 2000
 
-export async function RelaychainRewardCalculator(): Promise<RewardCalculator> {
+export async function RelaychainRewardCalculator(eraInfoDataSource: EraInfoDataSource): Promise<RewardCalculator> {
     let parachains = await api.query.paras.parachains()
 
     let numberOfPublicParachains = parachains.filter(
@@ -28,15 +29,15 @@ export async function RelaychainRewardCalculator(): Promise<RewardCalculator> {
     }
     let inflation = new RewardCurveInflation(rewardCurveConfig)
 
-    return new DefaultValidatorStakingRewardCalculator(inflation)
+    return new DefaultValidatorStakingRewardCalculator(inflation, eraInfoDataSource)
 }
 
 class DefaultValidatorStakingRewardCalculator extends ValidatorStakingRewardCalculator {
 
     private inflation: Inflation
 
-    constructor(inflation: Inflation) {
-        super();
+    constructor(inflation: Inflation, eraInfoDataSource: EraInfoDataSource) {
+        super(eraInfoDataSource);
         this.inflation = inflation
     }
 

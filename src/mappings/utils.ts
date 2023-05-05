@@ -1,12 +1,14 @@
 import {INumber} from "@polkadot/types-codec/types/interfaces";
 import {Big} from "big.js"
+import {Perbill, Percent} from "@polkadot/types/interfaces/runtime/types";
+import {Compact} from '@polkadot/types-codec'
 
 export function BigFromINumber(number: INumber): Big {
     return Big(number.toString())
 }
 
 // Maps perbill to be in the range of [0..1]
-export function PerbillToNumber(perbill: INumber): number {
+export function PerbillToNumber(perbill: Perbill | Compact<Perbill>): number {
     return BigFromINumber(perbill).div(10**9).toNumber()
 }
 
@@ -16,14 +18,18 @@ export function BigToPerbillNumber(perbill: Big): number {
 }
 
 // Maps percent to be in the range of [0..1]
-export function PercentToNumber(perbill: INumber): number {
-    return BigFromINumber(perbill).div(10**2).toNumber()
+export function PercentToNumber(percent: Percent): number {
+    return BigFromINumber(percent).div(10**2).toNumber()
 }
 
 export function max(array: number[]): number | undefined {
     if (array.length == 0) return undefined
 
     return Math.max.apply(null, array)
+}
+
+export function BigintFromBig(number: Big): bigint {
+    return BigInt(number.toString())
 }
 
 export function minBig(array: Big[]): Big | undefined {

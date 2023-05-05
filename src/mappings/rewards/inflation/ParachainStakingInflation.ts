@@ -1,11 +1,12 @@
 import {Inflation, StakedInfo} from "./Inflation";
 import Big from "big.js";
-import {BigFromINumber, PerbillToNumber} from "../../utils";
+import {PerbillToNumber} from "../../utils";
+import '@moonbeam-network/api-augment'
 
 export class ParachainStakingInflation implements Inflation {
 
     async from(stakedInfo: StakedInfo): Promise<number> {
-        let inflationConfig = (await api.query.parachainStaking.inflationConfig()).toJSON() as { expect: {min, max, ideal}, annual: {min, max, ideal} }
+        let inflationConfig = await api.query.parachainStaking.inflationConfig()
 
         if (stakedInfo.totalStaked < Big(Number(inflationConfig.expect.min))) {
             return PerbillToNumber(inflationConfig.annual.min)

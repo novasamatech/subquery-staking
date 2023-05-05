@@ -9,3 +9,21 @@ type StakingApy @entity {
 
   maxAPY: Float!
 }
+
+enum StakerType {
+  NOMINATOR
+  VALIDATOR
+}
+
+type ActiveStaker @entity {
+
+  id: ID!
+
+  type: StakerType!
+
+  address: String!
+
+  networkId: String! @index
+
+  activeAmount: BigInt!
+}
