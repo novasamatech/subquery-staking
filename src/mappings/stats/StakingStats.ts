@@ -67,12 +67,6 @@ export class StakingStats {
             return nominators
         }))
 
-        // const chunkSize = 1000;
-        // for (let i = 0; i < activeStakers.length; i += chunkSize) {
-        //     const chunk = activeStakers.slice(i, i + chunkSize);
-        //     await store.bulkCreate("ActiveStaker", chunk)
-        // }
-
         await store.bulkCreate("ActiveStaker", activeStakers)
     }
 
