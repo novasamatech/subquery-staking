@@ -115,8 +115,6 @@ services:
       - --db-schema=app
       - --disable-historical
       - --query-limit=1000000
-      - --store-cache-async=false
-      - --store-cache-threshold=0
     healthcheck:
       test: [ "CMD", "curl", "-f", "http://subquery-node-moonriver:3003/ready" ]
       interval: 3s
