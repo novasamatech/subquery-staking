@@ -67,28 +67,16 @@ export class StakingStats {
             return nominators
         }))
 
+        logger.info(`Number of stakers in current era: ${activeStakers.length}`)
+
         await store.bulkCreate("ActiveStaker", activeStakers)
     }
 
-    private async removeOldRecords() {
-        // we do a while loop because there seem to be no way to increase number of returned results from 100
-        while (true) {
-            const records = await store.getByField('ActiveStaker', 'networkId', this.networkId);
-            const oldRecordIds = records.map(record => record.id);
+    private async removeOldRecords(): Promise<void> {
+        const records = await store.getByField('ActiveStaker', 'networkId', this.networkId);
+        const oldRecordIds = records.map(record => record.id);
 
-            if (oldRecordIds.length == 0) {
-                break
-            }
-
-            // TODO this is slow. While there is no bulkDelete, we can consider marking removed objected with removed flag
-            // using bulkUpdate. However it will create garbage records over time
-            let deletePromises = oldRecordIds.map(oldRecord => {
-                ActiveStaker.remove(oldRecord)
-            })
-
-            await Promise.all(deletePromises)
-        }
-
+        await store.bulkRemove("ActiveStaker", oldRecordIds)
     }
 
     private generateActiveSakerId(address: string, validatorAddress: string): string {
