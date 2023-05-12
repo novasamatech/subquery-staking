@@ -42,6 +42,8 @@ export class StakingStats {
     private async updateActiveStakers(): Promise<void> {
         await this.removeOldRecords();
 
+        logger.info(`Inserting new era data`)
+
         let stakeTargets = await this.eraInfoDataSource.eraStakers()
 
         const activeStakers: ActiveStaker[] = stakeTargets.flatMap((stakeTarget => {
@@ -76,7 +78,9 @@ export class StakingStats {
         const records = await store.getByField('ActiveStaker', 'networkId', this.networkId);
         const oldRecordIds = records.map(record => record.id);
 
-        await store.bulkRemove("ActiveStaker", oldRecordIds)
+        // await store.bulkRemove("ActiveStaker", oldRecordIds)
+
+        await Promise.all(oldRecordIds.map((recordId) => store.remove("ActiveStaker", recordId)))
     }
 
     private generateActiveSakerId(address: string, validatorAddress: string): string {
