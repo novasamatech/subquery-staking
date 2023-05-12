@@ -1,8 +1,6 @@
 import {RewardCalculator} from "../rewards/RewardCalculator";
 import {EraInfoDataSource} from "../era/EraInfoDataSource";
 import {ActiveStaker, StakerType, StakingApy} from "../../types";
-import {ActiveStakerProps} from "../../types/models/ActiveStaker";
-import {unboundedQueryOptions} from "../common";
 
 export class StakingStats {
 
@@ -41,8 +39,6 @@ export class StakingStats {
 
     private async updateActiveStakers(): Promise<void> {
         await this.removeOldRecords();
-
-        logger.info(`Inserting new era data`)
 
         let stakeTargets = await this.eraInfoDataSource.eraStakers()
 
