@@ -23,8 +23,14 @@ dataSources:
     mapping:
       file: ./dist/index.js
       handlers:
-        - handler: handleMoonbeamNewEra
+#        - handler: handleMoonbeamNewEra
+#          kind: substrate/EventHandler
+#          filter:
+#            module: parachainStaking
+#            method: NewRound
+
+        - handler: handleMoonbeamStakingReward
           kind: substrate/EventHandler
           filter:
             module: parachainStaking
-            method: NewRound
+            method: Rewarded

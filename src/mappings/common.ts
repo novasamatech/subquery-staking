@@ -16,5 +16,3 @@ export async function handleNewEra(
 
     await stakingStats.indexEraStats()
 }
-
-export const unboundedQueryOptions = { limit: 1_000_000 }

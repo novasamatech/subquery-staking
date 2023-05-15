@@ -23,8 +23,32 @@ dataSources:
     mapping:
       file: ./dist/index.js
       handlers:
-        - handler: handlePolkadotNewEra
+#        - handler: handlePolkadotNewEra
+#          kind: substrate/EventHandler
+#          filter:
+#            module: staking
+#            method: StakersElected
+
+        - handler: handlePolkadotStakingReward
           kind: substrate/EventHandler
           filter:
             module: staking
-            method: StakersElected
+            method: Reward
+
+        - handler: handlePolkadotStakingReward
+          kind: substrate/EventHandler
+          filter:
+            module: staking
+            method: Rewarded
+
+        - handler: handlePolkadotStakingSlash
+          kind: substrate/EventHandler
+          filter:
+            module: staking
+            method: Slash
+
+        - handler: handlePolkadotStakingSlash
+          kind: substrate/EventHandler
+          filter:
+            module: staking
+            method: Slashed

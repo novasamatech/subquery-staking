@@ -19,12 +19,36 @@ network:
   dictionary: "https://api.subquery.network/sq/subquery/kusama-dictionary"
 dataSources:
   - kind: substrate/Runtime
-    startBlock: 17259479
+    startBlock: 17876589
     mapping:
       file: ./dist/index.js
       handlers:
-        - handler: handleKusamaNewEra
+#        - handler: handleKusamaNewEra
+#          kind: substrate/EventHandler
+#          filter:
+#            module: staking
+#            method: StakersElected
+
+        - handler: handleKusamaStakingReward
           kind: substrate/EventHandler
           filter:
             module: staking
-            method: StakersElected
+            method: Reward
+
+        - handler: handleKusamaStakingReward
+          kind: substrate/EventHandler
+          filter:
+            module: staking
+            method: Rewarded
+
+        - handler: handleKusamaStakingSlash
+          kind: substrate/EventHandler
+          filter:
+            module: staking
+            method: Slash
+
+        - handler: handleKusamaStakingSlash
+          kind: substrate/EventHandler
+          filter:
+            module: staking
+            method: Slashed

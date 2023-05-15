@@ -19,12 +19,18 @@ network:
   dictionary: "https://api.subquery.network/sq/subquery/moonriver-dictionary"
 dataSources:
   - kind: substrate/Runtime
-    startBlock: 3932399
+    startBlock: 4224672
     mapping:
       file: ./dist/index.js
       handlers:
-        - handler: handleMoonriverNewEra
+#        - handler: handleMoonriverNewEra
+#          kind: substrate/EventHandler
+#          filter:
+#            module: parachainStaking
+#            method: NewRound
+
+        - handler: handleMoonriverStakingReward
           kind: substrate/EventHandler
           filter:
             module: parachainStaking
-            method: NewRound
+            method: Rewarded
