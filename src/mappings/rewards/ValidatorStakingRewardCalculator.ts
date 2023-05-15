@@ -2,8 +2,15 @@ import {RewardCalculator, StakerNode} from "./RewardCalculator";
 import {StakedInfo} from "./inflation/Inflation";
 import Big from "big.js";
 import {associate, BigFromINumber, PerbillToNumber} from "../utils";
+import {EraInfoDataSource} from "../era/EraInfoDataSource";
 
 export abstract class ValidatorStakingRewardCalculator implements RewardCalculator {
+
+    private readonly eraInfoDataSource: EraInfoDataSource
+
+    protected constructor(eraInfoDataSource: EraInfoDataSource) {
+        this.eraInfoDataSource = eraInfoDataSource
+    }
 
     abstract maxApyInternal(stakers: StakerNode[], stakedInfo: StakedInfo): Promise<number>
 
@@ -32,9 +39,10 @@ export abstract class ValidatorStakingRewardCalculator implements RewardCalculat
     }
 
     private async fetchStakers(): Promise<StakerNode[]> {
-        const currentEra = (await api.query.staking.currentEra()).unwrap()
-        const exposures = await api.query.staking.erasStakersClipped.entries(currentEra.toNumber())
-        const commissions = await api.query.staking.erasValidatorPrefs.entries(currentEra.toNumber())
+        const currentEra = await this.eraInfoDataSource.era()
+        const eraStakers = await this.eraInfoDataSource.eraStakers()
+
+        const commissions = await api.query.staking.erasValidatorPrefs.entries(currentEra)
 
         const commissionByValidatorId = associate(
             commissions,
@@ -42,16 +50,12 @@ export abstract class ValidatorStakingRewardCalculator implements RewardCalculat
             ([, prefs]) => prefs.commission,
         )
 
-        return exposures.map(([key, exposure]) => {
-            const [, validatorId] = key.args
-            let validatorIdString = validatorId.toString()
-
+        return eraStakers.map(({address, totalStake}) => {
             return {
-                totalStake: BigFromINumber(exposure.total),
-                commission: PerbillToNumber(commissionByValidatorId[validatorIdString])
+                totalStake: totalStake,
+                commission: PerbillToNumber(commissionByValidatorId[address])
             }
         })
-
     }
 
     private async fetchTotalIssuance(): Promise<Big> {

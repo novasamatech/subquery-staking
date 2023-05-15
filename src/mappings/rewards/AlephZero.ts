@@ -3,8 +3,13 @@ import {StakerNode} from "./RewardCalculator";
 import {StakedInfo} from "./inflation/Inflation";
 import Big from "big.js";
 import {aprToApy, max, toPlanks} from "../utils";
+import {EraInfoDataSource} from "../era/EraInfoDataSource";
 
 export class AlephZeroRewardCalculator extends ValidatorStakingRewardCalculator {
+
+    constructor(eraInfoDataSource: EraInfoDataSource) {
+        super(eraInfoDataSource)
+    }
 
     async maxApyInternal(stakers: StakerNode[], stakedInfo: StakedInfo): Promise<number> {
         let yearlyMint = this.yearlyMint()
