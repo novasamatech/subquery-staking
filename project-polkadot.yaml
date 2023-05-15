@@ -19,15 +19,15 @@ network:
   dictionary: "https://api.subquery.network/sq/subquery/polkadot-dictionary"
 dataSources:
   - kind: substrate/Runtime
-    startBlock: 14855917
+    startBlock: 0
     mapping:
       file: ./dist/index.js
       handlers:
-#        - handler: handlePolkadotNewEra
-#          kind: substrate/EventHandler
-#          filter:
-#            module: staking
-#            method: StakersElected
+        - handler: handlePolkadotNewEra
+          kind: substrate/EventHandler
+          filter:
+            module: staking
+            method: StakersElected
 
         - handler: handlePolkadotStakingReward
           kind: substrate/EventHandler

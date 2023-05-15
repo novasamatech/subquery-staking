@@ -18,15 +18,15 @@ network:
   endpoint: "wss://ws.azero.dev"
 dataSources:
   - kind: substrate/Runtime
-    startBlock: 47168220
+    startBlock: 0
     mapping:
       file: ./dist/index.js
       handlers:
-#        - handler: handleAlephZeroNewEra
-#          kind: substrate/EventHandler
-#          filter:
-#            module: staking
-#            method: StakersElected
+        - handler: handleAlephZeroNewEra
+          kind: substrate/EventHandler
+          filter:
+            module: staking
+            method: StakersElected
 
         - handler: handleAlephZeroStakingReward
           kind: substrate/EventHandler

@@ -19,15 +19,15 @@ network:
   dictionary: "https://api.subquery.network/sq/subquery/moonbeam-dictionary"
 dataSources:
   - kind: substrate/Runtime
-    startBlock: 3250199
+    startBlock: 0
     mapping:
       file: ./dist/index.js
       handlers:
-#        - handler: handleMoonbeamNewEra
-#          kind: substrate/EventHandler
-#          filter:
-#            module: parachainStaking
-#            method: NewRound
+        - handler: handleMoonbeamNewEra
+          kind: substrate/EventHandler
+          filter:
+            module: parachainStaking
+            method: NewRound
 
         - handler: handleMoonbeamStakingReward
           kind: substrate/EventHandler
