@@ -27,3 +27,30 @@ type ActiveStaker @entity {
 
   activeAmount: BigInt!
 }
+
+type AccumulatedReward @entity {
+
+  id: ID!
+
+  networkId: String!
+
+  address: String!
+
+  amount: BigInt!
+}
+
+enum RewardType {
+  reward
+  slash
+}
+
+type Reward @entity {
+  id: ID!
+  address: String! @index
+  blockNumber: Int! @index
+  timestamp: BigInt!
+  networkId: String! @index
+  amount: BigInt!
+  accumulatedAmount: BigInt!
+  type: RewardType!
+}
