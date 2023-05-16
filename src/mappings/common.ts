@@ -6,12 +6,14 @@ import {StakingStats} from "./stats/StakingStats";
 export async function handleNewEra(
     eraInfoDataSource: EraInfoDataSource,
     rewardCalculator: RewardCalculator,
-    networkId: string
+    networkId: string,
+    stakingType: string
 ): Promise<void> {
     const stakingStats = new StakingStats(
         rewardCalculator,
         eraInfoDataSource,
-        networkId
+        networkId,
+        stakingType
     )
 
     await stakingStats.indexEraStats()

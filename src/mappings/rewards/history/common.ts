@@ -10,13 +10,15 @@ export interface RewardArgs {
     type: RewardType
 
     chainId: string
+
+    stakingType: string
 }
 
 export async function handleReward(rewardProps: RewardArgs, event: SubstrateEvent) {
     const accumulatedReward = await updateAccumulatedReward(rewardProps)
 
     let accountAddress = rewardProps.address
-    let id = eventIdWithNetworkId(event, rewardProps.chainId)
+    let id = generateRewardId(event, rewardProps.chainId, rewardProps.stakingType)
 
     let accountReward = Reward.create({
         id: id,
@@ -26,7 +28,8 @@ export async function handleReward(rewardProps: RewardArgs, event: SubstrateEven
         type: rewardProps.type,
         timestamp: timestamp(event.block),
         blockNumber: blockNumber(event),
-        networkId: rewardProps.chainId
+        networkId: rewardProps.chainId,
+        stakingType: rewardProps.stakingType
     });
 
     await accountReward.save()
@@ -34,13 +37,14 @@ export async function handleReward(rewardProps: RewardArgs, event: SubstrateEven
 
 async function updateAccumulatedReward(rewardProps: RewardArgs): Promise<AccumulatedReward> {
     let accountAddress = rewardProps.address
-    let id = accumulatedRewardId(accountAddress, rewardProps.chainId);
+    let id = accumulatedRewardId(accountAddress, rewardProps.chainId, rewardProps.stakingType);
 
     let accumulatedReward = await AccumulatedReward.get(id);
     if (!accumulatedReward) {
         accumulatedReward = new AccumulatedReward(id);
         accumulatedReward.amount = BigInt(0)
         accumulatedReward.networkId = rewardProps.chainId
+        accumulatedReward.stakingType = rewardProps.stakingType
         accumulatedReward.address = accountAddress
     }
 
@@ -52,12 +56,12 @@ async function updateAccumulatedReward(rewardProps: RewardArgs): Promise<Accumul
     return accumulatedReward
 }
 
-function accumulatedRewardId(accountAddress: string, chainId: string): string {
-    return `${accountAddress}-${chainId}`
+function accumulatedRewardId(accountAddress: string, chainId: string, stakingType: string): string {
+    return `${accountAddress}-${chainId}-${stakingType}`
 }
 
-export function eventIdWithNetworkId(event: SubstrateEvent, chainId: string): string {
-    return `${eventId(event)}-${chainId}`
+export function generateRewardId(event: SubstrateEvent, chainId: string, stakingType: string): string {
+    return `${eventId(event)}-${chainId}-${stakingType}`
 }
 export function eventId(event: SubstrateEvent): string {
     return `${blockNumber(event)}-${event.idx}`
