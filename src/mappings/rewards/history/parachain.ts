@@ -7,7 +7,8 @@ import {Codec} from "@polkadot/types/types";
 
 export async function handleParachainStakingReward(
     event: SubstrateEvent<[accountId: Codec, reward: INumber]>,
-    chainId: string
+    chainId: string,
+    stakingType: string
 ): Promise<void> {
     const {event: {data: [accountId, amount]}} = event
 
@@ -15,7 +16,8 @@ export async function handleParachainStakingReward(
         amount: amount.toBigInt(),
         address: accountId.toString(),
         type: RewardType.reward,
-        chainId: chainId
+        chainId: chainId,
+        stakingType: stakingType
     }
 
     await handleReward(rewardProps, event)

@@ -7,6 +7,7 @@ import {INumber} from "@polkadot/types-codec/types/interfaces";
 import {handleRelaychainStakingReward, handleRelaychainStakingSlash} from "./rewards/history/relaychain";
 
 const ALEPH_ZERO_GENESIS = "0x70255b4d28de0fc4e1a193d7e175ad1ccef431598211c55538f1018651a0344e"
+const STAKING_TYPE = "aleph-zero"
 
 export async function handleAlephZeroNewEra(_: SubstrateEvent): Promise<void> {
     let validatorEraInfoDataSource = new ValidatorEraInfoDataSource();
@@ -14,18 +15,19 @@ export async function handleAlephZeroNewEra(_: SubstrateEvent): Promise<void> {
     await handleNewEra(
         validatorEraInfoDataSource,
         new AlephZeroRewardCalculator(validatorEraInfoDataSource),
-        ALEPH_ZERO_GENESIS
+        ALEPH_ZERO_GENESIS,
+        STAKING_TYPE
     )
 }
 
 export async function handleAlephZeroStakingReward(
     event: SubstrateEvent<[accountId: Codec, reward: INumber]>,
 ): Promise<void> {
-    await handleRelaychainStakingReward(event, ALEPH_ZERO_GENESIS)
+    await handleRelaychainStakingReward(event, ALEPH_ZERO_GENESIS, STAKING_TYPE)
 }
 
 export async function handleAlephZeroStakingSlash(
     event: SubstrateEvent<[account: Codec, slash: INumber]>,
 ): Promise<void> {
-    await handleRelaychainStakingSlash(event, ALEPH_ZERO_GENESIS)
+    await handleRelaychainStakingSlash(event, ALEPH_ZERO_GENESIS, STAKING_TYPE)
 }

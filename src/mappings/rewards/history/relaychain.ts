@@ -6,22 +6,25 @@ import {INumber} from "@polkadot/types-codec/types/interfaces";
 
 export async function handleRelaychainStakingReward(
     event: SubstrateEvent<[accountId: Codec, reward: INumber]>,
-    chainId: string
+    chainId: string,
+    stakingType: string
 ): Promise<void> {
-    await handleRelaychainStakingRewardType(event, RewardType.reward, chainId)
+    await handleRelaychainStakingRewardType(event, RewardType.reward, chainId, stakingType)
 }
 
 export async function handleRelaychainStakingSlash(
     event: SubstrateEvent<[account: Codec, slash: INumber]>,
-    chainId: string
+    chainId: string,
+    stakingType: string
 ): Promise<void> {
-   await handleRelaychainStakingRewardType(event, RewardType.slash, chainId)
+   await handleRelaychainStakingRewardType(event, RewardType.slash, chainId, stakingType)
 }
 
 async function handleRelaychainStakingRewardType(
     event: SubstrateEvent<[account: Codec, amount: INumber]>,
     type: RewardType,
-    chainId: string
+    chainId: string,
+    stakingType: string
 ): Promise<void> {
     const {event: {data: [accountId, amount]}} = event
 
@@ -29,7 +32,8 @@ async function handleRelaychainStakingRewardType(
         amount: amount.toBigInt(),
         address: accountId.toString(),
         type: type,
-        chainId: chainId
+        chainId: chainId,
+        stakingType: stakingType
     }
 
     await handleReward(rewardProps, event)

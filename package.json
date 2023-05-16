@@ -28,7 +28,13 @@
     "@subql/types": "1.7.3-2",
     "jest": "^29.3.1",
     "ts-jest": "^29.0.3",
-    "typescript": "^4.1.3"
+    "typescript": "^4.1.3",
+    "@zeroio/type-definitions": "^0.0.14",
+    "moonbeam-types-bundle": "^2.0.8"
+  },
+  "exports": {
+    "alephZeroChaintypes": "./chainTypes/alephZeroChaintypes.ts",
+    "moonbeamChaintypes": "./chainTypes/moonbeamChaintypes.ts"
   },
   "dependencies": {
     "@moonbeam-network/api-augment": "^0.2301.0",

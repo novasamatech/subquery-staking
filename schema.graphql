@@ -5,7 +5,9 @@
 type StakingApy @entity {
   id: ID!
 
-  networkId: String!
+  networkId: String! @index
+
+  stakingType: String! @index
 
   maxAPY: Float!
 }
@@ -25,6 +27,8 @@ type ActiveStaker @entity {
 
   networkId: String! @index
 
+  stakingType: String! @index
+
   activeAmount: BigInt!
 }
 
@@ -33,6 +37,8 @@ type AccumulatedReward @entity {
   id: ID!
 
   networkId: String!
+
+  stakingType: String! @index
 
   address: String!
 
@@ -50,6 +56,7 @@ type Reward @entity {
   blockNumber: Int! @index
   timestamp: BigInt!
   networkId: String! @index
+  stakingType: String! @index
   amount: BigInt!
   accumulatedAmount: BigInt!
   type: RewardType!

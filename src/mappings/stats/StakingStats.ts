@@ -10,14 +10,18 @@ export class StakingStats {
 
     private readonly networkId: string
 
+    private readonly stakingType: string
+
     constructor(
         rewardCalculator: RewardCalculator,
         eraInfoDataSource: EraInfoDataSource,
-        networkId: string
+        networkId: string,
+        stakingType: string,
     ) {
         this.eraInfoDataSource = eraInfoDataSource
         this.rewardCalculator = rewardCalculator
         this.networkId = networkId
+        this.stakingType = stakingType
     }
 
     async indexEraStats(): Promise<void> {
@@ -29,8 +33,9 @@ export class StakingStats {
         let apy = await this.rewardCalculator.maxApy()
 
         let apyEntity = StakingApy.create({
-            id: this.networkId,
+            id: this.generateMaxApyId(),
             networkId: this.networkId,
+            stakingType: this.stakingType,
             maxAPY: apy
         })
 
@@ -45,21 +50,23 @@ export class StakingStats {
         const activeStakers: ActiveStaker[] = stakeTargets.flatMap((stakeTarget => {
             const nominators = stakeTarget.others.map((nominator) => {
                 return ActiveStaker.create({
-                    id: this.generateActiveSakerId(nominator.address, stakeTarget.address),
+                    id: this.generateActiveStakerId(nominator.address, stakeTarget.address),
                     activeAmount: nominator.amount,
                     address: nominator.address,
                     type: StakerType.NOMINATOR,
-                    networkId: this.networkId
+                    networkId: this.networkId,
+                    stakingType: this.stakingType
                 })
             })
 
             nominators.push(
                 ActiveStaker.create({
-                    id: this.generateActiveSakerId(stakeTarget.address, stakeTarget.address),
+                    id: this.generateActiveStakerId(stakeTarget.address, stakeTarget.address),
                     activeAmount: stakeTarget.selfStake,
                     address: stakeTarget.address,
                     type: StakerType.VALIDATOR,
-                    networkId: this.networkId
+                    networkId: this.networkId,
+                    stakingType: this.stakingType
                 }))
 
             return nominators
@@ -71,15 +78,19 @@ export class StakingStats {
     }
 
     private async removeOldRecords(): Promise<void> {
-        const records = await store.getByField('ActiveStaker', 'networkId', this.networkId);
-        const oldRecordIds = records.map(record => record.id);
+        const oldNetworkRecords = await ActiveStaker.getByNetworkId(this.networkId)
+        const oldTypeRecords = oldNetworkRecords.filter(record => record.stakingType == this.stakingType)
 
         // await store.bulkRemove("ActiveStaker", oldRecordIds)
 
-        await Promise.all(oldRecordIds.map((recordId) => store.remove("ActiveStaker", recordId)))
+        await Promise.all(oldTypeRecords.map((record) => store.remove("ActiveStaker", record.id)))
     }
 
-    private generateActiveSakerId(address: string, validatorAddress: string): string {
-        return `${address}-${validatorAddress}-${this.networkId}`
+    private generateActiveStakerId(address: string, validatorAddress: string): string {
+        return `${address}-${validatorAddress}-${this.networkId}-${this.stakingType}`
+    }
+
+    private generateMaxApyId(): string {
+        return `${this.networkId}-${this.stakingType}`
     }
 }
