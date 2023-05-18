@@ -34,7 +34,10 @@
   },
   "exports": {
     "alephZeroChaintypes": "./chainTypes/alephZeroChaintypes.ts",
-    "moonbeamChaintypes": "./chainTypes/moonbeamChaintypes.ts"
+    "moonbeamChaintypes": "./chainTypes/moonbeamChaintypes.ts",
+    "polkadexChaintypes": "./chainTypes/polkadexChaintypes.ts",
+    "ternoaChaintypes": "/chainTypes/ternoaChaintypes.ts",
+    "zeitgeistChaintypes": "/chainTypes/zeitgeistChaintypes.ts"
   },
   "dependencies": {
     "@moonbeam-network/api-augment": "^0.2301.0",
