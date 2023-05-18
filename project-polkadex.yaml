@@ -15,13 +15,13 @@ schema:
 network:
   chainId: '0x3920bcb4960a1eef5580cd5367ff3f430eef052774f78468852f7b9cb39f8a3c'
   endpoint: >-
-    wss://polkadex.api.onfinality.io/public-ws
+    wss://mainnet.polkadex.trade
   chaintypes:
     file: ./dist/polkadexChaintypes.js
 dataSources:
   - name: main
     kind: substrate/Runtime
-    startBlock: 1
+    startBlock: 3702250 # https://polkadex.subscan.io/block/3702250?tab=event&event=3702250-2
     mapping:
       file: ./dist/index.js
       handlers:

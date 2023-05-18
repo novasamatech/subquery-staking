@@ -15,13 +15,13 @@ schema:
 network:
   chainId: '0x1bf2a2ecb4a868de66ea8610f2ce7c8c43706561b6476031315f6640fe38e060'
   endpoint: >-
-    wss://zeitgeist.api.onfinality.io/public-ws
+    wss://main.rpc.zeitgeist.pm/ws
   chaintypes:
     file: ./dist/zeitgeistChaintypes.js
 dataSources:
   - name: main
     kind: substrate/Runtime
-    startBlock: 1
+    startBlock: 2920190 # https://zeitgeist.subscan.io/block/2920190?tab=event&event=2920190-28
     mapping:
       file: ./dist/index.js
       handlers:
