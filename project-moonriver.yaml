@@ -21,7 +21,7 @@ network:
     file: ./dist/moonbeamChaintypes.js
 dataSources:
   - kind: substrate/Runtime
-    startBlock: 3000000
+    startBlock: 4214400 # https://moonriver.subscan.io/block/4214400?tab=event&event=4214400-74
     mapping:
       file: ./dist/index.js
       handlers:
