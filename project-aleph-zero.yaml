@@ -20,7 +20,7 @@ network:
     file: ./dist/alephZeroChaintypes.js
 dataSources:
   - kind: substrate/Runtime
-    startBlock: 40428000 # https://alephzero.subscan.io/block/40428000?tab=event&event=40428000-0
+    startBlock: 40513500 # https://alephzero.subscan.io/block/40513500?tab=event&event=40513500-0
     mapping:
       file: ./dist/index.js
       handlers:
