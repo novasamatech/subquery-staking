@@ -66,7 +66,7 @@ services:
       - --query-limit=1000000
       - --batch-size=30
     healthcheck:
-      test: [ "CMD", "curl", "-f", "http://subquery-node-kusama:3001/ready" ]
+      test: [ "CMD", "curl", "-f", "http://subquery-node-kusama:3000/ready" ]
       interval: 3s
       timeout: 5s
       retries: 10
@@ -93,7 +93,7 @@ services:
       - --query-limit=1000000
       - --batch-size=30
     healthcheck:
-      test: [ "CMD", "curl", "-f", "http://subquery-node-moonbeam:3002/ready" ]
+      test: [ "CMD", "curl", "-f", "http://subquery-node-moonbeam:3000/ready" ]
       interval: 3s
       timeout: 5s
       retries: 10
@@ -120,7 +120,7 @@ services:
       - --query-limit=1000000
       - --batch-size=30
     healthcheck:
-      test: [ "CMD", "curl", "-f", "http://subquery-node-moonriver:3003/ready" ]
+      test: [ "CMD", "curl", "-f", "http://subquery-node-moonriver:3000/ready" ]
       interval: 3s
       timeout: 5s
       retries: 10
@@ -147,7 +147,7 @@ services:
       - --query-limit=1000000
       - --batch-size=30
     healthcheck:
-      test: [ "CMD", "curl", "-f", "http://subquery-node-aleph-zero:3004/ready" ]
+      test: [ "CMD", "curl", "-f", "http://subquery-node-aleph-zero:3000/ready" ]
       interval: 3s
       timeout: 5s
       retries: 10
@@ -174,7 +174,7 @@ services:
       - --query-limit=1000000
       - --batch-size=30
     healthcheck:
-      test: [ "CMD", "curl", "-f", "http://subquery-node-zeitgeist:3005/ready" ]
+      test: [ "CMD", "curl", "-f", "http://subquery-node-zeitgeist:3000/ready" ]
       interval: 3s
       timeout: 5s
       retries: 10
@@ -201,7 +201,7 @@ services:
       - --query-limit=1000000
       - --batch-size=30
     healthcheck:
-      test: [ "CMD", "curl", "-f", "http://subquery-node-westend:3006/ready" ]
+      test: [ "CMD", "curl", "-f", "http://subquery-node-westend:3000/ready" ]
       interval: 3s
       timeout: 5s
       retries: 10
@@ -228,7 +228,7 @@ services:
       - --query-limit=1000000
       - --batch-size=30
     healthcheck:
-      test: [ "CMD", "curl", "-f", "http://subquery-node-turing:3007/ready" ]
+      test: [ "CMD", "curl", "-f", "http://subquery-node-turing:3000/ready" ]
       interval: 3s
       timeout: 5s
       retries: 10
@@ -255,7 +255,7 @@ services:
       - --query-limit=1000000
       - --batch-size=30
     healthcheck:
-      test: [ "CMD", "curl", "-f", "http://subquery-node-ternoa:3008/ready" ]
+      test: [ "CMD", "curl", "-f", "http://subquery-node-ternoa:3000/ready" ]
       interval: 3s
       timeout: 5s
       retries: 10
@@ -309,7 +309,7 @@ services:
       - --query-limit=1000000
       - --batch-size=30
     healthcheck:
-      test: [ "CMD", "curl", "-f", "http://subquery-node-calamari:3010/ready" ]
+      test: [ "CMD", "curl", "-f", "http://subquery-node-calamari:3000/ready" ]
       interval: 3s
       timeout: 5s
       retries: 10
