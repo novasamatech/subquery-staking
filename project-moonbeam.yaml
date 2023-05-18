@@ -21,7 +21,7 @@ network:
     file: ./dist/moonbeamChaintypes.js
 dataSources:
   - kind: substrate/Runtime
-    startBlock: 0
+    startBlock: 3000000
     mapping:
       file: ./dist/index.js
       handlers:

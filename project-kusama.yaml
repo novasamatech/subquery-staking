@@ -15,11 +15,11 @@ schema:
   file: ./schema.graphql
 network:
   chainId: "0xb0a8d493285c2df73290dfb7e61f870f17b41801197a149ca93654499ea3dafe"
-  endpoint: "wss://kusama.api.onfinality.io/public-ws"
+  endpoint: "wss://rpc-kusama.luckyfriday.io"
   dictionary: "https://api.subquery.network/sq/subquery/kusama-dictionary"
 dataSources:
   - kind: substrate/Runtime
-    startBlock: 0
+    startBlock: 17603877 # https://kusama.subscan.io/block/17603877?tab=event&event=17603877-6
     mapping:
       file: ./dist/index.js
       handlers:

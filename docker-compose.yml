@@ -37,6 +37,7 @@ services:
       - --db-schema=app
       - --disable-historical
       - --query-limit=1000000
+      - --batch-size=30
     healthcheck:
       test: ["CMD", "curl", "-f", "http://subquery-node-polkadot:3000/ready"]
       interval: 3s
@@ -63,6 +64,7 @@ services:
       - --db-schema=app
       - --disable-historical
       - --query-limit=1000000
+      - --batch-size=30
     healthcheck:
       test: [ "CMD", "curl", "-f", "http://subquery-node-kusama:3001/ready" ]
       interval: 3s
@@ -89,6 +91,7 @@ services:
       - --db-schema=app
       - --disable-historical
       - --query-limit=1000000
+      - --batch-size=30
     healthcheck:
       test: [ "CMD", "curl", "-f", "http://subquery-node-moonbeam:3002/ready" ]
       interval: 3s
@@ -115,6 +118,7 @@ services:
       - --db-schema=app
       - --disable-historical
       - --query-limit=1000000
+      - --batch-size=30
     healthcheck:
       test: [ "CMD", "curl", "-f", "http://subquery-node-moonriver:3003/ready" ]
       interval: 3s
@@ -141,6 +145,7 @@ services:
       - --db-schema=app
       - --disable-historical
       - --query-limit=1000000
+      - --batch-size=30
     healthcheck:
       test: [ "CMD", "curl", "-f", "http://subquery-node-aleph-zero:3004/ready" ]
       interval: 3s
