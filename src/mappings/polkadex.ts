@@ -6,7 +6,7 @@ import {Codec} from "@polkadot/types/types";
 import {INumber} from "@polkadot/types-codec/types/interfaces";
 import {handleRelaychainStakingReward, handleRelaychainStakingSlash} from "./rewards/history/relaychain";
 
-const POLKADOT_GENESIS = "0x3920bcb4960a1eef5580cd5367ff3f430eef052774f78468852f7b9cb39f8a3c"
+const POLKADEX_GENESIS = "0x3920bcb4960a1eef5580cd5367ff3f430eef052774f78468852f7b9cb39f8a3c"
 const STAKING_TYPE = "relaychain"
 
 export async function handlePolkadexNewEra(_: SubstrateEvent): Promise<void> {
