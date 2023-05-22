@@ -38,6 +38,10 @@ export class CollatorStakingRewardCalculator implements RewardCalculator {
 		return apr.mul(1 - parachainBondPercent - collatorCommission).toNumber()
 	}
 
+	protected async fetchTotalIssuance(): Promise<Big> {
+		return BigFromINumber(await api.query.balances.totalIssuance());
+	}
+
 	private calculateStakingDeviation(collators: CollatorNode[]): Big {
 		let totalCollatorStake = collators.reduce(
             (accumulator, collator) => accumulator.plus(collator.totalStake),
@@ -64,10 +68,6 @@ export class CollatorStakingRewardCalculator implements RewardCalculator {
     private async fetchTotalStaked(round: number): Promise<Big> {
     	const totalStake = await api.query.parachainStaking.staked(round)
     	return BigFromINumber(totalStake)
-    }
-
-	private async fetchTotalIssuance(): Promise<Big> {
-        return BigFromINumber(await api.query.balances.totalIssuance());
     }
 
     private async fetchParachainBondPercent(): Promise<number> {
