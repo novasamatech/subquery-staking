@@ -37,6 +37,7 @@ services:
       - --db-schema=app
       - --disable-historical
       - --query-limit=1000000
+      - --batch-size=30
     healthcheck:
       test: ["CMD", "curl", "-f", "http://subquery-node-polkadot:3000/ready"]
       interval: 3s
@@ -63,8 +64,9 @@ services:
       - --db-schema=app
       - --disable-historical
       - --query-limit=1000000
+      - --batch-size=30
     healthcheck:
-      test: [ "CMD", "curl", "-f", "http://subquery-node-kusama:3001/ready" ]
+      test: [ "CMD", "curl", "-f", "http://subquery-node-kusama:3000/ready" ]
       interval: 3s
       timeout: 5s
       retries: 10
@@ -89,8 +91,9 @@ services:
       - --db-schema=app
       - --disable-historical
       - --query-limit=1000000
+      - --batch-size=30
     healthcheck:
-      test: [ "CMD", "curl", "-f", "http://subquery-node-moonbeam:3002/ready" ]
+      test: [ "CMD", "curl", "-f", "http://subquery-node-moonbeam:3000/ready" ]
       interval: 3s
       timeout: 5s
       retries: 10
@@ -115,8 +118,9 @@ services:
       - --db-schema=app
       - --disable-historical
       - --query-limit=1000000
+      - --batch-size=30
     healthcheck:
-      test: [ "CMD", "curl", "-f", "http://subquery-node-moonriver:3003/ready" ]
+      test: [ "CMD", "curl", "-f", "http://subquery-node-moonriver:3000/ready" ]
       interval: 3s
       timeout: 5s
       retries: 10
@@ -141,8 +145,171 @@ services:
       - --db-schema=app
       - --disable-historical
       - --query-limit=1000000
+      - --batch-size=30
     healthcheck:
-      test: [ "CMD", "curl", "-f", "http://subquery-node-aleph-zero:3004/ready" ]
+      test: [ "CMD", "curl", "-f", "http://subquery-node-aleph-zero:3000/ready" ]
+      interval: 3s
+      timeout: 5s
+      retries: 10
+
+  subquery-node-zeitgeist:
+    image: onfinality/subql-node:v1.21.2
+    depends_on:
+      "postgres":
+        condition: service_healthy
+    restart: always
+    environment:
+      DB_USER: postgres
+      DB_PASS: postgres
+      DB_DATABASE: postgres
+      DB_HOST: postgres
+      DB_PORT: 5432
+    volumes:
+      - ./:/app
+    command:
+      - -f=/app/project-zeitgeist.yaml
+      - --multi-chain
+      - --db-schema=app
+      - --disable-historical
+      - --query-limit=1000000
+      - --batch-size=30
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://subquery-node-zeitgeist:3000/ready" ]
+      interval: 3s
+      timeout: 5s
+      retries: 10
+  
+  subquery-node-westend:
+    image: onfinality/subql-node:v1.21.2
+    depends_on:
+      "postgres":
+        condition: service_healthy
+    restart: always
+    environment:
+      DB_USER: postgres
+      DB_PASS: postgres
+      DB_DATABASE: postgres
+      DB_HOST: postgres
+      DB_PORT: 5432
+    volumes:
+      - ./:/app
+    command:
+      - -f=/app/project-westend.yaml
+      - --multi-chain
+      - --db-schema=app
+      - --disable-historical
+      - --query-limit=1000000
+      - --batch-size=30
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://subquery-node-westend:3000/ready" ]
+      interval: 3s
+      timeout: 5s
+      retries: 10
+
+  subquery-node-turing:
+    image: onfinality/subql-node:v1.21.2
+    depends_on:
+      "postgres":
+        condition: service_healthy
+    restart: always
+    environment:
+      DB_USER: postgres
+      DB_PASS: postgres
+      DB_DATABASE: postgres
+      DB_HOST: postgres
+      DB_PORT: 5432
+    volumes:
+      - ./:/app
+    command:
+      - -f=/app/project-turing.yaml
+      - --multi-chain
+      - --db-schema=app
+      - --disable-historical
+      - --query-limit=1000000
+      - --batch-size=30
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://subquery-node-turing:3000/ready" ]
+      interval: 3s
+      timeout: 5s
+      retries: 10
+  
+  subquery-node-ternoa:
+    image: onfinality/subql-node:v1.21.2
+    depends_on:
+      "postgres":
+        condition: service_healthy
+    restart: always
+    environment:
+      DB_USER: postgres
+      DB_PASS: postgres
+      DB_DATABASE: postgres
+      DB_HOST: postgres
+      DB_PORT: 5432
+    volumes:
+      - ./:/app
+    command:
+      - -f=/app/project-ternoa.yaml
+      - --multi-chain
+      - --db-schema=app
+      - --disable-historical
+      - --query-limit=1000000
+      - --batch-size=30
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://subquery-node-ternoa:3000/ready" ]
+      interval: 3s
+      timeout: 5s
+      retries: 10
+
+  subquery-node-polkadex:
+    image: onfinality/subql-node:v1.21.2
+    depends_on:
+      "postgres":
+        condition: service_healthy
+    restart: always
+    environment:
+      DB_USER: postgres
+      DB_PASS: postgres
+      DB_DATABASE: postgres
+      DB_HOST: postgres
+      DB_PORT: 5432
+    volumes:
+      - ./:/app
+    command:
+      - -f=/app/project-polkadex.yaml
+      - --multi-chain
+      - --db-schema=app
+      - --disable-historical
+      - --query-limit=1000000
+      - --batch-size=30
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://subquery-node-ternoa:3000/ready" ]
+      interval: 3s
+      timeout: 5s
+      retries: 10
+  
+  subquery-node-calamari:
+    image: onfinality/subql-node:v1.21.2
+    depends_on:
+      "postgres":
+        condition: service_healthy
+    restart: always
+    environment:
+      DB_USER: postgres
+      DB_PASS: postgres
+      DB_DATABASE: postgres
+      DB_HOST: postgres
+      DB_PORT: 5432
+    volumes:
+      - ./:/app
+    command:
+      - -f=/app/project-calamari.yaml
+      - --multi-chain
+      - --db-schema=app
+      - --disable-historical
+      - --query-limit=1000000
+      - --batch-size=30
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://subquery-node-calamari:3000/ready" ]
       interval: 3s
       timeout: 5s
       retries: 10
