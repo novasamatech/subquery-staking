@@ -1,6 +1,6 @@
 import {RewardCalculator, StakerNode} from "./RewardCalculator";
 import '@polkadot/api-augment/polkadot'
-import {RewardCurveConfig, RewardCurveInflation} from "./inflation/RewardCurveInflation";
+import {RewardCurveConfig, RewardCurveInflation, RewardCurveParachainAdjust} from "./inflation/RewardCurveInflation";
 import {ValidatorStakingRewardCalculator} from "./ValidatorStakingRewardCalculator";
 import {Inflation, StakedInfo} from "./inflation/Inflation";
 import {max} from "../utils";
@@ -10,23 +10,33 @@ import {EraInfoDataSource} from "../era/EraInfoDataSource";
 const LOWEST_PUBLIC_ID = 2000
 
 export async function RelaychainRewardCalculator(eraInfoDataSource: EraInfoDataSource): Promise<RewardCalculator> {
-    let parachains = await api.query.paras.parachains()
+    const parasPallet = api.query.paras
+    let parachainAdjust: RewardCurveParachainAdjust | null
 
-    let numberOfPublicParachains = parachains.filter(
-        (paraId) => paraId.toNumber() >= LOWEST_PUBLIC_ID
-    ).length
+    if (parasPallet) {
+        let parachains = await parasPallet.parachains()
+
+        let numberOfPublicParachains = parachains.filter(
+            (paraId) => paraId.toNumber() >= LOWEST_PUBLIC_ID
+        ).length
+
+        parachainAdjust = {
+            maxParachains: 60,
+            activePublicParachains: numberOfPublicParachains,
+            parachainReservedSupplyFraction: 0.3
+        }
+    } else {
+        parachainAdjust = null
+    }
 
     let rewardCurveConfig: RewardCurveConfig = {
         falloff: 0.05,
         maxInflation: 0.1,
         minInflation: 0.025,
         stakeTarget: 0.75,
-        parachainAdjust: {
-            maxParachains: 60,
-            activePublicParachains: numberOfPublicParachains,
-            parachainReservedSupplyFraction: 0.3
-        }
+        parachainAdjust: parachainAdjust
     }
+
     let inflation = new RewardCurveInflation(rewardCurveConfig)
 
     return new DefaultValidatorStakingRewardCalculator(inflation, eraInfoDataSource)

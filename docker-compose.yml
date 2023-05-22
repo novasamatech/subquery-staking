@@ -178,7 +178,7 @@ services:
       interval: 3s
       timeout: 5s
       retries: 10
-  
+
   subquery-node-westend:
     image: onfinality/subql-node:v1.21.2
     depends_on:
@@ -232,7 +232,7 @@ services:
       interval: 3s
       timeout: 5s
       retries: 10
-  
+
   subquery-node-ternoa:
     image: onfinality/subql-node:v1.21.2
     depends_on:
@@ -286,7 +286,7 @@ services:
       interval: 3s
       timeout: 5s
       retries: 10
-  
+
   subquery-node-calamari:
     image: onfinality/subql-node:v1.21.2
     depends_on:

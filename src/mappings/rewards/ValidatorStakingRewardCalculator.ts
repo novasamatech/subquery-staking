@@ -31,6 +31,9 @@ export abstract class ValidatorStakingRewardCalculator implements RewardCalculat
 
         let stakedPortion = totalStaked.div(totalIssuance).toNumber()
 
+        logger.info(`Total Issuance ${totalIssuance}`)
+        logger.info(`Total staked ${totalStaked}`)
+
         return {
             totalStaked: totalStaked,
             totalIssuance: totalIssuance,
