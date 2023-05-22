@@ -262,12 +262,19 @@ services:
 
   graphql-engine:
     image: onfinality/subql-query:latest
+    restart: on-failure
+    healthcheck:
+      test: ["CMD-SHELL", "wget --quiet --header 'Content-Type: application/json' \
+            --post-data '{\"query\":\"\\n{\\n    stakingApies {\\n       nodes {\\n            networkId\\n            stakingType\\n            maxAPY\\n        }\\n    }\\n}\\n\",\"variables\":{}}' \
+            --output-document=- http://127.0.0.1:3000 >/dev/null || exit 1"]
+      interval: 1m
+      timeout: 10s
+      retries: 2
     ports:
       - 3000:3000
     depends_on:
       "postgres":
         condition: service_healthy
-    restart: always
     environment:
       DB_USER: postgres
       DB_PASS: postgres
@@ -277,3 +284,12 @@ services:
     command:
       - --name=app
       - --playground
+    
+  autoheal:
+    image: willfarrell/autoheal
+    container_name: autoheal
+    restart: always
+    environment:
+      - AUTOHEAL_CONTAINER_LABEL=all
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
