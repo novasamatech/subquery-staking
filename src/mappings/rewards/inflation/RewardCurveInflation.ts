@@ -10,7 +10,7 @@ export interface RewardCurveConfig {
 
     stakeTarget: number
 
-    parachainAdjust?: RewardCurveParachainAdjust
+    parachainAdjust: RewardCurveParachainAdjust | null
 }
 
 export interface RewardCurveParachainAdjust {
