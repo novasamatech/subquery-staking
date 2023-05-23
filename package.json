@@ -42,6 +42,7 @@
   },
   "dependencies": {
     "@moonbeam-network/api-augment": "^0.2301.0",
+    "@oak-network/api-augment": "latest",
     "@types/big.js": "^6.1.6",
     "big.js": "^6.2.1"
   }
