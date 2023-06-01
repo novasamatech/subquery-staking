@@ -23,7 +23,7 @@
   "license": "MIT",
   "devDependencies": {
     "@jest/globals": "^29.3.1",
-    "@polkadot/api": "latest",
+    "@polkadot/api": "^9",
     "@subql/cli": "1.13.2-2",
     "@subql/types": "1.7.3-2",
     "@zeitgeistpm/type-defs": "^1.0.0",
