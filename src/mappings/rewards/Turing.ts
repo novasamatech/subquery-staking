@@ -14,8 +14,15 @@ export class TuringRewardCalculator extends CollatorStakingRewardCalculator {
 
     protected async fetchTotalIssuance(): Promise<Big> {
         const total = await api.query.balances.totalIssuance()
-        const additional = await api.query.vesting.totalUnvestedAllocation()
 
-        return BigFromINumber(additional as INumber).plus(BigFromINumber(total))
+        let additional: Big
+        if (api.query.vesting?.totalUnvestedAllocation) {
+            const additionalINumber = await api.query.vesting.totalUnvestedAllocation()
+            additional = BigFromINumber(additionalINumber as INumber)
+        } else  {
+            additional = Big(0)
+        }
+
+        return additional.plus(BigFromINumber(total))
     }
 }
