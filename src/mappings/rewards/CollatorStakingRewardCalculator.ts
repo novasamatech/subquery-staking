@@ -25,6 +25,9 @@ export class CollatorStakingRewardCalculator implements RewardCalculator {
 		let parachainBondPercent = await this.fetchParachainBondPercent()
 
 		let stakedInfo = this.constructStakedInfo(totalStaked, totalIssuance)
+		if (stakedInfo.totalStaked.eq(Big(0))) {
+			return 0
+		}
 		let inflation = await this.inflation.from(stakedInfo)
 
 		let stakingDeviation = this.calculateStakingDeviation(collators)
