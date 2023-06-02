@@ -2,7 +2,8 @@ import {StakeTarget} from "./EraInfoDataSource";
 import {CachingEraInfoDataSource} from "./CachingEraInfoDataSource";
 import {BigFromINumber} from "../utils";
 import '@moonbeam-network/api-augment'
-import {PalletParachainStakingCollatorSnapshot} from "@polkadot/types/lookup";
+import {PalletParachainStakingBond, PalletParachainStakingCollatorSnapshot} from "@polkadot/types/lookup";
+import {Struct, Vec} from "@polkadot/types-codec";
 
 export class CollatorEraInfoDataSource extends CachingEraInfoDataSource {
 
@@ -13,14 +14,16 @@ export class CollatorEraInfoDataSource extends CachingEraInfoDataSource {
 
     protected async fetchEraStakers(): Promise<StakeTarget[]> {
         const round = await this.era()
-        const stakes = await api.query.parachainStaking.atStake.entries(round)
+        const stakes = await api.query.parachainStaking.atStake.entries(round) ?? []
 
         return stakes.map(([key, exp]) => {
             const collatorSnapshot = exp as PalletParachainStakingCollatorSnapshot
             const [, collatorId] = key.args
             let validatorAddress = collatorId.toString()
 
-            const others = collatorSnapshot.delegations.map(({owner, amount}) => {
+            const delegations = collatorSnapshot?.delegations ?? (collatorSnapshot['nominators'] as Vec<PalletParachainStakingBond>)
+
+            const others = delegations.map(({owner, amount}) => {
                 return {
                     address: owner.toString(),
                     amount: amount.toBigInt()
@@ -35,5 +38,4 @@ export class CollatorEraInfoDataSource extends CachingEraInfoDataSource {
             }
         })
     }
-
 }
