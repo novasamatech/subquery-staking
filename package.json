@@ -38,7 +38,8 @@
     "moonbeamChaintypes": "./chainTypes/moonbeamChaintypes.ts",
     "polkadexChaintypes": "./chainTypes/polkadexChaintypes.ts",
     "ternoaChaintypes": "./chainTypes/ternoaChaintypes.ts",
-    "zeitgeistChaintypes": "./chainTypes/zeitgeistChaintypes.ts"
+    "zeitgeistChaintypes": "./chainTypes/zeitgeistChaintypes.ts",
+    "calamariChainTypes": "./chainTypes/calamariChainTypes.ts"
   },
   "dependencies": {
     "@moonbeam-network/api-augment": "^0.2301.0",
