@@ -24,8 +24,8 @@
   "devDependencies": {
     "@jest/globals": "^29.3.1",
     "@polkadot/api": "^9",
-    "@subql/cli": "1.13.2-2",
-    "@subql/types": "1.7.3-2",
+    "@subql/cli": "^2",
+    "@subql/types": "^1.7.2",
     "@zeitgeistpm/type-defs": "^1.0.0",
     "@zeroio/type-definitions": "^0.0.14",
     "jest": "^29.3.1",
