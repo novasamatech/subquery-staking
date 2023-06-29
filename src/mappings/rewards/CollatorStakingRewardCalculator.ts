@@ -34,9 +34,13 @@ export class CollatorStakingRewardCalculator implements RewardCalculator {
 		let apr = stakingDeviation.mul(stakedInfo.totalIssuance).mul(inflation).div(stakedInfo.totalStaked)
 
 		logger.info(`Total Issuance ${totalIssuance}`)
+		logger.info(`Total Staked ${totalStaked}`)
 		logger.info(`Round ${round}`)
 		logger.info(`Commission ${collatorCommission}`)
 		logger.info(`Parachain percent ${parachainBondPercent}`)
+		logger.info(`Inflation ${inflation}`)
+		logger.info(`Staking deviation ${stakingDeviation}`)
+		logger.info(`Apr ${apr}`)
 
 		return apr.mul(1 - parachainBondPercent - collatorCommission).toNumber()
 	}
