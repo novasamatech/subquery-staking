@@ -28,8 +28,8 @@ dataSources:
         - handler: handlePolkadexNewEra
           kind: substrate/EventHandler
           filter:
-            module: staking
-            method: StakersElected
+            module: session
+            method: NewSession
 
         - handler: handlePolkadexStakingReward
           kind: substrate/EventHandler

@@ -27,8 +27,8 @@ dataSources:
         - handler: handleAlephZeroNewEra
           kind: substrate/EventHandler
           filter:
-            module: staking
-            method: StakersElected
+            module: session
+            method: NewSession
 
         - handler: handleAlephZeroStakingReward
           kind: substrate/EventHandler
