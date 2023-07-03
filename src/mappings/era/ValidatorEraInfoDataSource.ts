@@ -7,11 +7,11 @@ import {PalletStakingExposure} from "@polkadot/types/lookup";
 export class ValidatorEraInfoDataSource extends CachingEraInfoDataSource {
 
     async eraStarted(): Promise<boolean> {
-        if (api.query['staking'] === undefined || (typeof api.query.staking['currentEra']) === 'function') {
+        if (api.query['staking'] === undefined || (typeof api.query.staking['currentEra']) !== 'function') {
             return false
         }
         const era = (await api.query.staking.currentEra())
-        return era.isSome
+        return era.isSome && era.unwrap().toNumber() > 0
     }
 
     protected async fetchEra(): Promise<number> {
