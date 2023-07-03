@@ -16,10 +16,6 @@ export async function handleNewEra(
     )
 
     await stakingStats.indexEra()
-
-    if(stakingType !== 'relaychain' && stakingType !== 'aleph-zero') {
-        await stakingStats.indexSession()
-    }
 }
 
 export async function handleNewSession(

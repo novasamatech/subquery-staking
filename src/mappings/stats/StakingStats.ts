@@ -26,6 +26,7 @@ export class StakingStats {
 
     async indexEra(): Promise<void> {
         await this.updateActiveStakers()
+        await this.updateAPY()
     }
 
     async indexSession(): Promise<void> {
