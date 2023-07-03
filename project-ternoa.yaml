@@ -27,6 +27,12 @@ dataSources:
         - handler: handleTernoaNewEra
           kind: substrate/EventHandler
           filter:
+            module: staking
+            method: StakersElected
+
+        - handler: handleTernoaNewSession
+          kind: substrate/EventHandler
+          filter:
             module: session
             method: NewSession
 

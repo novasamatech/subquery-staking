@@ -26,6 +26,12 @@ dataSources:
         - handler: handlePolkadotNewEra
           kind: substrate/EventHandler
           filter:
+            module: staking
+            method: StakersElected
+
+        - handler: handlePolkadotNewSession
+          kind: substrate/EventHandler
+          filter:
             module: session
             method: NewSession
 

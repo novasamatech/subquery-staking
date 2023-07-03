@@ -1,5 +1,5 @@
 import {SubstrateEvent} from "@subql/types";
-import {handleNewEra} from "./common";
+import {handleNewEra, handleNewSession} from "./common";
 import {RelaychainRewardCalculator} from "./rewards/Relaychain";
 import {ValidatorEraInfoDataSource} from "./era/ValidatorEraInfoDataSource";
 import {Codec} from "@polkadot/types/types";
@@ -13,6 +13,17 @@ export async function handleKusamaNewEra(_: SubstrateEvent): Promise<void> {
     let validatorEraInfoDataSource = new ValidatorEraInfoDataSource();
 
     await handleNewEra(
+        validatorEraInfoDataSource,
+        await RelaychainRewardCalculator(validatorEraInfoDataSource),
+        KUSAMA_GENESIS,
+        STAKING_TYPE
+    )
+}
+
+export async function handleKusamaNewSession(_: SubstrateEvent): Promise<void> {
+    let validatorEraInfoDataSource = new ValidatorEraInfoDataSource();
+
+    await handleNewSession(
         validatorEraInfoDataSource,
         await RelaychainRewardCalculator(validatorEraInfoDataSource),
         KUSAMA_GENESIS,

@@ -24,9 +24,12 @@ export class StakingStats {
         this.stakingType = stakingType
     }
 
-    async indexEraStats(): Promise<void> {
-        await this.updateAPY()
+    async indexEra(): Promise<void> {
         await this.updateActiveStakers()
+    }
+
+    async indexSession(): Promise<void> {
+        await this.updateAPY()
     }
 
     private async updateAPY(): Promise<void> {
