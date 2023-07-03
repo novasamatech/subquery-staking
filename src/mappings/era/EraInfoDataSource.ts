@@ -5,6 +5,8 @@ export interface EraInfoDataSource {
     era(): Promise<number>
 
     eraStakers(): Promise<StakeTarget[]>
+
+    eraStarted(): Promise<boolean>
 }
 
 export interface StakeTarget {

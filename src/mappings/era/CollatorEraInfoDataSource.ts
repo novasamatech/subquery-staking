@@ -7,6 +7,10 @@ import {Struct, Vec} from "@polkadot/types-codec";
 
 export class CollatorEraInfoDataSource extends CachingEraInfoDataSource {
 
+    async eraStarted(): Promise<boolean> {
+        return true
+    }
+
     protected async fetchEra(): Promise<number> {
         const round = (await api.query.parachainStaking.round())
         return round.current.toNumber()

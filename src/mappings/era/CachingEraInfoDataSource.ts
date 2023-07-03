@@ -22,6 +22,8 @@ export abstract class CachingEraInfoDataSource implements EraInfoDataSource {
         return this._eraStakers
     }
 
+    abstract eraStarted(): Promise<boolean>
+
     protected abstract fetchEraStakers(): Promise<StakeTarget[]>
 
     protected abstract fetchEra(): Promise<number>
