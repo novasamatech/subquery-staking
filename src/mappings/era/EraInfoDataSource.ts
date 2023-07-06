@@ -4,7 +4,7 @@ export interface EraInfoDataSource {
 
     era(): Promise<number>
 
-    eraStakers(): Promise<StakeTarget[]>
+    eraStakers(cached: boolean): Promise<StakeTarget[]>
 
     eraStarted(): Promise<boolean>
 }

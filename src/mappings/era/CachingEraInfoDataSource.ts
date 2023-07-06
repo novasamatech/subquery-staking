@@ -1,10 +1,10 @@
 import {EraInfoDataSource, StakeTarget} from "./EraInfoDataSource";
 
+let cachedStakers: StakeTarget[] | undefined = undefined
+
 export abstract class CachingEraInfoDataSource implements EraInfoDataSource {
 
     private _era: number
-
-    private _eraStakers: StakeTarget[]
 
     async era(): Promise<number> {
         if (this._era == undefined) {
@@ -14,12 +14,21 @@ export abstract class CachingEraInfoDataSource implements EraInfoDataSource {
         return this._era
     }
 
-    async eraStakers(): Promise<StakeTarget[]> {
-        if (this._eraStakers == undefined) {
-            this._eraStakers = await this.fetchEraStakers()
+    async eraStakers(cached: boolean): Promise<StakeTarget[]> {
+        if (cached) {
+            if (cachedStakers === undefined) {
+                return await this.updateCachedStakers();
+            } else {
+                return cachedStakers
+            }
+        } else {
+            return await this.updateCachedStakers()
         }
+    }
 
-        return this._eraStakers
+    private async updateCachedStakers(): Promise<StakeTarget[]> {
+        cachedStakers = await this.fetchEraStakers()
+        return cachedStakers
     }
 
     abstract eraStarted(): Promise<boolean>

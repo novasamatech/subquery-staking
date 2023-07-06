@@ -20,7 +20,7 @@ export class CollatorStakingRewardCalculator implements RewardCalculator {
 		let totalIssuance = await this.fetchTotalIssuance()
 		let round = await this.eraInfoDataSource.era()
 		let totalStaked = await this.fetchTotalStaked(round)
-		let collators = await this.eraInfoDataSource.eraStakers()
+		let collators = await this.eraInfoDataSource.eraStakers(true)
 		let collatorCommission = await this.fetchCommission()
 		let parachainBondPercent = await this.fetchParachainBondPercent()
 

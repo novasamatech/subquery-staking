@@ -51,7 +51,7 @@ export class StakingStats {
     private async updateActiveStakers(): Promise<void> {
         await this.removeOldRecords();
 
-        let stakeTargets = await this.eraInfoDataSource.eraStakers()
+        let stakeTargets = await this.eraInfoDataSource.eraStakers(false)
 
         const activeStakers: ActiveStaker[] = stakeTargets.flatMap((stakeTarget => {
             const nominators = stakeTarget.others.map((nominator) => {
