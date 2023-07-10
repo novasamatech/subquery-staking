@@ -12,6 +12,25 @@ export async function handleRelaychainStakingReward(
     await handleRelaychainStakingRewardType(event, RewardType.reward, chainId, stakingType)
 }
 
+export async function handleRelaychainPooledStakingReward(
+    event: SubstrateEvent<[accountId: Codec, poolId: INumber, reward: INumber]>,
+    chainId: string,
+    stakingType: string
+): Promise<void> {
+    const {event: {data: [accountId, poolId, amount]}} = event
+
+    const rewardProps: RewardArgs = {
+        amount: amount.toBigInt(),
+        address: accountId.toString(),
+        type: RewardType.reward,
+        chainId: chainId,
+        stakingType: stakingType,
+        poolId: poolId.toNumber()
+    }
+
+    await handleReward(rewardProps, event)
+}
+
 export async function handleRelaychainStakingSlash(
     event: SubstrateEvent<[account: Codec, slash: INumber]>,
     chainId: string,

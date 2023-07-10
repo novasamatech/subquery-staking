@@ -41,6 +41,12 @@ dataSources:
             module: staking
             method: Rewarded
 
+        - handler: handleKusamaPoolStakingReward
+          kind: substrate/EventHandler
+          filter:
+            module: nominationPools
+            method: PaidOut
+
         - handler: handleKusamaStakingSlash
           kind: substrate/EventHandler
           filter:
