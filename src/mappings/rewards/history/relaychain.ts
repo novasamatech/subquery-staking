@@ -1,7 +1,7 @@
 import {SubstrateEvent} from "@subql/types";
 import {Codec} from "@polkadot/types/types";
 import {handleReward, RewardArgs} from "./common";
-import {RewardType} from "../../../types";
+import {RewardSource, RewardType} from "../../../types";
 import {INumber} from "@polkadot/types-codec/types/interfaces";
 
 export async function handleRelaychainStakingReward(
@@ -25,6 +25,7 @@ export async function handleRelaychainPooledStakingReward(
         type: RewardType.reward,
         chainId: chainId,
         stakingType: stakingType,
+        source: RewardSource.pooled,
         poolId: poolId.toNumber()
     }
 
@@ -52,6 +53,7 @@ async function handleRelaychainStakingRewardType(
         address: accountId.toString(),
         type: type,
         chainId: chainId,
+        source: RewardSource.direct,
         stakingType: stakingType
     }
 

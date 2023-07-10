@@ -1,4 +1,4 @@
-import {AccumulatedReward, Reward, RewardType} from "../../../types";
+import {AccumulatedReward, Reward, RewardSource, RewardType} from "../../../types";
 import {SubstrateBlock, SubstrateEvent} from "@subql/types";
 
 export interface RewardArgs {
@@ -13,6 +13,8 @@ export interface RewardArgs {
 
     stakingType: string
 
+    source: RewardSource
+
     poolId?: number
 }
 
@@ -20,7 +22,7 @@ export async function handleReward(rewardProps: RewardArgs, event: SubstrateEven
     const accumulatedReward = await updateAccumulatedReward(rewardProps)
 
     let accountAddress = rewardProps.address
-    let id = generateRewardId(event, rewardProps.chainId, rewardProps.stakingType)
+    let id = generateRewardId(event, rewardProps.chainId, rewardProps.stakingType, rewardProps.source)
 
     let accountReward = Reward.create({
         id: id,
@@ -31,7 +33,8 @@ export async function handleReward(rewardProps: RewardArgs, event: SubstrateEven
         timestamp: timestamp(event.block),
         blockNumber: blockNumber(event),
         networkId: rewardProps.chainId,
-        stakingType: rewardProps.stakingType
+        stakingType: rewardProps.stakingType,
+        source: rewardProps.source
     });
 
     if (rewardProps.poolId !== undefined) {
@@ -66,8 +69,8 @@ function accumulatedRewardId(accountAddress: string, chainId: string, stakingTyp
     return `${accountAddress}-${chainId}-${stakingType}`
 }
 
-export function generateRewardId(event: SubstrateEvent, chainId: string, stakingType: string): string {
-    return `${eventId(event)}-${chainId}-${stakingType}`
+export function generateRewardId(event: SubstrateEvent, chainId: string, stakingType: string, source: string): string {
+    return `${eventId(event)}-${chainId}-${stakingType}-${source}`
 }
 export function eventId(event: SubstrateEvent): string {
     return `${blockNumber(event)}-${event.idx}`

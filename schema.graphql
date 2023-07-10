@@ -50,6 +50,11 @@ enum RewardType {
   slash
 }
 
+enum RewardSource {
+  direct
+  pooled
+}
+
 type Reward @entity {
   id: ID!
   address: String! @index
@@ -60,5 +65,6 @@ type Reward @entity {
   amount: BigInt!
   accumulatedAmount: BigInt!
   type: RewardType!
+  source: RewardSource!
   poolId: Int
 }

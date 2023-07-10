@@ -18,11 +18,3 @@ export async function handleNewEra(
 
     await stakingStats.indexEraStats()
 }
-
-export function stakingTypeDirect(stakingType: string): string {
-    return `${stakingType}-${"direct"}`
-}
-
-export function stakingTypePooled(stakingType: string): string {
-    return `${stakingType}-${"pooled"}`
-}
