@@ -1,4 +1,4 @@
-import {AccumulatedReward, Reward, RewardSource, RewardType} from "../../../types";
+import {AccumulatedReward, Reward, RewardType} from "../../../types";
 import {SubstrateBlock, SubstrateEvent} from "@subql/types";
 
 export interface RewardArgs {
@@ -13,8 +13,6 @@ export interface RewardArgs {
 
     stakingType: string
 
-    source: RewardSource
-
     poolId?: number
 }
 
@@ -22,7 +20,7 @@ export async function handleReward(rewardProps: RewardArgs, event: SubstrateEven
     const accumulatedReward = await updateAccumulatedReward(rewardProps)
 
     let accountAddress = rewardProps.address
-    let id = generateRewardId(event, rewardProps.chainId, rewardProps.stakingType, rewardProps.source)
+    let id = generateRewardId(event, rewardProps.chainId, rewardProps.stakingType)
 
     let accountReward = Reward.create({
         id: id,
@@ -34,7 +32,6 @@ export async function handleReward(rewardProps: RewardArgs, event: SubstrateEven
         blockNumber: blockNumber(event),
         networkId: rewardProps.chainId,
         stakingType: rewardProps.stakingType,
-        source: rewardProps.source
     });
 
     if (rewardProps.poolId !== undefined) {
@@ -46,7 +43,7 @@ export async function handleReward(rewardProps: RewardArgs, event: SubstrateEven
 
 async function updateAccumulatedReward(rewardProps: RewardArgs): Promise<AccumulatedReward> {
     let accountAddress = rewardProps.address
-    let id = accumulatedRewardId(accountAddress, rewardProps.chainId, rewardProps.stakingType, rewardProps.source);
+    let id = accumulatedRewardId(accountAddress, rewardProps.chainId, rewardProps.stakingType);
 
     let accumulatedReward = await AccumulatedReward.get(id);
     if (!accumulatedReward) {
@@ -55,7 +52,6 @@ async function updateAccumulatedReward(rewardProps: RewardArgs): Promise<Accumul
         accumulatedReward.networkId = rewardProps.chainId
         accumulatedReward.stakingType = rewardProps.stakingType
         accumulatedReward.address = accountAddress
-        accumulatedReward.source = rewardProps.source
     }
 
     const newAmount = rewardProps.type == RewardType.reward ? rewardProps.amount : -rewardProps.amount
@@ -66,12 +62,12 @@ async function updateAccumulatedReward(rewardProps: RewardArgs): Promise<Accumul
     return accumulatedReward
 }
 
-function accumulatedRewardId(accountAddress: string, chainId: string, stakingType: string, source: string): string {
-    return `${accountAddress}-${chainId}-${stakingType}-${source}`
+function accumulatedRewardId(accountAddress: string, chainId: string, stakingType: string): string {
+    return `${accountAddress}-${chainId}-${stakingType}`
 }
 
-export function generateRewardId(event: SubstrateEvent, chainId: string, stakingType: string, source: string): string {
-    return `${eventId(event)}-${chainId}-${stakingType}-${source}`
+export function generateRewardId(event: SubstrateEvent, chainId: string, stakingType: string): string {
+    return `${eventId(event)}-${chainId}-${stakingType}`
 }
 export function eventId(event: SubstrateEvent): string {
     return `${blockNumber(event)}-${event.idx}`

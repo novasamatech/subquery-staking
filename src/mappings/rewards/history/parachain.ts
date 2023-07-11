@@ -1,7 +1,7 @@
 import {SubstrateEvent} from "@subql/types";
 import '@moonbeam-network/api-augment'
 import {handleReward, RewardArgs} from "./common";
-import {RewardSource, RewardType} from "../../../types";
+import {RewardType} from "../../../types";
 import {INumber} from "@polkadot/types-codec/types/interfaces";
 import {Codec} from "@polkadot/types/types";
 
@@ -18,7 +18,6 @@ export async function handleParachainStakingReward(
         type: RewardType.reward,
         chainId: chainId,
         stakingType: stakingType,
-        source: RewardSource.direct
     }
 
     await handleReward(rewardProps, event)

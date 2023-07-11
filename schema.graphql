@@ -17,11 +17,6 @@ enum StakerType {
   VALIDATOR
 }
 
-enum RewardSource {
-  direct
-  pooled
-}
-
 type ActiveStaker @entity {
 
   id: ID!
@@ -48,8 +43,6 @@ type AccumulatedReward @entity {
   address: String!
 
   amount: BigInt!
-
-  source: RewardSource!
 }
 
 enum RewardType {
@@ -67,6 +60,5 @@ type Reward @entity {
   amount: BigInt!
   accumulatedAmount: BigInt!
   type: RewardType!
-  source: RewardSource!
   poolId: Int
 }
