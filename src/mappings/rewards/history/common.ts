@@ -12,6 +12,8 @@ export interface RewardArgs {
     chainId: string
 
     stakingType: string
+
+    poolId?: number
 }
 
 export async function handleReward(rewardProps: RewardArgs, event: SubstrateEvent) {
@@ -29,8 +31,12 @@ export async function handleReward(rewardProps: RewardArgs, event: SubstrateEven
         timestamp: timestamp(event.block),
         blockNumber: blockNumber(event),
         networkId: rewardProps.chainId,
-        stakingType: rewardProps.stakingType
+        stakingType: rewardProps.stakingType,
     });
+
+    if (rewardProps.poolId !== undefined) {
+        accountReward.poolId = rewardProps.poolId
+    }
 
     await accountReward.save()
 }

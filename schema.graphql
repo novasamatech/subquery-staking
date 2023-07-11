@@ -60,4 +60,5 @@ type Reward @entity {
   amount: BigInt!
   accumulatedAmount: BigInt!
   type: RewardType!
+  poolId: Int
 }
