@@ -83,7 +83,7 @@ export class CollatorStakingRewardCalculator implements RewardCalculator {
     }
 
     private async fetchCommission(): Promise<number> {
-    	const collatorCommission = await this.eraInfoDataSource.eraComissions(false)
+    	const collatorCommission = await this.eraInfoDataSource.cachedEraComissions()
     	return collatorCommission["collator"]
     }
 }

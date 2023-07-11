@@ -32,21 +32,16 @@ export abstract class CachingEraInfoDataSource implements EraInfoDataSource {
         return cachedStakers
     }
 
-    async eraComissions(forceRefresh: boolean): Promise<Record<string, number>> {
-        if (!forceRefresh) {
-            if (cachedComissions === undefined) {
-                return await this.updateComissions();
-            } else {
-                return cachedComissions
-            }
-        } else {
-            return await this.updateComissions()
-        }
+    async cachedEraComissions(): Promise<Record<string, number>> {
+        if (cachedComissions === undefined) {
+            await this.updateEraComissions();
+        } 
+
+        return cachedComissions
     }
 
-    private async updateComissions(): Promise<Record<string, number>> {
+    async updateEraComissions(): Promise<void> {
         cachedComissions = await this.fetchComissions();
-        return cachedComissions
     }
 
     abstract eraStarted(): Promise<boolean>

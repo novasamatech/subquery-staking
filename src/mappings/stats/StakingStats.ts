@@ -52,7 +52,7 @@ export class StakingStats {
         await this.removeOldRecords();
 
         let stakeTargets = await this.eraInfoDataSource.eraStakers(true)
-        await this.eraInfoDataSource.eraComissions(true) // updating comissions for APY
+        await this.eraInfoDataSource.updateEraComissions()
 
         const activeStakers: ActiveStaker[] = stakeTargets.flatMap((stakeTarget => {
             const nominators = stakeTarget.others.map((nominator) => {
