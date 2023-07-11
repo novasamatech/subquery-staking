@@ -4,7 +4,12 @@ import {RelaychainRewardCalculator} from "./rewards/Relaychain";
 import {ValidatorEraInfoDataSource} from "./era/ValidatorEraInfoDataSource";
 import {Codec} from "@polkadot/types/types";
 import {INumber} from "@polkadot/types-codec/types/interfaces";
-import {handleRelaychainStakingReward, handleRelaychainStakingSlash, handleRelaychainPooledStakingReward} from "./rewards/history/relaychain";
+import {
+    handleRelaychainStakingReward, 
+    handleRelaychainStakingSlash, 
+    handleRelaychainPooledStakingReward, 
+    handleRelaychainPooledStakingBondedSlash
+} from "./rewards/history/relaychain";
 
 const KUSAMA_GENESIS = "0xb0a8d493285c2df73290dfb7e61f870f17b41801197a149ca93654499ea3dafe"
 const DIRECT_STAKING_TYPE = "relaychain"
@@ -37,4 +42,10 @@ export async function handleKusamaPoolStakingReward(
     event: SubstrateEvent<[accountId: Codec, poolId: INumber, reward: INumber]>,
 ): Promise<void> {
     await handleRelaychainPooledStakingReward(event, KUSAMA_GENESIS, POOLED_STAKING_TYPE)
+}
+
+export async function handleKusamaPoolStakingBondedSlash(
+    event: SubstrateEvent<[poolId: INumber, reward: INumber]>,
+): Promise<void> {
+    await handleRelaychainPooledStakingBondedSlash(event, KUSAMA_GENESIS, POOLED_STAKING_TYPE)
 }

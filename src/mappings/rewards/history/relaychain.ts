@@ -9,7 +9,26 @@ export async function handleRelaychainStakingReward(
     chainId: string,
     stakingType: string
 ): Promise<void> {
-    await handleRelaychainStakingRewardType(event, RewardType.reward, chainId, stakingType)
+    await handleRelaychainDirectStakingReward(event, RewardType.reward, chainId, stakingType)
+}
+
+export async function handleRelaychainStakingSlash(
+    event: SubstrateEvent<[account: Codec, slash: INumber]>,
+    chainId: string,
+    stakingType: string
+): Promise<void> {
+   await handleRelaychainDirectStakingReward(event, RewardType.slash, chainId, stakingType)
+}
+
+async function handleRelaychainDirectStakingReward(
+    event: SubstrateEvent<[account: Codec, slash: INumber]>,
+    type: RewardType,
+    chainId: string,
+    stakingType: string,
+    poolId?: number
+): Promise<void> {
+    const {event: {data: [accountId, amount]}} = event
+    await handleRelaychainStakingRewardType(event, amount.toBigInt(), accountId.toString(), type, chainId, stakingType)
 }
 
 export async function handleRelaychainPooledStakingReward(
@@ -19,40 +38,63 @@ export async function handleRelaychainPooledStakingReward(
 ): Promise<void> {
     const {event: {data: [accountId, poolId, amount]}} = event
 
-    const rewardProps: RewardArgs = {
-        amount: amount.toBigInt(),
-        address: accountId.toString(),
-        type: RewardType.reward,
-        chainId: chainId,
-        stakingType: stakingType,
-        poolId: poolId.toNumber()
-    }
-
-    await handleReward(rewardProps, event)
+    await handleRelaychainStakingRewardType(
+        event, 
+        amount.toBigInt(),
+        accountId.toString(), 
+        RewardType.reward, 
+        chainId, stakingType, 
+        poolId.toNumber()
+    )
 }
 
-export async function handleRelaychainStakingSlash(
-    event: SubstrateEvent<[account: Codec, slash: INumber]>,
+export async function handleRelaychainPooledStakingBondedSlash(
+    event: SubstrateEvent<[poolId: INumber, slash: INumber]>,
     chainId: string,
     stakingType: string
 ): Promise<void> {
-   await handleRelaychainStakingRewardType(event, RewardType.slash, chainId, stakingType)
+    const {event: {data: [poolId, slash]}} = event
+    const pid = poolId.toNumber()
+
+    const pool = (await api.query.nominationPools.bondedPools(pid)).unwrap()
+
+    const poolPoints = pool.points.toBigInt()
+
+    const members = await api.query.nominationPools.poolMembers.entries()
+
+    const totalSlash = slash.toBigInt()
+
+    await Promise.all(members.map(async ([accountId, member]) => {
+        let memberPoints: bigint
+        if (member.isSome && (memberPoints = member.unwrap().points.toBigInt())) {
+            await handleRelaychainStakingRewardType(
+                event, 
+                (totalSlash / poolPoints) * memberPoints,
+                accountId.toString(), 
+                RewardType.slash, 
+                chainId, stakingType, 
+                poolId.toNumber()
+            )
+        }
+    }))
 }
 
 async function handleRelaychainStakingRewardType(
-    event: SubstrateEvent<[account: Codec, amount: INumber]>,
+    event: SubstrateEvent,
+    amount: bigint,
+    accountId: string,
     type: RewardType,
     chainId: string,
-    stakingType: string
+    stakingType: string,
+    poolId?: number
 ): Promise<void> {
-    const {event: {data: [accountId, amount]}} = event
-
     const rewardProps: RewardArgs = {
-        amount: amount.toBigInt(),
-        address: accountId.toString(),
+        amount: amount,
+        address: accountId,
         type: type,
         chainId: chainId,
-        stakingType: stakingType
+        stakingType: stakingType,
+        poolId: poolId
     }
 
     await handleReward(rewardProps, event)
