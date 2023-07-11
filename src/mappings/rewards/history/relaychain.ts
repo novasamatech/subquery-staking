@@ -58,26 +58,69 @@ export async function handleRelaychainPooledStakingBondedSlash(
 
     const pool = (await api.query.nominationPools.bondedPools(pid)).unwrap()
 
-    const poolPoints = pool.points.toBigInt()
+    await handleRelaychainPooledStakingSlash(
+        event,
+        pid,
+        pool.points.toBigInt(),
+        slash.toBigInt(),
+        chainId,
+        stakingType
+    )
+}
 
+export async function handleRelaychainPooledStakingUnbondingSlash(
+    event: SubstrateEvent<[era: INumber, poolId: INumber, slash: INumber]>,
+    chainId: string,
+    stakingType: string
+): Promise<void> {
+    const {event: {data: [era, poolId, slash]}} = event
+    const pid = poolId.toNumber()
+
+    const unbondingPools = (await api.query.nominationPools.subPoolsStorage(pid)).unwrap()
+
+    let pool = unbondingPools.withEra[era.toNumber()]
+    if (pool === undefined) {
+        pool = unbondingPools.noEra
+    }
+
+    await handleRelaychainPooledStakingSlash(
+        event,
+        pid,
+        pool.points.toBigInt(),
+        slash.toBigInt(),
+        chainId,
+        stakingType
+    )
+}
+
+export async function handleRelaychainPooledStakingSlash(
+    event: SubstrateEvent,
+    poolId: number,
+    poolPoints: bigint,
+    slash: bigint,
+    chainId: string,
+    stakingType: string
+): Promise<void> {
     const members = await api.query.nominationPools.poolMembers.entries()
-
-    const totalSlash = slash.toBigInt()
 
     await Promise.all(members.map(async ([accountId, member]) => {
         let memberPoints: bigint
-        if (member.isSome && (memberPoints = member.unwrap().points.toBigInt())) {
+        if (member.isSome && 
+            member.unwrap().poolId.toNumber() === poolId && 
+            (memberPoints = member.unwrap().points.toBigInt())) {
             await handleRelaychainStakingRewardType(
                 event, 
-                (totalSlash / poolPoints) * memberPoints,
+                (slash / poolPoints) * memberPoints,
                 accountId.toString(), 
                 RewardType.slash, 
-                chainId, stakingType, 
-                poolId.toNumber()
+                chainId, 
+                stakingType, 
+                poolId
             )
         }
     }))
 }
+
 
 async function handleRelaychainStakingRewardType(
     event: SubstrateEvent,

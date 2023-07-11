@@ -58,3 +58,15 @@ dataSources:
           filter:
             module: staking
             method: Slashed
+
+        - handler: handleKusamaPoolStakingBondedSlash
+          kind: substrate/EventHandler
+          filter:
+            module: nominationPools
+            method: PoolSlashed
+
+        - handler: handleKusamaPoolStakingUnbondingSlash
+          kind: substrate/EventHandler
+          filter:
+            module: nominationPools
+            method: UnbondingPoolSlashed

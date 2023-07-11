@@ -8,7 +8,8 @@ import {
     handleRelaychainStakingReward, 
     handleRelaychainStakingSlash, 
     handleRelaychainPooledStakingReward, 
-    handleRelaychainPooledStakingBondedSlash
+    handleRelaychainPooledStakingBondedSlash,
+    handleRelaychainPooledStakingUnbondingSlash
 } from "./rewards/history/relaychain";
 
 const KUSAMA_GENESIS = "0xb0a8d493285c2df73290dfb7e61f870f17b41801197a149ca93654499ea3dafe"
@@ -45,7 +46,13 @@ export async function handleKusamaPoolStakingReward(
 }
 
 export async function handleKusamaPoolStakingBondedSlash(
-    event: SubstrateEvent<[poolId: INumber, reward: INumber]>,
+    event: SubstrateEvent<[poolId: INumber, slash: INumber]>,
 ): Promise<void> {
     await handleRelaychainPooledStakingBondedSlash(event, KUSAMA_GENESIS, POOLED_STAKING_TYPE)
+}
+
+export async function handleKusamaPoolStakingUnbondingSlash(
+    event: SubstrateEvent<[era: INumber, poolId: INumber, slash: INumber]>,
+): Promise<void> {
+    await handleRelaychainPooledStakingUnbondingSlash(event, KUSAMA_GENESIS, POOLED_STAKING_TYPE)
 }
