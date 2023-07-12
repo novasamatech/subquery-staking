@@ -1,5 +1,5 @@
 import {SubstrateEvent} from "@subql/types";
-import {handleNewEra} from "./common";
+import {handleNewEra, handleNewSession} from "./common";
 import {AlephZeroRewardCalculator} from "./rewards/AlephZero";
 import {ValidatorEraInfoDataSource} from "./era/ValidatorEraInfoDataSource";
 import {Codec} from "@polkadot/types/types";
@@ -13,6 +13,17 @@ export async function handleAlephZeroNewEra(_: SubstrateEvent): Promise<void> {
     let validatorEraInfoDataSource = new ValidatorEraInfoDataSource();
 
     await handleNewEra(
+        validatorEraInfoDataSource,
+        new AlephZeroRewardCalculator(validatorEraInfoDataSource),
+        ALEPH_ZERO_GENESIS,
+        STAKING_TYPE
+    )
+}
+
+export async function handleAlephZeroNewSession(_: SubstrateEvent): Promise<void> {
+    let validatorEraInfoDataSource = new ValidatorEraInfoDataSource();
+
+    await handleNewSession(
         validatorEraInfoDataSource,
         new AlephZeroRewardCalculator(validatorEraInfoDataSource),
         ALEPH_ZERO_GENESIS,
