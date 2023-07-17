@@ -1,6 +1,6 @@
 import { AccumulatedReward, Reward } from '../src/types';
 import { handleRelaychainPooledStakingBondedSlash, handleRelaychainPooledStakingUnbondingSlash } from "../src/mappings/rewards/history/relaychain"
-import { SubstrateTestEventBuilder, MockOption, mockNumber, mockAddress } from "./utils/mockFunctions"
+import { SubstrateTestEventBuilder, mockOption, mockNumber, mockAddress } from "./utils/mockFunctions"
 
 
 const MOCK_GENESIS = "0xb0a8d493285c2df73290dfb7e61f870f17b41801197a149ca93654499ea3dafe"
@@ -8,7 +8,7 @@ const DIRECT_STAKING_TYPE = "relaychain"
 const POOLED_STAKING_TYPE = "nomination-pool"
 
 const mockBondedPools = {
-	42: new MockOption({
+	42: mockOption({
 		commission: {
 			current: null,
 			max: null,
@@ -28,7 +28,7 @@ const mockBondedPools = {
 }
 
 const mockSubPoolsStorage = {
-	42: new MockOption({
+	42: mockOption({
 		noEra: {
 			points: mockNumber(1000),
 			balance: mockNumber(1000)
@@ -51,7 +51,7 @@ const mockPoolMembers = [
 	  [
 		mockAddress("12JFwUszJsgVUr5YW3QcheYmDZHNYHiPELbuJx3rm6guhrse")
 	  ],
-	  new MockOption({
+	  mockOption({
 			isSome: true,
 			poolId: mockNumber(16),
 			points: mockNumber(100),
@@ -63,36 +63,42 @@ const mockPoolMembers = [
 	  [
 		mockAddress("16XzkhKCZqFA4yYd2nfrNk8GZBhq8xkdAQZe3T8tUWxanWWj")
 	  ],
-	  new MockOption({
+	  mockOption({
 		isSome: true,
 		poolId: mockNumber(42),
 		points: mockNumber(100),
 		lastRecordedRewardCounter: undefined,
-		unbondingEras: {}
+		unbondingEras: {
+			4904: mockNumber(10)
+		}
 	  })
 	],
 	[
 	  [
 		mockAddress("128uKFo94ewG8BrRXyqVQFDj8753XNfgsDUp9DSGdh8erKwS")
 	  ],
-	  new MockOption({
+	  mockOption({
 		isSome: true,
 		poolId: mockNumber(42),
 		points: mockNumber(50),
 		lastRecordedRewardCounter: undefined,
-		unbondingEras: {}
+		unbondingEras: {
+			5426: mockNumber(5)
+		}
 	  })
 	],
 	[
 	  [
 		mockAddress("13au37C1nZtMjvv2uPHRvamYdgAVxffTWJoCZXo2sw1NeysP")
 	  ],
-	  new MockOption({
+	  mockOption({
 		isSome: true,
 		poolId: mockNumber(42),
 		points: mockNumber(25),
 		lastRecordedRewardCounter: undefined,
-		unbondingEras: {}
+		unbondingEras: {
+			1: mockNumber(1234)
+		}
 	  })
 	]
 ]
@@ -128,12 +134,6 @@ describe('handlePoolSlash', () => {
 	let poolId
 	let slashAmount
 
-	let answers = [
-		["16XzkhKCZqFA4yYd2nfrNk8GZBhq8xkdAQZe3T8tUWxanWWj", BigInt(1000)],
-		["128uKFo94ewG8BrRXyqVQFDj8753XNfgsDUp9DSGdh8erKwS", BigInt(500)],
-		["13au37C1nZtMjvv2uPHRvamYdgAVxffTWJoCZXo2sw1NeysP", BigInt(250)],
-	]
-
 	let results: Reward[] = []
 
 	beforeAll(() => {
@@ -157,6 +157,12 @@ describe('handlePoolSlash', () => {
 	})
 
 	it('Bonded slash', async () => {
+		const answers = [
+			["16XzkhKCZqFA4yYd2nfrNk8GZBhq8xkdAQZe3T8tUWxanWWj", BigInt(1000)],
+			["128uKFo94ewG8BrRXyqVQFDj8753XNfgsDUp9DSGdh8erKwS", BigInt(500)],
+			["13au37C1nZtMjvv2uPHRvamYdgAVxffTWJoCZXo2sw1NeysP", BigInt(250)],
+		]
+
 		bondedSlashEvent = new SubstrateTestEventBuilder().buildEventForBondedPoolSlashed(poolId, slashAmount)
 		await handleRelaychainPooledStakingBondedSlash(bondedSlashEvent, MOCK_GENESIS, POOLED_STAKING_TYPE);
 
@@ -167,8 +173,40 @@ describe('handlePoolSlash', () => {
 		});
 	});
 
-	it('Unbonding slash with no era(same results as for bonded)', async () => {
+	it('Unbonding slash with no era', async () => {
+		const answers = [
+			["13au37C1nZtMjvv2uPHRvamYdgAVxffTWJoCZXo2sw1NeysP", BigInt(12340)],
+		]
+
 		unbondingSlashEvent = new SubstrateTestEventBuilder().buildEventForUnbondingPoolSlashed(mockNumber(1), poolId, slashAmount)
+		await handleRelaychainPooledStakingUnbondingSlash(unbondingSlashEvent, MOCK_GENESIS, POOLED_STAKING_TYPE);
+
+		expect(results.length).toBe(answers.length)
+		results.forEach((element, index) => {
+			expect(element.address).toBe(answers[index][0])
+			expect(element.amount).toBe(answers[index][1])
+		});
+	});
+
+	it('Unbonding slash in era with points', async () => {
+		const answers = [
+			["16XzkhKCZqFA4yYd2nfrNk8GZBhq8xkdAQZe3T8tUWxanWWj", BigInt(50)],
+		]
+
+		unbondingSlashEvent = new SubstrateTestEventBuilder().buildEventForUnbondingPoolSlashed(mockNumber(4904), poolId, slashAmount)
+		await handleRelaychainPooledStakingUnbondingSlash(unbondingSlashEvent, MOCK_GENESIS, POOLED_STAKING_TYPE);
+
+		expect(results.length).toBe(answers.length)
+		results.forEach((element, index) => {
+			expect(element.address).toBe(answers[index][0])
+			expect(element.amount).toBe(answers[index][1])
+		});
+	});
+
+	it('Unbonding slash in era without points', async () => {
+		const answers = []
+
+		unbondingSlashEvent = new SubstrateTestEventBuilder().buildEventForUnbondingPoolSlashed(mockNumber(5426), poolId, slashAmount)
 		await handleRelaychainPooledStakingUnbondingSlash(unbondingSlashEvent, MOCK_GENESIS, POOLED_STAKING_TYPE);
 
 		expect(results.length).toBe(answers.length)

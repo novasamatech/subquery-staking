@@ -48,7 +48,7 @@ export class SubstrateTestEventBuilder<T extends AnyTuple = AnyTuple> {
     }
 }
 
-export class MockOption{
+class MockOption{
     private __data : unknown;
     public isSome = true;
 
@@ -61,6 +61,9 @@ export class MockOption{
     }
 }
 
+export function mockOption(data : unknown): unknown {
+    return new MockOption(data)
+}
 
 export function mockAddress(toStringValue: string): unknown {
     return {
