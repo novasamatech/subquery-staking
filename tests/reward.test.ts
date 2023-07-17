@@ -134,6 +134,7 @@ describe('handlePoolSlash', () => {
 	let poolId
 	let slashAmount
 
+	let answers
 	let results: Reward[] = []
 
 	beforeAll(() => {
@@ -153,11 +154,16 @@ describe('handlePoolSlash', () => {
 	});
 
 	afterEach(() => {
+		expect(results.length).toBe(answers.length)
+		results.forEach((element, index) => {
+			expect(element.address).toBe(answers[index][0])
+			expect(element.amount).toBe(answers[index][1])
+		});
 		results = []
 	})
 
 	it('Bonded slash', async () => {
-		const answers = [
+		answers = [
 			["16XzkhKCZqFA4yYd2nfrNk8GZBhq8xkdAQZe3T8tUWxanWWj", BigInt(1000)],
 			["128uKFo94ewG8BrRXyqVQFDj8753XNfgsDUp9DSGdh8erKwS", BigInt(500)],
 			["13au37C1nZtMjvv2uPHRvamYdgAVxffTWJoCZXo2sw1NeysP", BigInt(250)],
@@ -165,54 +171,30 @@ describe('handlePoolSlash', () => {
 
 		bondedSlashEvent = new SubstrateTestEventBuilder().buildEventForBondedPoolSlashed(poolId, slashAmount)
 		await handleRelaychainPooledStakingBondedSlash(bondedSlashEvent, MOCK_GENESIS, POOLED_STAKING_TYPE);
-
-		expect(results.length).toBe(answers.length)
-		results.forEach((element, index) => {
-			expect(element.address).toBe(answers[index][0])
-			expect(element.amount).toBe(answers[index][1])
-		});
 	});
 
 	it('Unbonding slash with no era', async () => {
-		const answers = [
+		answers = [
 			["13au37C1nZtMjvv2uPHRvamYdgAVxffTWJoCZXo2sw1NeysP", BigInt(12340)],
 		]
 
 		unbondingSlashEvent = new SubstrateTestEventBuilder().buildEventForUnbondingPoolSlashed(mockNumber(1), poolId, slashAmount)
 		await handleRelaychainPooledStakingUnbondingSlash(unbondingSlashEvent, MOCK_GENESIS, POOLED_STAKING_TYPE);
-
-		expect(results.length).toBe(answers.length)
-		results.forEach((element, index) => {
-			expect(element.address).toBe(answers[index][0])
-			expect(element.amount).toBe(answers[index][1])
-		});
 	});
 
 	it('Unbonding slash in era with points', async () => {
-		const answers = [
+		answers = [
 			["16XzkhKCZqFA4yYd2nfrNk8GZBhq8xkdAQZe3T8tUWxanWWj", BigInt(50)],
 		]
 
 		unbondingSlashEvent = new SubstrateTestEventBuilder().buildEventForUnbondingPoolSlashed(mockNumber(4904), poolId, slashAmount)
 		await handleRelaychainPooledStakingUnbondingSlash(unbondingSlashEvent, MOCK_GENESIS, POOLED_STAKING_TYPE);
-
-		expect(results.length).toBe(answers.length)
-		results.forEach((element, index) => {
-			expect(element.address).toBe(answers[index][0])
-			expect(element.amount).toBe(answers[index][1])
-		});
 	});
 
 	it('Unbonding slash in era without points', async () => {
-		const answers = []
+		answers = []
 
 		unbondingSlashEvent = new SubstrateTestEventBuilder().buildEventForUnbondingPoolSlashed(mockNumber(5426), poolId, slashAmount)
 		await handleRelaychainPooledStakingUnbondingSlash(unbondingSlashEvent, MOCK_GENESIS, POOLED_STAKING_TYPE);
-
-		expect(results.length).toBe(answers.length)
-		results.forEach((element, index) => {
-			expect(element.address).toBe(answers[index][0])
-			expect(element.amount).toBe(answers[index][1])
-		});
 	});
 });
