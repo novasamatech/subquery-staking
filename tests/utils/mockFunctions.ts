@@ -39,8 +39,21 @@ export class SubstrateTestEventBuilder<T extends AnyTuple = AnyTuple> {
         return this.withBlock().withEvent([rewardAccountId, amount]).build()
     }
 
-    buildEventForPoolSlashed(poolId, amount): SubstrateEvent<T> {
+    buildEventForBondedPoolSlashed(poolId, amount): SubstrateEvent<T> {
         return this.withBlock().withEvent([poolId, amount]).build()
+    }
+}
+
+export class MockOption{
+    private __data : unknown;
+    public isSome = true;
+
+    constructor(data : unknown) {
+        this.__data = data
+    }
+
+    unwrap() {
+        return this.__data
     }
 }
 
