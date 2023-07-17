@@ -149,7 +149,6 @@ describe('handlePoolSlash', () => {
 
 		jest.spyOn(AccumulatedReward, "get").mockResolvedValue(undefined)
 		jest.spyOn(AccumulatedReward.prototype, "save").mockImplementation(function (this: AccumulatedReward) {
-			console.log(this)
 			return Promise.resolve()
 		})
 		jest.spyOn(Reward.prototype, "save").mockImplementation(function (this: Reward) {
@@ -231,7 +230,6 @@ describe('handlePoolReward', () => {
 	it('Positive reward processed properly', async () => {
 		jest.spyOn(AccumulatedReward, "get").mockResolvedValue(undefined)
 		jest.spyOn(AccumulatedReward.prototype, "save").mockImplementation(function (this: AccumulatedReward) {
-			console.log(this)
 			return Promise.resolve()
 		})
 		const rewardSpy = jest.spyOn(Reward.prototype, "save").mockImplementation(function (this: Reward) {
