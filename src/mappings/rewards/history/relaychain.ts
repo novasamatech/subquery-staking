@@ -115,6 +115,10 @@ export async function handleRelaychainPooledStakingSlash(
     stakingType: string,
     memberPointsCounter: (member: PalletNominationPoolsPoolMember) => bigint
 ): Promise<void> {
+    if(!poolPoints) {
+        return
+    }
+
     const members = await api.query.nominationPools.poolMembers.entries()
 
     await Promise.all(members.map(async ([accountId, member]) => {
