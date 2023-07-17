@@ -227,7 +227,7 @@ describe('handlePoolReward', () => {
 		rewardEvent = new SubstrateTestEventBuilder().buildEventForPoolReward(accountId, poolId, rewardAmount)
 	});
 
-	it('Positive reward processed properly', async () => {
+	it('Pool reward processed properly', async () => {
 		jest.spyOn(AccumulatedReward, "get").mockResolvedValue(undefined)
 		jest.spyOn(AccumulatedReward.prototype, "save").mockImplementation(function (this: AccumulatedReward) {
 			return Promise.resolve()
