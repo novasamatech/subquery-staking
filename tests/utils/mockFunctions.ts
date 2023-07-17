@@ -42,6 +42,10 @@ export class SubstrateTestEventBuilder<T extends AnyTuple = AnyTuple> {
     buildEventForBondedPoolSlashed(poolId, amount): SubstrateEvent<T> {
         return this.withBlock().withEvent([poolId, amount]).build()
     }
+
+    buildEventForUnbondingPoolSlashed(era, poolId, amount): SubstrateEvent<T> {
+        return this.withBlock().withEvent([era, poolId, amount]).build()
+    }
 }
 
 export class MockOption{

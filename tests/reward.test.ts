@@ -1,5 +1,5 @@
 import { AccumulatedReward, Reward } from '../src/types';
-import { handleRelaychainPooledStakingBondedSlash } from "../src/mappings/rewards/history/relaychain"
+import { handleRelaychainPooledStakingBondedSlash, handleRelaychainPooledStakingUnbondingSlash } from "../src/mappings/rewards/history/relaychain"
 import { SubstrateTestEventBuilder, MockOption, mockNumber, mockAddress } from "./utils/mockFunctions"
 
 
@@ -8,35 +8,42 @@ const DIRECT_STAKING_TYPE = "relaychain"
 const POOLED_STAKING_TYPE = "nomination-pool"
 
 const mockBondedPools = {
-	42: {
-		unwrap : function() {
-			return {
-				commission: {
-				  current: null,
-				  max: null,
-				  changeRate: null,
-				  throttleFrom: null,
-				},
-				memberCounter: 3,
-				points: mockNumber(1000),
-				roles: {
-				  depositor: mockAddress("13wcqPQM6W5C3BdZDegusda4akT8XL7RfjcXP6RHuo85ANNS"),
-				  root: mockAddress("13wcqPQM6W5C3BdZDegusda4akT8XL7RfjcXP6RHuo85ANNS"),
-				  nominator: mockAddress("13wcqPQM6W5C3BdZDegusda4akT8XL7RfjcXP6RHuo85ANNS"),
-				  bouncer: mockAddress("13wcqPQM6W5C3BdZDegusda4akT8XL7RfjcXP6RHuo85ANNS"),
-				},
-				state: "Open"
-			  }
-		}
-	}
+	42: new MockOption({
+		commission: {
+			current: null,
+			max: null,
+			changeRate: null,
+			throttleFrom: null,
+		},
+		memberCounter: 3,
+		points: mockNumber(1000),
+		roles: {
+			depositor: mockAddress("13wcqPQM6W5C3BdZDegusda4akT8XL7RfjcXP6RHuo85ANNS"),
+			root: mockAddress("13wcqPQM6W5C3BdZDegusda4akT8XL7RfjcXP6RHuo85ANNS"),
+			nominator: mockAddress("13wcqPQM6W5C3BdZDegusda4akT8XL7RfjcXP6RHuo85ANNS"),
+			bouncer: mockAddress("13wcqPQM6W5C3BdZDegusda4akT8XL7RfjcXP6RHuo85ANNS"),
+		},
+		state: "Open"
+	})
 }
 
-interface MockMember {
-	isSome: boolean,
-	poolId: unknown,
-	points: unknown,
-	lastRecordedRewardCounter: unknown,
-	unbondingEras: unknown
+const mockSubPoolsStorage = {
+	42: new MockOption({
+		noEra: {
+			points: mockNumber(1000),
+			balance: mockNumber(1000)
+		  },
+		  withEra: {
+			4904: {
+			  points: mockNumber(2000),
+			  balance: mockNumber(2000)
+			},
+			5426: {
+				points: mockNumber(0),
+				balance: mockNumber(0)
+			}
+		  }
+	})
 }
 
 const mockPoolMembers = [
@@ -83,7 +90,7 @@ const mockPoolMembers = [
 	  new MockOption({
 		isSome: true,
 		poolId: mockNumber(42),
-		points: mockNumber(100),
+		points: mockNumber(25),
 		lastRecordedRewardCounter: undefined,
 		unbondingEras: {}
 	  })
@@ -103,25 +110,28 @@ let mockAPI = {
 			bondedPools: async function(poolId) {
 				return mockBondedPools[poolId]
 			},
-
 			poolMembers: {
 				entries: async function() {
 					return mockPoolMembers
 				}
+			},
+			subPoolsStorage: async function(era) {
+				return mockSubPoolsStorage[era]
 			}
 		}
 	},
 };
 
-describe('handlePoolBondedSlash', () => {
-	let slashEvent
+describe('handlePoolSlash', () => {
+	let bondedSlashEvent
+	let unbondingSlashEvent
 	let poolId
 	let slashAmount
 
 	let answers = [
-		[mockAddress("16XzkhKCZqFA4yYd2nfrNk8GZBhq8xkdAQZe3T8tUWxanWWj"), BigInt(100)],
-		[mockAddress("128uKFo94ewG8BrRXyqVQFDj8753XNfgsDUp9DSGdh8erKwS"), BigInt(50)],
-		[mockAddress("13au37C1nZtMjvv2uPHRvamYdgAVxffTWJoCZXo2sw1NeysP"), BigInt(100)],
+		["16XzkhKCZqFA4yYd2nfrNk8GZBhq8xkdAQZe3T8tUWxanWWj", BigInt(1000)],
+		["128uKFo94ewG8BrRXyqVQFDj8753XNfgsDUp9DSGdh8erKwS", BigInt(500)],
+		["13au37C1nZtMjvv2uPHRvamYdgAVxffTWJoCZXo2sw1NeysP", BigInt(250)],
 	]
 
 	let results: Reward[] = []
@@ -129,12 +139,8 @@ describe('handlePoolBondedSlash', () => {
 	beforeAll(() => {
 		(global as any).api = mockAPI;
 		poolId = mockNumber(42)
-		slashAmount = mockNumber(1000)
+		slashAmount = mockNumber(10000)
 
-		slashEvent = new SubstrateTestEventBuilder().buildEventForBondedPoolSlashed(poolId, slashAmount)
-	});
-
-	it('Slash for account calculated correctly', async () => {
 		jest.spyOn(AccumulatedReward, "get").mockResolvedValue(undefined)
 		jest.spyOn(AccumulatedReward.prototype, "save").mockImplementation(function (this: AccumulatedReward) {
 			console.log(this)
@@ -144,11 +150,30 @@ describe('handlePoolBondedSlash', () => {
 			results.push(this)
 			return Promise.resolve()
 		})
+	});
 
-		await handleRelaychainPooledStakingBondedSlash(slashEvent, MOCK_GENESIS, POOLED_STAKING_TYPE);
+	afterEach(() => {
+		results = []
+	})
+
+	it('Bonded slash', async () => {
+		bondedSlashEvent = new SubstrateTestEventBuilder().buildEventForBondedPoolSlashed(poolId, slashAmount)
+		await handleRelaychainPooledStakingBondedSlash(bondedSlashEvent, MOCK_GENESIS, POOLED_STAKING_TYPE);
 
 		expect(results.length).toBe(answers.length)
 		results.forEach((element, index) => {
+			expect(element.address).toBe(answers[index][0])
+			expect(element.amount).toBe(answers[index][1])
+		});
+	});
+
+	it('Unbonding slash with no era(same results as for bonded)', async () => {
+		unbondingSlashEvent = new SubstrateTestEventBuilder().buildEventForUnbondingPoolSlashed(mockNumber(1), poolId, slashAmount)
+		await handleRelaychainPooledStakingUnbondingSlash(unbondingSlashEvent, MOCK_GENESIS, POOLED_STAKING_TYPE);
+
+		expect(results.length).toBe(answers.length)
+		results.forEach((element, index) => {
+			expect(element.address).toBe(answers[index][0])
 			expect(element.amount).toBe(answers[index][1])
 		});
 	});
