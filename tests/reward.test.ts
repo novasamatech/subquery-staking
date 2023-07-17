@@ -1,6 +1,11 @@
 import { AccumulatedReward, Reward } from '../src/types';
-import { handleRelaychainPooledStakingBondedSlash, handleRelaychainPooledStakingUnbondingSlash } from "../src/mappings/rewards/history/relaychain"
+import { 
+	handleRelaychainPooledStakingBondedSlash, 
+	handleRelaychainPooledStakingUnbondingSlash, 
+	handleRelaychainPooledStakingReward 
+} from "../src/mappings/rewards/history/relaychain"
 import { SubstrateTestEventBuilder, mockOption, mockNumber, mockAddress } from "./utils/mockFunctions"
+import {RewardType} from "../src/types";
 
 
 const MOCK_GENESIS = "0xb0a8d493285c2df73290dfb7e61f870f17b41801197a149ca93654499ea3dafe"
@@ -158,7 +163,14 @@ describe('handlePoolSlash', () => {
 		results.forEach((element, index) => {
 			expect(element.address).toBe(answers[index][0])
 			expect(element.amount).toBe(answers[index][1])
+			expect(element.type).toBe(RewardType.slash)
+			expect(element.stakingType).toBe(POOLED_STAKING_TYPE)
+			expect(element.networkId).toBe(MOCK_GENESIS)
+			expect(element.poolId).toBe(poolId.toNumber())
 		});
+	})
+
+	beforeEach(() => {
 		results = []
 	})
 
@@ -169,7 +181,7 @@ describe('handlePoolSlash', () => {
 			["13au37C1nZtMjvv2uPHRvamYdgAVxffTWJoCZXo2sw1NeysP", BigInt(250)],
 		]
 
-		bondedSlashEvent = new SubstrateTestEventBuilder().buildEventForBondedPoolSlashed(poolId, slashAmount)
+		bondedSlashEvent = new SubstrateTestEventBuilder().buildEventForBondedPoolSlash(poolId, slashAmount)
 		await handleRelaychainPooledStakingBondedSlash(bondedSlashEvent, MOCK_GENESIS, POOLED_STAKING_TYPE);
 	});
 
@@ -178,7 +190,7 @@ describe('handlePoolSlash', () => {
 			["13au37C1nZtMjvv2uPHRvamYdgAVxffTWJoCZXo2sw1NeysP", BigInt(12340)],
 		]
 
-		unbondingSlashEvent = new SubstrateTestEventBuilder().buildEventForUnbondingPoolSlashed(mockNumber(1), poolId, slashAmount)
+		unbondingSlashEvent = new SubstrateTestEventBuilder().buildEventForUnbondingPoolSlash(mockNumber(1), poolId, slashAmount)
 		await handleRelaychainPooledStakingUnbondingSlash(unbondingSlashEvent, MOCK_GENESIS, POOLED_STAKING_TYPE);
 	});
 
@@ -187,14 +199,53 @@ describe('handlePoolSlash', () => {
 			["16XzkhKCZqFA4yYd2nfrNk8GZBhq8xkdAQZe3T8tUWxanWWj", BigInt(50)],
 		]
 
-		unbondingSlashEvent = new SubstrateTestEventBuilder().buildEventForUnbondingPoolSlashed(mockNumber(4904), poolId, slashAmount)
+		unbondingSlashEvent = new SubstrateTestEventBuilder().buildEventForUnbondingPoolSlash(mockNumber(4904), poolId, slashAmount)
 		await handleRelaychainPooledStakingUnbondingSlash(unbondingSlashEvent, MOCK_GENESIS, POOLED_STAKING_TYPE);
 	});
 
 	it('Unbonding slash in era without points', async () => {
 		answers = []
 
-		unbondingSlashEvent = new SubstrateTestEventBuilder().buildEventForUnbondingPoolSlashed(mockNumber(5426), poolId, slashAmount)
+		unbondingSlashEvent = new SubstrateTestEventBuilder().buildEventForUnbondingPoolSlash(mockNumber(5426), poolId, slashAmount)
 		await handleRelaychainPooledStakingUnbondingSlash(unbondingSlashEvent, MOCK_GENESIS, POOLED_STAKING_TYPE);
+	});
+});
+
+describe('handlePoolReward', () => {
+	let rewardEvent
+	let accountId
+	let rewardAmount
+	let poolId
+
+	beforeAll(() => {
+		jest.clearAllMocks();
+
+		(global as any).api = mockAPI;
+		accountId = mockAddress("JHXFqYWQFFr5RkHVzviRiKhY7tutyGcYQb6kUyoScSir862")
+		rewardAmount = mockNumber(1000)
+		poolId = mockNumber(42)
+
+		rewardEvent = new SubstrateTestEventBuilder().buildEventForPoolReward(accountId, poolId, rewardAmount)
+	});
+
+	it('Positive reward processed properly', async () => {
+		jest.spyOn(AccumulatedReward, "get").mockResolvedValue(undefined)
+		jest.spyOn(AccumulatedReward.prototype, "save").mockImplementation(function (this: AccumulatedReward) {
+			console.log(this)
+			return Promise.resolve()
+		})
+		const rewardSpy = jest.spyOn(Reward.prototype, "save").mockImplementation(function (this: Reward) {
+			expect(this.amount).toBe(rewardAmount.toBigInt())
+			expect(this.address).toBe(accountId.toString())
+			expect(this.type).toBe(RewardType.reward)
+			expect(this.stakingType).toBe(POOLED_STAKING_TYPE)
+			expect(this.networkId).toBe(MOCK_GENESIS)
+			expect(this.poolId).toBe(poolId.toNumber())
+			return Promise.resolve()
+		})
+
+		await handleRelaychainPooledStakingReward(rewardEvent, MOCK_GENESIS, POOLED_STAKING_TYPE);
+		
+		expect(rewardSpy).toBeCalledTimes(1)		
 	});
 });
