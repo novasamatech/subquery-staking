@@ -3,6 +3,7 @@ import {Codec} from "@polkadot/types/types";
 import {handleReward, RewardArgs} from "./common";
 import {RewardType} from "../../../types";
 import {INumber} from "@polkadot/types-codec/types/interfaces";
+import {PalletNominationPoolsPoolMember} from "@polkadot/types/lookup";
 
 export async function handleRelaychainStakingReward(
     event: SubstrateEvent<[accountId: Codec, reward: INumber]>,
@@ -64,7 +65,10 @@ export async function handleRelaychainPooledStakingBondedSlash(
         pool.points.toBigInt(),
         slash.toBigInt(),
         chainId,
-        stakingType
+        stakingType,
+        (member: PalletNominationPoolsPoolMember) : bigint => {
+            return member.points.toBigInt()
+        }
     )
 }
 
@@ -75,10 +79,11 @@ export async function handleRelaychainPooledStakingUnbondingSlash(
 ): Promise<void> {
     const {event: {data: [era, poolId, slash]}} = event
     const pid = poolId.toNumber()
+    const eid = era.toNumber()
 
     const unbondingPools = (await api.query.nominationPools.subPoolsStorage(pid)).unwrap()
 
-    let pool = unbondingPools.withEra[era.toNumber()]
+    let pool = unbondingPools.withEra[eid]
     if (pool === undefined) {
         pool = unbondingPools.noEra
     }
@@ -89,7 +94,15 @@ export async function handleRelaychainPooledStakingUnbondingSlash(
         pool.points.toBigInt(),
         slash.toBigInt(),
         chainId,
-        stakingType
+        stakingType,
+        (member: PalletNominationPoolsPoolMember) : bigint => {
+            const points = member.unbondingEras[eid]
+            if (points == undefined) {
+                return BigInt(0)
+            } else {
+                return points.toBigInt()
+            }
+        }
     )
 }
 
@@ -99,7 +112,8 @@ export async function handleRelaychainPooledStakingSlash(
     poolPoints: bigint,
     slash: bigint,
     chainId: string,
-    stakingType: string
+    stakingType: string,
+    memberPointsCounter: (member: PalletNominationPoolsPoolMember) => bigint
 ): Promise<void> {
     const members = await api.query.nominationPools.poolMembers.entries()
 
@@ -107,7 +121,7 @@ export async function handleRelaychainPooledStakingSlash(
         let memberPoints: bigint
         if (member.isSome && 
             member.unwrap().poolId.toNumber() === poolId && 
-            (memberPoints = member.unwrap().points.toBigInt())) {
+            (memberPoints = memberPointsCounter(member.unwrap()))) {
             await handleRelaychainStakingRewardType(
                 event, 
                 (slash / poolPoints) * memberPoints,
