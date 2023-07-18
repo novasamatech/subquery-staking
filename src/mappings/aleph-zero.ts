@@ -1,20 +1,18 @@
 import {SubstrateEvent} from "@subql/types";
-import {handleNewEra} from "./common";
+import {handleNewEra, POOLED_STAKING_TYPE} from "./common";
 import {AlephZeroRewardCalculator} from "./rewards/AlephZero";
 import {ValidatorEraInfoDataSource} from "./era/ValidatorEraInfoDataSource";
 import {Codec} from "@polkadot/types/types";
 import {INumber} from "@polkadot/types-codec/types/interfaces";
+import {handleRelaychainStakingReward, handleRelaychainStakingSlash} from "./rewards/history/relaychain";
 import {
-    handleRelaychainStakingReward, 
-    handleRelaychainStakingSlash, 
     handleRelaychainPooledStakingReward, 
     handleRelaychainPooledStakingBondedSlash,
     handleRelaychainPooledStakingUnbondingSlash
-} from "./rewards/history/relaychain";
+} from "./rewards/history/nomination_pools";
 
 const ALEPH_ZERO_GENESIS = "0x70255b4d28de0fc4e1a193d7e175ad1ccef431598211c55538f1018651a0344e"
 const DIRECT_STAKING_TYPE = "aleph-zero"
-const POOLED_STAKING_TYPE = "nomination-pool"
 
 export async function handleAlephZeroNewEra(_: SubstrateEvent): Promise<void> {
     let validatorEraInfoDataSource = new ValidatorEraInfoDataSource();

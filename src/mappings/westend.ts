@@ -1,20 +1,18 @@
 import {SubstrateEvent} from "@subql/types";
-import {handleNewEra} from "./common";
+import {handleNewEra, POOLED_STAKING_TYPE} from "./common";
 import {RelaychainRewardCalculator} from "./rewards/Relaychain";
 import {ValidatorEraInfoDataSource} from "./era/ValidatorEraInfoDataSource";
 import {Codec} from "@polkadot/types/types";
 import {INumber} from "@polkadot/types-codec/types/interfaces";
+import {handleRelaychainStakingReward, handleRelaychainStakingSlash} from "./rewards/history/relaychain";
 import {
-    handleRelaychainStakingReward, 
-    handleRelaychainStakingSlash, 
     handleRelaychainPooledStakingReward, 
     handleRelaychainPooledStakingBondedSlash,
     handleRelaychainPooledStakingUnbondingSlash
-} from "./rewards/history/relaychain";
+} from "./rewards/history/nomination_pools";
 
 const WESTEND_GENESIS = "0xe143f23803ac50e8f6f8e62695d1ce9e4e1d68aa36c1cd2cfd15340213f3423e"
 const DIRECT_STAKING_TYPE = "relaychain"
-const POOLED_STAKING_TYPE = "nomination-pool"
 
 export async function handleWestendNewEra(_: SubstrateEvent): Promise<void> {
     let validatorEraInfoDataSource = new ValidatorEraInfoDataSource();

@@ -1,20 +1,18 @@
 import {SubstrateEvent} from "@subql/types";
-import {handleNewEra} from "./common";
+import {handleNewEra, POOLED_STAKING_TYPE} from "./common";
 import {RelaychainRewardCalculator} from "./rewards/Relaychain";
 import {ValidatorEraInfoDataSource} from "./era/ValidatorEraInfoDataSource";
 import {Codec} from "@polkadot/types/types";
 import {INumber} from "@polkadot/types-codec/types/interfaces";
+import {handleRelaychainStakingReward, handleRelaychainStakingSlash} from "./rewards/history/relaychain";
 import {
-    handleRelaychainStakingReward, 
-    handleRelaychainStakingSlash, 
     handleRelaychainPooledStakingReward, 
     handleRelaychainPooledStakingBondedSlash,
     handleRelaychainPooledStakingUnbondingSlash
-} from "./rewards/history/relaychain";
+} from "./rewards/history/nomination_pools";
 
 const KUSAMA_GENESIS = "0xb0a8d493285c2df73290dfb7e61f870f17b41801197a149ca93654499ea3dafe"
 const DIRECT_STAKING_TYPE = "relaychain"
-const POOLED_STAKING_TYPE = "nomination-pool"
 
 export async function handleKusamaNewEra(_: SubstrateEvent): Promise<void> {
     let validatorEraInfoDataSource = new ValidatorEraInfoDataSource();
