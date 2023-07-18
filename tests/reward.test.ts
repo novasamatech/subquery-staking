@@ -3,7 +3,7 @@ import {
 	handleRelaychainPooledStakingBondedSlash, 
 	handleRelaychainPooledStakingUnbondingSlash, 
 	handleRelaychainPooledStakingReward 
-} from "../src/mappings/rewards/history/relaychain"
+} from "../src/mappings/rewards/history/nomination_pools"
 import { SubstrateTestEventBuilder, mockOption, mockNumber, mockAddress } from "./utils/mockFunctions"
 import {RewardType} from "../src/types";
 
