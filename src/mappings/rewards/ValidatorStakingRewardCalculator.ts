@@ -3,24 +3,35 @@ import {StakedInfo} from "./inflation/Inflation";
 import Big from "big.js";
 import {BigFromINumber} from "../utils";
 import {EraInfoDataSource} from "../era/EraInfoDataSource";
+import {max} from "../utils";
 
 export abstract class ValidatorStakingRewardCalculator implements RewardCalculator {
 
     private readonly eraInfoDataSource: EraInfoDataSource
 
+    protected stakersApy: Map<string, number> | undefined = undefined
+
     protected constructor(eraInfoDataSource: EraInfoDataSource) {
         this.eraInfoDataSource = eraInfoDataSource
     }
 
-    abstract maxApyInternal(stakers: StakerNode[], stakedInfo: StakedInfo): Promise<number>
+    async getStakersApy(): Promise<Map<string, number>> {
+        if (this.stakersApy === undefined) {
+            let stakers = await this.fetchStakers()
+            let totalIssuance = await this.fetchTotalIssuance()
+
+            let stakedInfo = this.constructStakedInfo(stakers, totalIssuance)
+
+            this.stakersApy = await this.getStakersApyImpl(stakers, stakedInfo)
+        }
+        return this.stakersApy
+    }
+
+    protected abstract getStakersApyImpl(stakers: StakerNode[], stakedInfo: StakedInfo): Promise<Map<string, number>>
 
     async maxApy(): Promise<number> {
-        let stakers = await this.fetchStakers()
-        let totalIssuance = await this.fetchTotalIssuance()
-
-        let stakedInfo = this.constructStakedInfo(stakers, totalIssuance)
-
-        return this.maxApyInternal(stakers, stakedInfo);
+        const stakersApy = await this.getStakersApy()
+        return max([...stakersApy.values()]);
     }
 
     private constructStakedInfo(stakers: StakerNode[], totalIssuance: Big): StakedInfo {
@@ -42,13 +53,13 @@ export abstract class ValidatorStakingRewardCalculator implements RewardCalculat
     }
 
     private async fetchStakers(): Promise<StakerNode[]> {
-        const currentEra = await this.eraInfoDataSource.era()
         const eraStakers = await this.eraInfoDataSource.eraStakers(false)
 
         const commissionByValidatorId = await this.eraInfoDataSource.cachedEraComissions()
 
         return eraStakers.map(({address, totalStake}) => {
             return {
+                address: address,
                 totalStake: totalStake,
                 commission: commissionByValidatorId[address]
             }
