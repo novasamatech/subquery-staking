@@ -8,8 +8,6 @@ export interface RewardCalculator {
 
 export interface StakerNode {
 
-    address: string
-
     totalStake: Big
 
     commission: number

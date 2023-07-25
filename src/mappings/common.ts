@@ -24,15 +24,13 @@ export async function handleNewSession(
     eraInfoDataSource: EraInfoDataSource,
     rewardCalculator: RewardCalculator,
     networkId: string,
-    stakingType: string,
-    poolRewardCalculator?: RewardCalculator
+    stakingType: string
 ): Promise<void> {
     const stakingStats = new StakingStats(
         rewardCalculator,
         eraInfoDataSource,
         networkId,
-        stakingType,
-        poolRewardCalculator
+        stakingType
     )
 
     await stakingStats.indexSession()
