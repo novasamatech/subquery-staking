@@ -29,6 +29,12 @@ dataSources:
             module: staking
             method: StakersElected
 
+        - handler: handleKusamaNewSession
+          kind: substrate/EventHandler
+          filter:
+            module: session
+            method: NewSession
+
         - handler: handleKusamaStakingReward
           kind: substrate/EventHandler
           filter:

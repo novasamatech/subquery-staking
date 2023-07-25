@@ -1,6 +1,7 @@
 import {RewardCalculator} from "../rewards/RewardCalculator";
 import {EraInfoDataSource} from "../era/EraInfoDataSource";
 import {ActiveStaker, StakerType, StakingApy} from "../../types";
+import {POOLED_STAKING_TYPE} from "../common"
 
 export class StakingStats {
 
@@ -12,40 +13,64 @@ export class StakingStats {
 
     private readonly stakingType: string
 
+    private readonly poolRewardCalculator: RewardCalculator | undefined
+
     constructor(
         rewardCalculator: RewardCalculator,
         eraInfoDataSource: EraInfoDataSource,
         networkId: string,
         stakingType: string,
+        poolRewardCalculator?: RewardCalculator
     ) {
         this.eraInfoDataSource = eraInfoDataSource
         this.rewardCalculator = rewardCalculator
         this.networkId = networkId
         this.stakingType = stakingType
+        this.poolRewardCalculator = poolRewardCalculator
     }
 
-    async indexEraStats(): Promise<void> {
-        await this.updateAPY()
+    async indexEra(): Promise<void> {
         await this.updateActiveStakers()
+        await this.eraInfoDataSource.updateEraComissions()
+        await this.updateAPY()
+    }
+
+    async indexSession(): Promise<void> {
+        await this.updateAPY()
     }
 
     private async updateAPY(): Promise<void> {
-        let apy = await this.rewardCalculator.maxApy()
+        if (await this.eraInfoDataSource.eraStarted()) {
+            let apy = await this.rewardCalculator.maxApy()
 
-        let apyEntity = StakingApy.create({
-            id: this.generateMaxApyId(),
-            networkId: this.networkId,
-            stakingType: this.stakingType,
-            maxAPY: apy
-        })
+            let apyEntity = StakingApy.create({
+                id: this.generateMaxApyId(this.stakingType),
+                networkId: this.networkId,
+                stakingType: this.stakingType,
+                maxAPY: apy
+            })
 
-        await apyEntity.save()
+            await apyEntity.save()
+
+            if (this.poolRewardCalculator !== undefined) {
+                let apy = await this.poolRewardCalculator.maxApy()
+
+                let apyEntity = StakingApy.create({
+                    id: this.generateMaxApyId(POOLED_STAKING_TYPE),
+                    networkId: this.networkId,
+                    stakingType: POOLED_STAKING_TYPE,
+                    maxAPY: apy
+                })
+                
+                await apyEntity.save()
+            }
+        }
     }
 
     private async updateActiveStakers(): Promise<void> {
         await this.removeOldRecords();
 
-        let stakeTargets = await this.eraInfoDataSource.eraStakers()
+        let stakeTargets = await this.eraInfoDataSource.eraStakers(true)
 
         const activeStakers: ActiveStaker[] = stakeTargets.flatMap((stakeTarget => {
             const nominators = stakeTarget.others.map((nominator) => {
@@ -90,7 +115,7 @@ export class StakingStats {
         return `${address}-${validatorAddress}-${this.networkId}-${this.stakingType}`
     }
 
-    private generateMaxApyId(): string {
-        return `${this.networkId}-${this.stakingType}`
+    private generateMaxApyId(stakingType: string): string {
+        return `${this.networkId}-${stakingType}`
     }
 }

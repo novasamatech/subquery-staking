@@ -1,15 +1,24 @@
 import {StakeTarget} from "./EraInfoDataSource";
 import {CachingEraInfoDataSource} from "./CachingEraInfoDataSource";
-import {BigFromINumber} from "../utils";
+import {BigFromINumber, PerbillToNumber} from "../utils";
 import '@moonbeam-network/api-augment'
 import {PalletParachainStakingBond, PalletParachainStakingCollatorSnapshot} from "@polkadot/types/lookup";
-import {Struct, Vec} from "@polkadot/types-codec";
+import {Vec} from "@polkadot/types-codec";
 
 export class CollatorEraInfoDataSource extends CachingEraInfoDataSource {
+
+    async eraStarted(): Promise<boolean> {
+        return true
+    }
 
     protected async fetchEra(): Promise<number> {
         const round = (await api.query.parachainStaking.round())
         return round.current.toNumber()
+    }
+
+    protected async fetchComissions(): Promise<Record<string, number>> {
+        const commission = PerbillToNumber(await api.query.parachainStaking.collatorCommission())
+        return {"collator": commission}
     }
 
     protected async fetchEraStakers(): Promise<StakeTarget[]> {

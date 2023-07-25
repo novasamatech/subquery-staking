@@ -1,6 +1,7 @@
 import {SubstrateEvent} from "@subql/types";
-import {handleNewEra, POOLED_STAKING_TYPE} from "./common";
+import {handleNewEra, handleNewSession, POOLED_STAKING_TYPE} from "./common";
 import {RelaychainRewardCalculator} from "./rewards/Relaychain";
+import {NominationPoolRewardCalculator} from "./rewards/NominationPoolRewardCalculator";
 import {ValidatorEraInfoDataSource} from "./era/ValidatorEraInfoDataSource";
 import {Codec} from "@polkadot/types/types";
 import {INumber} from "@polkadot/types-codec/types/interfaces";
@@ -24,6 +25,21 @@ export async function handleKusamaNewEra(_: SubstrateEvent): Promise<void> {
         DIRECT_STAKING_TYPE
     )
 }
+
+export async function handleKusamaNewSession(_: SubstrateEvent): Promise<void> {
+    let validatorEraInfoDataSource = new ValidatorEraInfoDataSource();
+    let mainRewardCalculator = await RelaychainRewardCalculator(validatorEraInfoDataSource)
+    let poolRewardCalculator = new NominationPoolRewardCalculator(mainRewardCalculator)
+
+    await handleNewSession(
+        validatorEraInfoDataSource,
+        mainRewardCalculator,
+        KUSAMA_GENESIS,
+        DIRECT_STAKING_TYPE,
+        poolRewardCalculator
+    )
+}
+
 
 export async function handleKusamaStakingReward(
     event: SubstrateEvent<[accountId: Codec, reward: INumber]>,

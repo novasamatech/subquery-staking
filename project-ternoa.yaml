@@ -30,6 +30,12 @@ dataSources:
             module: staking
             method: StakersElected
 
+        - handler: handleTernoaNewSession
+          kind: substrate/EventHandler
+          filter:
+            module: session
+            method: NewSession
+
         - handler: handleTernoaStakingReward
           kind: substrate/EventHandler
           filter:

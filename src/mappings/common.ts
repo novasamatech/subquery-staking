@@ -1,7 +1,8 @@
 import {RewardCalculator} from "./rewards/RewardCalculator";
-import {StakingApy} from "../types";
 import {EraInfoDataSource} from "./era/EraInfoDataSource";
 import {StakingStats} from "./stats/StakingStats";
+
+export const POOLED_STAKING_TYPE = "nomination-pool"
 
 export async function handleNewEra(
     eraInfoDataSource: EraInfoDataSource,
@@ -16,5 +17,23 @@ export async function handleNewEra(
         stakingType
     )
 
-    await stakingStats.indexEraStats()
+    await stakingStats.indexEra()
+}
+
+export async function handleNewSession(
+    eraInfoDataSource: EraInfoDataSource,
+    rewardCalculator: RewardCalculator,
+    networkId: string,
+    stakingType: string,
+    poolRewardCalculator?: RewardCalculator
+): Promise<void> {
+    const stakingStats = new StakingStats(
+        rewardCalculator,
+        eraInfoDataSource,
+        networkId,
+        stakingType,
+        poolRewardCalculator
+    )
+
+    await stakingStats.indexSession()
 }

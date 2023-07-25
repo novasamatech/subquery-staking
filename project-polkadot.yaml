@@ -29,6 +29,12 @@ dataSources:
             module: staking
             method: StakersElected
 
+        - handler: handlePolkadotNewSession
+          kind: substrate/EventHandler
+          filter:
+            module: session
+            method: NewSession
+
         - handler: handlePolkadotStakingReward
           kind: substrate/EventHandler
           filter:

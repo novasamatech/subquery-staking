@@ -11,13 +11,17 @@ export class AlephZeroRewardCalculator extends ValidatorStakingRewardCalculator 
         super(eraInfoDataSource)
     }
 
-    async maxApyInternal(stakers: StakerNode[], stakedInfo: StakedInfo): Promise<number> {
+    protected async getStakersApyImpl(stakers: StakerNode[], stakedInfo: StakedInfo): Promise<Map<string, number>> {
         let yearlyMint = this.yearlyMint()
         let apr = yearlyMint.div(stakedInfo.totalStaked).toNumber()
 
-        let validatorAPYs = stakers.map((staker) => this.calculateValidatorApy(staker.commission, apr))
-
-        return max(validatorAPYs)
+        return new Map<string, number>(stakers.map(
+            (staker) =>
+                [
+                    staker.address,
+                    this.calculateValidatorApy(staker.commission, apr)
+                ]
+        ))
     }
 
     private yearlyMint(): Big {
