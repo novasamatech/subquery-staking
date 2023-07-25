@@ -9,7 +9,7 @@ import {EraInfoDataSource} from "../era/EraInfoDataSource";
 
 const LOWEST_PUBLIC_ID = 2000
 
-export async function RelaychainRewardCalculator(eraInfoDataSource: EraInfoDataSource): Promise<ValidatorStakingRewardCalculator> {
+export async function RelaychainRewardCalculator(eraInfoDataSource: EraInfoDataSource): Promise<RewardCalculator> {
     const parasPallet = api.query.paras
     let parachainAdjust: RewardCurveParachainAdjust | null
 
@@ -51,19 +51,18 @@ class DefaultValidatorStakingRewardCalculator extends ValidatorStakingRewardCalc
         this.inflation = inflation
     }
 
-    protected async getStakersApyImpl(stakers: StakerNode[], stakedInfo: StakedInfo): Promise<Map<string, number>> {
+    async maxApyInternal(stakers: StakerNode[], stakedInfo: StakedInfo): Promise<number> {
         let inflation = await this.inflation.from(stakedInfo)
 
         let averageValidatorRewardPercentage = inflation / stakedInfo.stakedPortion
         let averageValidatorStake = stakedInfo.totalStaked.div(stakers.length)
 
-        return new Map<string, number>(stakers.map(
+        let stakersApy = stakers.map(
             (staker) =>
-                [
-                    staker.address,
-                    this.calculateValidatorApy(staker, averageValidatorRewardPercentage, averageValidatorStake)
-                ]
-        ))
+                this.calculateValidatorApy(staker, averageValidatorRewardPercentage, averageValidatorStake)
+        )
+
+        return max(stakersApy)
     }
 
     private calculateValidatorApy(
