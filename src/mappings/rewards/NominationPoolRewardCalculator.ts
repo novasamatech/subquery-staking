@@ -21,11 +21,15 @@ export class NominationPoolRewardCalculator implements RewardCalculator {
     async maxApy(): Promise<number> {
         const stakersApy = await this.mainRewardCalculator.getStakersApy()
         const pools = await api.query.nominationPools.bondedPools.entries()
-        const poolsApy = await Promise.all(pools.map(async ([poolId, poolData]) => {
+        const poolsApy = await Promise.all(pools.map(async ([poolId, poolDataOption]) => {
             const poolAddress = this.derivePoolAccount(poolId.args[0].toNumber(), 0)
 
-            const comissionTuple = poolData.unwrap()["commission"]["current"]
-            const poolCommission = comissionTuple.isSome ? PerbillToNumber(comissionTuple.unwrap()[0]) : 0
+            let poolCommission = 0
+            const poolData = poolDataOption.unwrap()
+            if (poolData["commission"] !== undefined) {
+                const comissionTuple = poolData["commission"]["current"]
+                poolCommission = comissionTuple.isSome ? PerbillToNumber(comissionTuple.unwrap()[0]) : 0
+            }
 
             const poolActiveNominations = (await api.query.staking.nominators(poolAddress))
             if (poolActiveNominations.isSome) {
