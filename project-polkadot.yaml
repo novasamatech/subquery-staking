@@ -47,6 +47,12 @@ dataSources:
             module: staking
             method: Rewarded
 
+        - handler: handlePolkadotPoolStakingReward
+          kind: substrate/EventHandler
+          filter:
+            module: nominationPools
+            method: PaidOut
+
         - handler: handlePolkadotStakingSlash
           kind: substrate/EventHandler
           filter:
@@ -58,3 +64,15 @@ dataSources:
           filter:
             module: staking
             method: Slashed
+
+        - handler: handlePolkadotPoolStakingBondedSlash
+          kind: substrate/EventHandler
+          filter:
+            module: nominationPools
+            method: PoolSlashed
+
+        - handler: handlePolkadotPoolStakingUnbondingSlash
+          kind: substrate/EventHandler
+          filter:
+            module: nominationPools
+            method: UnbondingPoolSlashed
