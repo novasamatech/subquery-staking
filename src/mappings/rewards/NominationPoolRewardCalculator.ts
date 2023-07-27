@@ -26,9 +26,8 @@ export class NominationPoolRewardCalculator implements RewardCalculator {
 
             let poolCommission = 0
             const poolData = poolDataOption.unwrap()
-            if (poolData["commission"] !== undefined) {
-                const comissionTuple = poolData["commission"]["current"]
-                poolCommission = comissionTuple.isSome ? PerbillToNumber(comissionTuple.unwrap()[0]) : 0
+            if (poolData["commission"] !== undefined && poolData["commission"]["current"].isSome) {
+                poolCommission = PerbillToNumber(poolData["commission"]["current"].unwrap()[0])
             }
 
             const poolActiveNominations = (await api.query.staking.nominators(poolAddress))
