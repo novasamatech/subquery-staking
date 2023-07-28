@@ -90,13 +90,13 @@ export async function handleRelaychainPooledStakingSlash(
 
     await Promise.all(members.map(async ([accountId, member]) => {
         let memberPoints: bigint
-        if (member.isSome && member.unwrap().poolId.toNumber() === poolId) {
-            memberPoints = memberPointsCounter(member.unwrap())
+        if (member.poolId.toNumber() === poolId) {
+            memberPoints = memberPointsCounter(member)
             if (memberPoints != BigInt(0)) {
                 await handleRelaychainStakingRewardType(
                     event, 
                     (slash / poolPoints) * memberPoints,
-                    accountId.toString(), 
+                    accountId, 
                     RewardType.slash, 
                     chainId, 
                     stakingType, 

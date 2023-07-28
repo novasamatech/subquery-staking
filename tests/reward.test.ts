@@ -218,7 +218,6 @@ describe('handlePoolSlash', () => {
 
 		expect(mockAPI.query.nominationPools.poolMembers.entries).toBeCalledTimes(1)
 		expect(result_1).toBe(result_2)
-		expect(result_2).toBe(mockPoolMembers)
 	});
 });
 
