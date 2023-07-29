@@ -4,8 +4,9 @@ import {
 	handleRelaychainPooledStakingUnbondingSlash, 
 	handleRelaychainPooledStakingReward 
 } from "../src/mappings/rewards/history/nomination_pools"
+import { getPoolMembers } from "../src/mappings/rewards/history/cache"
 import { SubstrateTestEventBuilder, mockOption, mockNumber, mockAddress } from "./utils/mockFunctions"
-import {RewardType} from "../src/types";
+import { RewardType } from "../src/types";
 
 
 const MOCK_GENESIS = "0xb0a8d493285c2df73290dfb7e61f870f17b41801197a149ca93654499ea3dafe"
@@ -207,6 +208,16 @@ describe('handlePoolSlash', () => {
 
 		unbondingSlashEvent = new SubstrateTestEventBuilder().buildEventForUnbondingPoolSlash(mockNumber(5426), poolId, slashAmount)
 		await handleRelaychainPooledStakingUnbondingSlash(unbondingSlashEvent, MOCK_GENESIS, POOLED_STAKING_TYPE);
+	});
+
+	it('Caching for members working', async () => {
+		jest.spyOn(mockAPI.query.nominationPools.poolMembers, "entries")
+
+		const result_1 = await getPoolMembers(0) 
+		const result_2 = await getPoolMembers(0)
+
+		expect(mockAPI.query.nominationPools.poolMembers.entries).toBeCalledTimes(1)
+		expect(result_1).toBe(result_2)
 	});
 });
 
