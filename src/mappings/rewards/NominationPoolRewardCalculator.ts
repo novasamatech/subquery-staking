@@ -25,7 +25,7 @@ export class NominationPoolRewardCalculator implements RewardCalculator {
         const stakersApy = await this.mainRewardCalculator.getStakersApy()
         const eraStakers = await this.eraInfoDataSource.eraStakers(false)
         const pools = await api.query.nominationPools.bondedPools.entries()
-        const poolsApy = await Promise.all(pools.map(async ([poolId, poolDataOption]) => {
+        const poolsCommission = new Map<string, number>(await Promise.all(pools.map(async ([poolId, poolDataOption]) => {
             const poolAddress = this.derivePoolAccount(poolId.args[0].toNumber(), 0).toString()
 
             let poolCommission = 0
@@ -34,16 +34,25 @@ export class NominationPoolRewardCalculator implements RewardCalculator {
                 poolCommission = PerbillToNumber(poolData["commission"]["current"].unwrap()[0])
             }
 
-            return max(eraStakers.map(stakeTarget => {
-                if (stakeTarget.address === poolAddress || stakeTarget.others.find(staker => staker.address === poolAddress) !== undefined) {
-                    return (1 - poolCommission) * stakersApy.get(stakeTarget.address) ?? 0
-                } else {
-                    return 0
-                }
-            }))
-        }))
+            return [poolAddress, poolCommission] as [string, number]
+        })))
+        const maxApy = eraStakers.reduce(
+            (accumulator, stakeTarget) => {
+                const stakerApy = stakersApy.get(stakeTarget.address) ?? 0
 
-        return max(poolsApy)
+                accumulator = this.updateAccumulatedMaxApy(accumulator, poolsCommission, stakeTarget.address, stakerApy)
+                
+                return Math.max(accumulator, stakeTarget.others.reduce(
+                    (innerAccumulator, staker) => {
+                        return this.updateAccumulatedMaxApy(innerAccumulator, poolsCommission, staker.address, stakerApy)
+                    },
+                    0
+                ))
+            },
+            0
+        )
+
+        return maxApy
     }
 
     private derivePoolAccount(poolId: number, accountType: number) : AccountId32 {
@@ -56,5 +65,12 @@ export class NominationPoolRewardCalculator implements RewardCalculator {
             EMPTY_H256
         ])));
     }
-    
+
+    private updateAccumulatedMaxApy(accumulator: number, poolsCommission: Map<string, number>, address: string, stakerApy: number) : number {
+        if (poolsCommission.has(address)) {
+            return Math.max(accumulator, (1 - poolsCommission.get(address)) * stakerApy)
+        } else {
+            return accumulator
+        }
+    }
 }
