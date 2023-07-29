@@ -29,7 +29,7 @@ export async function handlePolkadotNewEra(_: SubstrateEvent): Promise<void> {
 export async function handlePolkadotNewSession(_: SubstrateEvent): Promise<void> {
     let validatorEraInfoDataSource = new ValidatorEraInfoDataSource();
     let mainRewardCalculator = await RelaychainRewardCalculator(validatorEraInfoDataSource)
-    let poolRewardCalculator = new NominationPoolRewardCalculator(mainRewardCalculator)
+    let poolRewardCalculator = new NominationPoolRewardCalculator(validatorEraInfoDataSource, mainRewardCalculator)
 
     await handleNewSession(
         validatorEraInfoDataSource,

@@ -1,4 +1,5 @@
 import {RewardCalculator} from "./RewardCalculator";
+import {EraInfoDataSource} from "../era/EraInfoDataSource";
 import {ValidatorStakingRewardCalculator} from "./ValidatorStakingRewardCalculator";
 import { bnToU8a, stringToU8a, u8aConcatStrict } from '@polkadot/util';
 import {max} from "../utils";
@@ -13,16 +14,19 @@ const U32_OPTS = { bitLength: 32, isLe: true };
 export class NominationPoolRewardCalculator implements RewardCalculator {
 
     private readonly mainRewardCalculator: ValidatorStakingRewardCalculator
+    private readonly eraInfoDataSource: EraInfoDataSource
 
-    constructor(relayChainRewardCalculator: ValidatorStakingRewardCalculator) {
+    constructor(eraInfoDataSource: EraInfoDataSource, relayChainRewardCalculator: ValidatorStakingRewardCalculator) {
         this.mainRewardCalculator = relayChainRewardCalculator
+        this.eraInfoDataSource = eraInfoDataSource
     }
 
     async maxApy(): Promise<number> {
         const stakersApy = await this.mainRewardCalculator.getStakersApy()
+        const eraStakers = await this.eraInfoDataSource.eraStakers(false)
         const pools = await api.query.nominationPools.bondedPools.entries()
         const poolsApy = await Promise.all(pools.map(async ([poolId, poolDataOption]) => {
-            const poolAddress = this.derivePoolAccount(poolId.args[0].toNumber(), 0)
+            const poolAddress = this.derivePoolAccount(poolId.args[0].toNumber(), 0).toString()
 
             let poolCommission = 0
             const poolData = poolDataOption.unwrap()
@@ -30,14 +34,13 @@ export class NominationPoolRewardCalculator implements RewardCalculator {
                 poolCommission = PerbillToNumber(poolData["commission"]["current"].unwrap()[0])
             }
 
-            const poolActiveNominations = (await api.query.staking.nominators(poolAddress))
-            if (poolActiveNominations.isSome) {
-                let poolAPY = max(poolActiveNominations.unwrap().targets.map((stakeTargetId) => stakersApy.get(stakeTargetId.toString()) ?? 0))                
-                return (1 - poolCommission) * poolAPY
-            } else {
-                return 0
-            }
-            
+            return max(eraStakers.map(stakeTarget => {
+                if (stakeTarget.address === poolAddress || stakeTarget.others.find(staker => staker.address === poolAddress) !== undefined) {
+                    return stakersApy.get(stakeTarget.address) ?? 0
+                } else {
+                    return 0
+                }
+            }))
         }))
 
         return max(poolsApy)

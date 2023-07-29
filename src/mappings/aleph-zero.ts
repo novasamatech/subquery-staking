@@ -29,7 +29,7 @@ export async function handleAlephZeroNewEra(_: SubstrateEvent): Promise<void> {
 export async function handleAlephZeroNewSession(_: SubstrateEvent): Promise<void> {
     let validatorEraInfoDataSource = new ValidatorEraInfoDataSource();
     let mainRewardCalculator = new AlephZeroRewardCalculator(validatorEraInfoDataSource)
-    let poolRewardCalculator = new NominationPoolRewardCalculator(mainRewardCalculator)
+    let poolRewardCalculator = new NominationPoolRewardCalculator(validatorEraInfoDataSource, mainRewardCalculator)
 
     await handleNewSession(
         validatorEraInfoDataSource,
