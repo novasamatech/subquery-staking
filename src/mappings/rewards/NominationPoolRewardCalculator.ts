@@ -36,7 +36,7 @@ export class NominationPoolRewardCalculator implements RewardCalculator {
 
             return max(eraStakers.map(stakeTarget => {
                 if (stakeTarget.address === poolAddress || stakeTarget.others.find(staker => staker.address === poolAddress) !== undefined) {
-                    return stakersApy.get(stakeTarget.address) ?? 0
+                    return (1 - poolCommission) * stakersApy.get(stakeTarget.address) ?? 0
                 } else {
                     return 0
                 }
