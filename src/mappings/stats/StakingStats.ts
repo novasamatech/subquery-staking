@@ -24,28 +24,35 @@ export class StakingStats {
         this.stakingType = stakingType
     }
 
-    async indexEraStats(): Promise<void> {
-        await this.updateAPY()
+    async indexEra(): Promise<void> {
         await this.updateActiveStakers()
+        await this.eraInfoDataSource.updateEraComissions()
+        await this.updateAPY()
+    }
+
+    async indexSession(): Promise<void> {
+        await this.updateAPY()
     }
 
     private async updateAPY(): Promise<void> {
-        let apy = await this.rewardCalculator.maxApy()
+        if (await this.eraInfoDataSource.eraStarted()) {
+            let apy = await this.rewardCalculator.maxApy()
 
-        let apyEntity = StakingApy.create({
-            id: this.generateMaxApyId(),
-            networkId: this.networkId,
-            stakingType: this.stakingType,
-            maxAPY: apy
-        })
+            let apyEntity = StakingApy.create({
+                id: this.generateMaxApyId(),
+                networkId: this.networkId,
+                stakingType: this.stakingType,
+                maxAPY: apy
+            })
 
-        await apyEntity.save()
+            await apyEntity.save()
+        }
     }
 
     private async updateActiveStakers(): Promise<void> {
         await this.removeOldRecords();
 
-        let stakeTargets = await this.eraInfoDataSource.eraStakers()
+        let stakeTargets = await this.eraInfoDataSource.eraStakers(true)
 
         const activeStakers: ActiveStaker[] = stakeTargets.flatMap((stakeTarget => {
             const nominators = stakeTarget.others.map((nominator) => {
