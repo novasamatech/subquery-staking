@@ -39,12 +39,14 @@ export class NominationPoolRewardCalculator implements RewardCalculator {
         const maxApy = eraStakers.reduce(
             (accumulator, stakeTarget) => {
                 const stakerApy = stakersApy.get(stakeTarget.address) ?? 0
-
-                accumulator = this.updateAccumulatedMaxApy(accumulator, poolsCommission, stakeTarget.address, stakerApy)
                 
                 return Math.max(accumulator, stakeTarget.others.reduce(
                     (innerAccumulator, staker) => {
-                        return this.updateAccumulatedMaxApy(innerAccumulator, poolsCommission, staker.address, stakerApy)
+                        if (poolsCommission.has(staker.address)) {
+                            return Math.max(innerAccumulator, (1 - poolsCommission.get(staker.address)) * stakerApy)
+                        } else {
+                            return innerAccumulator
+                        }
                     },
                     0
                 ))
@@ -64,13 +66,5 @@ export class NominationPoolRewardCalculator implements RewardCalculator {
             bnToU8a(poolId, U32_OPTS),
             EMPTY_H256
         ])));
-    }
-
-    private updateAccumulatedMaxApy(accumulator: number, poolsCommission: Map<string, number>, address: string, stakerApy: number) : number {
-        if (poolsCommission.has(address)) {
-            return Math.max(accumulator, (1 - poolsCommission.get(address)) * stakerApy)
-        } else {
-            return accumulator
-        }
     }
 }
