@@ -4,8 +4,6 @@ import {RewardType} from "../../../types";
 import {INumber} from "@polkadot/types-codec/types/interfaces";
 import {handleRelaychainStakingRewardType} from "./relaychain";
 import {PalletNominationPoolsPoolMember} from "@polkadot/types/lookup";
-import {blockNumber} from "./common"
-import {getPoolMembers} from "./cache"
 
 export async function handleRelaychainPooledStakingReward(
     event: SubstrateEvent<[accountId: Codec, poolId: INumber, reward: INumber]>,
@@ -86,17 +84,17 @@ export async function handleRelaychainPooledStakingSlash(
         return
     }
 
-    const members = await getPoolMembers(blockNumber(event))
+    const members = await api.query.nominationPools.poolMembers.entries()
 
     await Promise.all(members.map(async ([accountId, member]) => {
         let memberPoints: bigint
-        if (member.poolId.toNumber() === poolId) {
-            memberPoints = memberPointsCounter(member)
+        if (member.isSome && member.unwrap().poolId.toNumber() === poolId) {
+            memberPoints = memberPointsCounter(member.unwrap())
             if (memberPoints != BigInt(0)) {
                 await handleRelaychainStakingRewardType(
                     event, 
                     (slash / poolPoints) * memberPoints,
-                    accountId, 
+                    accountId.toString(), 
                     RewardType.slash, 
                     chainId, 
                     stakingType, 

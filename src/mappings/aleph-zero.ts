@@ -1,6 +1,7 @@
 import {SubstrateEvent} from "@subql/types";
 import {handleNewEra, handleNewSession, POOLED_STAKING_TYPE} from "./common";
 import {AlephZeroRewardCalculator} from "./rewards/AlephZero";
+import {NominationPoolRewardCalculator} from "./rewards/NominationPoolRewardCalculator";
 import {ValidatorEraInfoDataSource} from "./era/ValidatorEraInfoDataSource";
 import {Codec} from "@polkadot/types/types";
 import {INumber} from "@polkadot/types-codec/types/interfaces";
@@ -27,12 +28,15 @@ export async function handleAlephZeroNewEra(_: SubstrateEvent): Promise<void> {
 
 export async function handleAlephZeroNewSession(_: SubstrateEvent): Promise<void> {
     let validatorEraInfoDataSource = new ValidatorEraInfoDataSource();
+    let mainRewardCalculator = new AlephZeroRewardCalculator(validatorEraInfoDataSource)
+    let poolRewardCalculator = new NominationPoolRewardCalculator(validatorEraInfoDataSource, mainRewardCalculator)
 
     await handleNewSession(
         validatorEraInfoDataSource,
         new AlephZeroRewardCalculator(validatorEraInfoDataSource),
         ALEPH_ZERO_GENESIS,
-        DIRECT_STAKING_TYPE
+        DIRECT_STAKING_TYPE,
+        poolRewardCalculator
     )
 }
 

@@ -1,6 +1,7 @@
 import {SubstrateEvent} from "@subql/types";
 import {handleNewEra, handleNewSession, POOLED_STAKING_TYPE} from "./common";
 import {RelaychainRewardCalculator} from "./rewards/Relaychain";
+import {NominationPoolRewardCalculator} from "./rewards/NominationPoolRewardCalculator";
 import {ValidatorEraInfoDataSource} from "./era/ValidatorEraInfoDataSource";
 import {Codec} from "@polkadot/types/types";
 import {INumber} from "@polkadot/types-codec/types/interfaces";
@@ -27,12 +28,15 @@ export async function handleWestendNewEra(_: SubstrateEvent): Promise<void> {
 
 export async function handleWestendNewSession(_: SubstrateEvent): Promise<void> {
     let validatorEraInfoDataSource = new ValidatorEraInfoDataSource();
+    let mainRewardCalculator = await RelaychainRewardCalculator(validatorEraInfoDataSource)
+    let poolRewardCalculator = new NominationPoolRewardCalculator(validatorEraInfoDataSource, mainRewardCalculator)
 
     await handleNewSession(
         validatorEraInfoDataSource,
-        await RelaychainRewardCalculator(validatorEraInfoDataSource),
+        await mainRewardCalculator,
         WESTEND_GENESIS,
-        DIRECT_STAKING_TYPE
+        DIRECT_STAKING_TYPE,
+        poolRewardCalculator
     )
 }
 
