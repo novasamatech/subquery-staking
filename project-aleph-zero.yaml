@@ -30,6 +30,12 @@ dataSources:
             module: staking
             method: StakersElected
 
+        - handler: handleAlephZeroNewSession
+          kind: substrate/EventHandler
+          filter:
+            module: session
+            method: NewSession
+
         - handler: handleAlephZeroStakingReward
           kind: substrate/EventHandler
           filter:
