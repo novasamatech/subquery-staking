@@ -43,9 +43,9 @@ export abstract class ValidatorStakingRewardCalculator implements RewardCalculat
 
     private async fetchStakers(): Promise<StakerNode[]> {
         const currentEra = await this.eraInfoDataSource.era()
-        const eraStakers = await this.eraInfoDataSource.eraStakers(false)
+        const eraStakers = await this.eraInfoDataSource.eraStakers()
 
-        const commissionByValidatorId = await this.eraInfoDataSource.cachedEraComissions()
+        const commissionByValidatorId = await api.query.staking.erasValidatorPrefs.entries(currentEra)
 
         return eraStakers.map(({address, totalStake}) => {
             return {
