@@ -1,7 +1,7 @@
 import {RewardCalculator, StakerNode} from "./RewardCalculator";
 import {StakedInfo} from "./inflation/Inflation";
 import Big from "big.js";
-import {BigFromINumber} from "../utils";
+import {associate, BigFromINumber, PerbillToNumber} from "../utils";
 import {EraInfoDataSource} from "../era/EraInfoDataSource";
 
 export abstract class ValidatorStakingRewardCalculator implements RewardCalculator {
@@ -45,12 +45,18 @@ export abstract class ValidatorStakingRewardCalculator implements RewardCalculat
         const currentEra = await this.eraInfoDataSource.era()
         const eraStakers = await this.eraInfoDataSource.eraStakers()
 
-        const commissionByValidatorId = await api.query.staking.erasValidatorPrefs.entries(currentEra)
+        const commissions = await api.query.staking.erasValidatorPrefs.entries(currentEra)
+
+        const commissionByValidatorId = associate(
+            commissions,
+            ([storageKey]) => storageKey.args[1].toString(),
+            ([, prefs]) => prefs.commission,
+        )
 
         return eraStakers.map(({address, totalStake}) => {
             return {
                 totalStake: totalStake,
-                commission: commissionByValidatorId[address]
+                commission: PerbillToNumber(commissionByValidatorId[address])
             }
         })
     }
