@@ -93,7 +93,7 @@ export async function handleRelaychainPooledStakingSlash(
             if (memberPoints != BigInt(0)) {
                 await handleRelaychainStakingRewardType(
                     event, 
-                    (slash / poolPoints) * memberPoints,
+                    (slash * memberPoints) / poolPoints,
                     accountId.toString(), 
                     RewardType.slash, 
                     chainId, 
