@@ -16,11 +16,6 @@ export class CollatorEraInfoDataSource extends CachingEraInfoDataSource {
         return round.current.toNumber()
     }
 
-    protected async fetchComissions(): Promise<Record<string, number>> {
-        const commission = PerbillToNumber(await api.query.parachainStaking.collatorCommission())
-        return {"collator": commission}
-    }
-
     protected async fetchEraStakers(): Promise<StakeTarget[]> {
         const round = await this.era()
         const stakes = await api.query.parachainStaking.atStake.entries(round) ?? []
