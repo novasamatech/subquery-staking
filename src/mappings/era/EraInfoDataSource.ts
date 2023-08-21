@@ -4,11 +4,7 @@ export interface EraInfoDataSource {
 
     era(): Promise<number>
 
-    eraStakers(forceRefresh: boolean): Promise<StakeTarget[]>
-
-    cachedEraComissions(): Promise<Record<string, number>>
-
-    updateEraComissions(): Promise<void>
+    eraStakers(): Promise<StakeTarget[]>
 
     eraStarted(): Promise<boolean>
 }
