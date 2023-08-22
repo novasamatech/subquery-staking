@@ -23,7 +23,7 @@ export class NominationPoolRewardCalculator implements RewardCalculator {
 
     async maxApy(): Promise<number> {
         const stakersApy = await this.mainRewardCalculator.getStakersApy()
-        const eraStakers = await this.eraInfoDataSource.eraStakers(false)
+        const eraStakers = await this.eraInfoDataSource.eraStakers()
         const pools = await api.query.nominationPools.bondedPools.entries()
         const poolsCommission = new Map<string, number>(await Promise.all(pools.map(async ([poolId, poolDataOption]) => {
             const poolAddress = this.derivePoolAccount(poolId.args[0].toNumber(), 0).toString()

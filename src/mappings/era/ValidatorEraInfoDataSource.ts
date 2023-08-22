@@ -2,7 +2,6 @@ import {StakeTarget} from "./EraInfoDataSource";
 import {CachingEraInfoDataSource} from "./CachingEraInfoDataSource";
 import {BigFromINumber} from "../utils";
 import {PalletStakingExposure} from "@polkadot/types/lookup";
-import {associate, PerbillToNumber} from "../utils";
 
 
 export class ValidatorEraInfoDataSource extends CachingEraInfoDataSource {
@@ -17,17 +16,6 @@ export class ValidatorEraInfoDataSource extends CachingEraInfoDataSource {
 
     protected async fetchEra(): Promise<number> {
         return (await api.query.staking.currentEra()).unwrap().toNumber()
-    }
-
-    protected async fetchComissions(): Promise<Record<string, number>> {
-        const commissions = await api.query.staking.erasValidatorPrefs.entries(await this.era())
-
-        const commissionByValidatorId = associate(
-            commissions,
-            ([storageKey]) => storageKey.args[1].toString(),
-            ([, prefs]) => PerbillToNumber(prefs.commission),
-        )
-        return commissionByValidatorId
     }
 
     protected async fetchEraStakers(): Promise<StakeTarget[]> {
