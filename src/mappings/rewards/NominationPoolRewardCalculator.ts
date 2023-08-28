@@ -22,6 +22,9 @@ export class NominationPoolRewardCalculator implements RewardCalculator {
     }
 
     async maxApy(): Promise<number> {
+        if (api.query['nominationPools'] === undefined || (typeof api.query.nominationPools['bondedPools']) !== 'function') {
+            return 0
+        } 
         const stakersApy = await this.mainRewardCalculator.getStakersApy()
         const eraStakers = await this.eraInfoDataSource.eraStakers(false)
         const pools = await api.query.nominationPools.bondedPools.entries()
