@@ -54,7 +54,8 @@ class DefaultValidatorStakingRewardCalculator extends ValidatorStakingRewardCalc
     protected async getStakersApyImpl(stakers: StakerNode[], stakedInfo: StakedInfo): Promise<Map<string, number>> {
         let inflation = await this.inflation.from(stakedInfo)
 
-        let averageValidatorRewardPercentage = inflation / stakedInfo.stakedPortion
+        // if era is very old those values can be invalid as stakedInfo.totalStaked == stakedInfo.stakedPortion == 0
+        let averageValidatorRewardPercentage = stakedInfo.stakedPortion == 0 ? 0 : inflation / stakedInfo.stakedPortion
         let averageValidatorStake = stakedInfo.totalStaked.div(stakers.length)
 
         return new Map<string, number>(stakers.map(
@@ -71,6 +72,11 @@ class DefaultValidatorStakingRewardCalculator extends ValidatorStakingRewardCalc
         averageValidatorRewardPercentage: number,
         averageValidatorStake: Big,
     ): number {
+        // if era is very old we return 0 and wait(as storage doesn't exist yet, stake is zero)
+        if (validator.totalStake.eq(0)) {
+            return 0
+        }
+
         let yearlyRewardPercentage = averageValidatorStake.mul(averageValidatorRewardPercentage).div(validator.totalStake)
 
         return yearlyRewardPercentage.mul(1 - validator.commission).toNumber()
