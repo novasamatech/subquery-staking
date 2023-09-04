@@ -94,7 +94,7 @@ export async function handleRelaychainPooledStakingSlash(
                 await handleRelaychainStakingRewardType(
                     event, 
                     (slash * memberPoints) / poolPoints,
-                    accountId.toString(), 
+                    accountId.args.toString(), 
                     RewardType.slash, 
                     chainId, 
                     stakingType, 
