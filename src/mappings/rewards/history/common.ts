@@ -47,11 +47,13 @@ async function updateAccumulatedReward(rewardProps: RewardArgs): Promise<Accumul
 
     let accumulatedReward = await AccumulatedReward.get(id);
     if (!accumulatedReward) {
-        accumulatedReward = new AccumulatedReward(id);
-        accumulatedReward.amount = BigInt(0)
-        accumulatedReward.networkId = rewardProps.chainId
-        accumulatedReward.stakingType = rewardProps.stakingType
-        accumulatedReward.address = accountAddress
+        accumulatedReward = new AccumulatedReward(
+            id,
+            rewardProps.chainId,
+            rewardProps.stakingType,
+            accountAddress,
+            BigInt(0),
+        );
     }
 
     const newAmount = rewardProps.type == RewardType.reward ? rewardProps.amount : -rewardProps.amount
