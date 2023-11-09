@@ -102,12 +102,15 @@ export class StakingStats {
     }
 
     private async removeOldRecords(): Promise<void> {
-        const oldNetworkRecords = await ActiveStaker.getByNetworkId(this.networkId)
-        const oldTypeRecords = oldNetworkRecords.filter(record => record.stakingType == this.stakingType)
-
-        // await store.bulkRemove("ActiveStaker", oldRecordIds)
-
-        await Promise.all(oldTypeRecords.map((record) => store.remove("ActiveStaker", record.id)))
+        let oldNetworkRecords = []
+        do {
+            const oldNetworkRecords = await ActiveStaker.getByNetworkId(this.networkId)
+            const oldTypeRecords = oldNetworkRecords.filter(record => record.stakingType == this.stakingType)
+    
+            // await store.bulkRemove("ActiveStaker", oldRecordIds)
+    
+            await Promise.all(oldTypeRecords.map((record) => store.remove("ActiveStaker", record.id)))
+        } while(oldNetworkRecords.length > 0)
     }
 
     private generateActiveStakerId(address: string, validatorAddress: string): string {
