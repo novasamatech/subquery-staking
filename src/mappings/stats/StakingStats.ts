@@ -102,15 +102,19 @@ export class StakingStats {
     }
 
     private async removeOldRecords(): Promise<void> {
-        let oldNetworkRecords = []
+        let oldTypeRecords = []
+        let clearedCount = 0
         do {
             const oldNetworkRecords = await ActiveStaker.getByNetworkId(this.networkId)
-            const oldTypeRecords = oldNetworkRecords.filter(record => record.stakingType == this.stakingType)
+            oldTypeRecords = oldNetworkRecords.filter(record => record.stakingType == this.stakingType)
     
             // await store.bulkRemove("ActiveStaker", oldRecordIds)
     
             await Promise.all(oldTypeRecords.map((record) => store.remove("ActiveStaker", record.id)))
-        } while(oldNetworkRecords.length > 0)
+            clearedCount += oldTypeRecords.length
+            logger.info(`Cleared ${clearedCount} old ActiveStaker records`)
+            // BUG: need to check with query limit. 
+        } while(oldTypeRecords.length > 0)
     }
 
     private generateActiveStakerId(address: string, validatorAddress: string): string {
