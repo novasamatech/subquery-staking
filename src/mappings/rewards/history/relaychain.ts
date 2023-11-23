@@ -1,9 +1,9 @@
 import {SubstrateEvent} from "@subql/types";
 import {Codec} from "@polkadot/types/types";
-import {handleReward, RewardArgs} from "./common";
+import {Balance} from "@polkadot/types/interfaces";
+import {handleReward, RewardArgs, getRewardData} from "./common";
 import {RewardType} from "../../../types";
 import {INumber} from "@polkadot/types-codec/types/interfaces";
-import {PalletNominationPoolsPoolMember} from "@polkadot/types/lookup";
 
 export async function handleRelaychainStakingReward(
     event: SubstrateEvent<[accountId: Codec, reward: INumber]>,
@@ -22,13 +22,13 @@ export async function handleRelaychainStakingSlash(
 }
 
 async function handleRelaychainDirectRewardType(
-    event: SubstrateEvent<[account: Codec, amount: INumber]>,
+    event: SubstrateEvent,
     type: RewardType,
     chainId: string,
     stakingType: string
 ): Promise<void> {
-    const {event: {data: [accountId, amount]}} = event
-    await handleRelaychainStakingRewardType(event, amount.toBigInt(), accountId.toString(), type, chainId, stakingType)
+    const [accountId, amount] = getRewardData(event)
+    await handleRelaychainStakingRewardType(event, (amount as unknown as Balance).toBigInt(), accountId.toString(), type, chainId, stakingType)
 }
 
 export async function handleRelaychainStakingRewardType(
