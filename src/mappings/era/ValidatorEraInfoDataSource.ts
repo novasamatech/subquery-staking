@@ -1,7 +1,8 @@
 import {StakeTarget} from "./EraInfoDataSource";
 import {CachingEraInfoDataSource} from "./CachingEraInfoDataSource";
-import {BigFromINumber} from "../utils";
+import {BigFromINumber, SpStakingPagedExposureMetadata, SpStakingExposurePage} from "../utils";
 import {PalletStakingExposure} from "@polkadot/types/lookup";
+import {Option} from "@polkadot/types-codec";
 
 
 export class ValidatorEraInfoDataSource extends CachingEraInfoDataSource {
@@ -54,10 +55,9 @@ export class ValidatorEraInfoDataSource extends CachingEraInfoDataSource {
     private async fetchEraStakersPaged(era: number): Promise<StakeTarget[]> {
         const overview = await api.query.staking.erasStakersOverview.entries(era)
         const pages = await api.query.staking.erasStakersPaged.entries(era)
-        const exposures = await api.query.staking.erasStakersClipped.entries(era)
     
         const othersAggregation = pages.reduce((accumulator, [key, exp]) => {
-            const exposure = (exp as any).unwrap() // TODO: put correct type
+            const exposure = (exp as unknown as Option<SpStakingExposurePage>).unwrap()
             const [, validatorId] = key.args
             let validatorAddress = validatorId.toString()
         
@@ -69,17 +69,14 @@ export class ValidatorEraInfoDataSource extends CachingEraInfoDataSource {
             });
     
             (accumulator[validatorAddress] = accumulator[validatorAddress] || []).push(...others);
-            console.log(`${validatorId} -- ${accumulator[validatorAddress].length}`)
             return accumulator;
         }, {})
     
         return overview.map(([key, exp]) => {
-            const exposure = (exp as any).unwrap() // TODO: put correct type
+            const exposure = (exp as unknown as Option<SpStakingPagedExposureMetadata>).unwrap()
             const [, validatorId] = key.args
             let validatorAddress = validatorId.toString()
-    
-            console.log(`${exposure.nominatorCount} -- ${othersAggregation[validatorAddress].length}`)
-    
+        
             return {
                 address: validatorAddress,
                 selfStake: exposure.own.toBigInt(),
