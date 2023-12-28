@@ -3,6 +3,7 @@ import {CachingEraInfoDataSource} from "./CachingEraInfoDataSource";
 import {BigFromINumber, SpStakingPagedExposureMetadata, SpStakingExposurePage} from "../utils";
 import {PalletStakingExposure} from "@polkadot/types/lookup";
 import {Option} from "@polkadot/types-codec";
+import {INumber} from "@polkadot/types-codec/types/interfaces";
 
 
 export class ValidatorEraInfoDataSource extends CachingEraInfoDataSource {
@@ -56,10 +57,11 @@ export class ValidatorEraInfoDataSource extends CachingEraInfoDataSource {
         const overview = await api.query.staking.erasStakersOverview.entries(era)
         const pages = await api.query.staking.erasStakersPaged.entries(era)
     
-        const othersAggregation = pages.reduce((accumulator, [key, exp]) => {
+        const othersCounted = pages.reduce((accumulator, [key, exp]) => {
             const exposure = (exp as unknown as Option<SpStakingExposurePage>).unwrap()
-            const [, validatorId] = key.args
-            let validatorAddress = validatorId.toString()
+            const [, validatorId, pageId] = key.args
+            const pageNumber = (pageId as INumber).toNumber()
+            const validatorAddress = validatorId.toString()
         
             const others = exposure.others.map(({who, value}) => {
                 return {
@@ -68,7 +70,7 @@ export class ValidatorEraInfoDataSource extends CachingEraInfoDataSource {
                 }
             });
     
-            (accumulator[validatorAddress] = accumulator[validatorAddress] || []).push(...others);
+            (accumulator[validatorAddress] = accumulator[validatorAddress] || {})[pageNumber] = others;
             return accumulator;
         }, {})
     
@@ -77,11 +79,16 @@ export class ValidatorEraInfoDataSource extends CachingEraInfoDataSource {
             const [, validatorId] = key.args
             let validatorAddress = validatorId.toString()
         
+            let others = []
+            for (let i = 0; i < exposure.pageCount.toNumber(); ++i) {
+                others.push(...othersCounted[validatorAddress][i])
+            };
+
             return {
                 address: validatorAddress,
                 selfStake: exposure.own.toBigInt(),
                 totalStake: BigFromINumber(exposure.total),
-                others: othersAggregation[validatorAddress]
+                others: others
             }
         });
     }
