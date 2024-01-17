@@ -1,7 +1,7 @@
 import {INumber} from "@polkadot/types-codec/types/interfaces";
 import {Big} from "big.js"
-import {Perbill, Percent} from "@polkadot/types/interfaces/runtime/types";
-import {Compact} from '@polkadot/types-codec'
+import {Perbill, Percent, AccountId32} from "@polkadot/types/interfaces/runtime/types";
+import {Compact, Struct, Vec} from '@polkadot/types-codec'
 
 export function BigFromINumber(number: INumber): Big {
     return Big(number.toString())
@@ -65,4 +65,21 @@ export function toPlanks(amount: Big): Big {
 
 export function aprToApy(apr: number): number {
     return Math.exp(apr) - 1.0
+}
+
+export interface SpStakingPagedExposureMetadata extends Struct {
+    readonly total: INumber;
+    readonly own: INumber;
+    readonly nominatorCount: INumber;
+    readonly pageCount: INumber;
+}
+
+interface SpStakingIndividualExposure extends Struct {
+    readonly who: AccountId32;
+    readonly value: INumber;
+}
+
+export interface SpStakingExposurePage extends Struct {
+    readonly pageTotal: INumber;
+    readonly others: Vec<SpStakingIndividualExposure>;
 }
