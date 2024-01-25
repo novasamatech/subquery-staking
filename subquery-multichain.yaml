@@ -8,6 +8,7 @@ projects:
   - project-kusama.yaml
   - project-moonbeam.yaml
   - project-moonriver.yaml
+  - project-polimec.yaml
   - project-polkadex.yaml
   - project-polkadot.yaml
   - project-ternoa.yaml
