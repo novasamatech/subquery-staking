@@ -6,8 +6,10 @@ projects:
   - project-aleph-zero.yaml
   - project-calamari.yaml
   - project-kusama.yaml
+  - project-manta.yaml
   - project-moonbeam.yaml
   - project-moonriver.yaml
+  - project-polimec.yaml
   - project-polkadex.yaml
   - project-polkadot.yaml
   - project-ternoa.yaml

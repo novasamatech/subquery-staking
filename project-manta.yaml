@@ -1,0 +1,35 @@
+specVersion: 1.0.0
+name: nova-wallet-staking
+version: 0.0.1
+runner:
+  node:
+    name: "@subql/node"
+    version: ">=1.0.0"
+  query:
+    name: "@subql/query"
+    version: "*"
+description: >-
+  Project that provides up-to-date information about on-chain staking APY
+repository: "git@github.com:nova-wallet/subquery-staking.git"
+schema:
+  file: ./schema.graphql
+network:
+  chainId: "0xf3c7ad88f6a80f366c4be216691411ef0622e8b809b1046ea297ef106058d4eb"
+  endpoint: "wss://ws.manta.systems"
+dataSources:
+  - kind: substrate/Runtime
+    startBlock: 2192400
+    mapping:
+      file: ./dist/index.js
+      handlers:
+        - handler: handleMantaNewEra
+          kind: substrate/EventHandler
+          filter:
+            module: parachainStaking
+            method: NewRound
+
+        - handler: handleMantaStakingReward
+          kind: substrate/EventHandler
+          filter:
+            module: parachainStaking
+            method: Rewarded
