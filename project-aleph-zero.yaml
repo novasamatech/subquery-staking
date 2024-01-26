@@ -16,6 +16,7 @@ schema:
 network:
   chainId: "0x70255b4d28de0fc4e1a193d7e175ad1ccef431598211c55538f1018651a0344e"
   endpoint: "wss://ws.azero.dev"
+  dictionary: "https://api.subquery.network/sq/subquery/aleph-zero-dictionary"
   chaintypes:
     file: ./dist/alephZeroChaintypes.js
 dataSources:
@@ -48,6 +49,12 @@ dataSources:
             module: staking
             method: Rewarded
 
+        - handler: handleAlephZeroPoolStakingReward
+          kind: substrate/EventHandler
+          filter:
+            module: nominationPools
+            method: PaidOut
+
         - handler: handleAlephZeroStakingSlash
           kind: substrate/EventHandler
           filter:
@@ -59,3 +66,15 @@ dataSources:
           filter:
             module: staking
             method: Slashed
+
+        - handler: handleAlephZeroPoolStakingBondedSlash
+          kind: substrate/EventHandler
+          filter:
+            module: nominationPools
+            method: PoolSlashed
+
+        - handler: handleAlephZeroPoolStakingUnbondingSlash
+          kind: substrate/EventHandler
+          filter:
+            module: nominationPools
+            method: UnbondingPoolSlashed

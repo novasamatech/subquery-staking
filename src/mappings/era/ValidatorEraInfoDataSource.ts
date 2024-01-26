@@ -1,7 +1,9 @@
 import {StakeTarget} from "./EraInfoDataSource";
 import {CachingEraInfoDataSource} from "./CachingEraInfoDataSource";
-import {BigFromINumber} from "../utils";
+import {BigFromINumber, SpStakingPagedExposureMetadata, SpStakingExposurePage} from "../utils";
 import {PalletStakingExposure} from "@polkadot/types/lookup";
+import {Option} from "@polkadot/types-codec";
+import {INumber} from "@polkadot/types-codec/types/interfaces";
 
 
 export class ValidatorEraInfoDataSource extends CachingEraInfoDataSource {
@@ -20,6 +22,14 @@ export class ValidatorEraInfoDataSource extends CachingEraInfoDataSource {
 
     protected async fetchEraStakers(): Promise<StakeTarget[]> {
         const era = await this.era()
+        if (api.query.staking.erasStakersOverview) {
+            return await this.fetchEraStakersPaged(era);
+        } else {
+            return await this.fetchEraStakersClipped(era);
+        }
+    }
+
+    private async fetchEraStakersClipped(era: number): Promise<StakeTarget[]> {
         const exposures = await api.query.staking.erasStakersClipped.entries(era)
 
         return exposures.map(([key, exp]) => {
@@ -43,4 +53,43 @@ export class ValidatorEraInfoDataSource extends CachingEraInfoDataSource {
         })
     }
 
+    private async fetchEraStakersPaged(era: number): Promise<StakeTarget[]> {
+        const overview = await api.query.staking.erasStakersOverview.entries(era)
+        const pages = await api.query.staking.erasStakersPaged.entries(era)
+    
+        const othersCounted = pages.reduce((accumulator, [key, exp]) => {
+            const exposure = (exp as unknown as Option<SpStakingExposurePage>).unwrap()
+            const [, validatorId, pageId] = key.args
+            const pageNumber = (pageId as INumber).toNumber()
+            const validatorAddress = validatorId.toString()
+        
+            const others = exposure.others.map(({who, value}) => {
+                return {
+                    address: who.toString(),
+                    amount: value.toBigInt()
+                }
+            });
+    
+            (accumulator[validatorAddress] = accumulator[validatorAddress] || {})[pageNumber] = others;
+            return accumulator;
+        }, {})
+    
+        return overview.map(([key, exp]) => {
+            const exposure = (exp as unknown as Option<SpStakingPagedExposureMetadata>).unwrap()
+            const [, validatorId] = key.args
+            let validatorAddress = validatorId.toString()
+        
+            let others = []
+            for (let i = 0; i < exposure.pageCount.toNumber(); ++i) {
+                others.push(...othersCounted[validatorAddress][i])
+            };
+
+            return {
+                address: validatorAddress,
+                selfStake: exposure.own.toBigInt(),
+                totalStake: BigFromINumber(exposure.total),
+                others: others
+            }
+        });
+    }
 }

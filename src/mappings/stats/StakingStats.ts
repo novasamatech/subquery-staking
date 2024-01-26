@@ -1,6 +1,7 @@
 import {RewardCalculator} from "../rewards/RewardCalculator";
 import {EraInfoDataSource} from "../era/EraInfoDataSource";
 import {ActiveStaker, StakerType, StakingApy} from "../../types";
+import {POOLED_STAKING_TYPE} from "../common"
 
 export class StakingStats {
 
@@ -12,16 +13,20 @@ export class StakingStats {
 
     private readonly stakingType: string
 
+    private readonly poolRewardCalculator: RewardCalculator | undefined
+
     constructor(
         rewardCalculator: RewardCalculator,
         eraInfoDataSource: EraInfoDataSource,
         networkId: string,
         stakingType: string,
+        poolRewardCalculator?: RewardCalculator
     ) {
         this.eraInfoDataSource = eraInfoDataSource
         this.rewardCalculator = rewardCalculator
         this.networkId = networkId
         this.stakingType = stakingType
+        this.poolRewardCalculator = poolRewardCalculator
     }
 
     async indexEra(): Promise<void> {
@@ -38,13 +43,26 @@ export class StakingStats {
             let apy = await this.rewardCalculator.maxApy()
 
             let apyEntity = StakingApy.create({
-                id: this.generateMaxApyId(),
+                id: this.generateMaxApyId(this.stakingType),
                 networkId: this.networkId,
                 stakingType: this.stakingType,
                 maxAPY: apy
             })
 
             await apyEntity.save()
+
+            if (this.poolRewardCalculator !== undefined) {
+                let apy = await this.poolRewardCalculator.maxApy()
+
+                let apyEntity = StakingApy.create({
+                    id: this.generateMaxApyId(POOLED_STAKING_TYPE),
+                    networkId: this.networkId,
+                    stakingType: POOLED_STAKING_TYPE,
+                    maxAPY: apy
+                })
+                
+                await apyEntity.save()
+            }
         }
     }
 
@@ -84,19 +102,26 @@ export class StakingStats {
     }
 
     private async removeOldRecords(): Promise<void> {
-        const oldNetworkRecords = await ActiveStaker.getByNetworkId(this.networkId)
-        const oldTypeRecords = oldNetworkRecords.filter(record => record.stakingType == this.stakingType)
-
-        // await store.bulkRemove("ActiveStaker", oldRecordIds)
-
-        await Promise.all(oldTypeRecords.map((record) => store.remove("ActiveStaker", record.id)))
+        let oldTypeRecords = []
+        let clearedCount = 0
+        do {
+            const oldNetworkRecords = await ActiveStaker.getByNetworkId(this.networkId)
+            oldTypeRecords = oldNetworkRecords.filter(record => record.stakingType == this.stakingType)
+    
+            // await store.bulkRemove("ActiveStaker", oldRecordIds)
+    
+            await Promise.all(oldTypeRecords.map((record) => store.remove("ActiveStaker", record.id)))
+            clearedCount += oldTypeRecords.length
+            logger.info(`Cleared ${clearedCount} old ActiveStaker records`)
+            // BUG: need to check with query limit. 
+        } while(oldTypeRecords.length > 0)
     }
 
     private generateActiveStakerId(address: string, validatorAddress: string): string {
         return `${address}-${validatorAddress}-${this.networkId}-${this.stakingType}`
     }
 
-    private generateMaxApyId(): string {
-        return `${this.networkId}-${this.stakingType}`
+    private generateMaxApyId(stakingType: string): string {
+        return `${this.networkId}-${stakingType}`
     }
 }

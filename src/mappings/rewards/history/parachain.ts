@@ -17,7 +17,7 @@ export async function handleParachainStakingReward(
         address: accountId.toString(),
         type: RewardType.reward,
         chainId: chainId,
-        stakingType: stakingType
+        stakingType: stakingType,
     }
 
     await handleReward(rewardProps, event)

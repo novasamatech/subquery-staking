@@ -1,0 +1,35 @@
+specVersion: 1.0.0
+name: nova-wallet-staking
+version: 0.0.1
+runner:
+  node:
+    name: "@subql/node"
+    version: ">=1.0.0"
+  query:
+    name: "@subql/query"
+    version: "*"
+description: >-
+  Project that provides up-to-date information about on-chain staking APY
+repository: "git@github.com:nova-wallet/subquery-staking.git"
+schema:
+  file: ./schema.graphql
+network:
+  chainId: "0x7eb9354488318e7549c722669dcbdcdc526f1fef1420e7944667212f3601fdbd"
+  endpoint: "wss://rpc.polimec.org"
+dataSources:
+  - kind: substrate/Runtime
+    startBlock: 1
+    mapping:
+      file: ./dist/index.js
+      handlers:
+        - handler: handlePolimecNewEra
+          kind: substrate/EventHandler
+          filter:
+            module: parachainStaking
+            method: NewRound
+
+        - handler: handlePolimecStakingReward
+          kind: substrate/EventHandler
+          filter:
+            module: parachainStaking
+            method: Rewarded

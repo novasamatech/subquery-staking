@@ -1,5 +1,6 @@
 import {AccumulatedReward, Reward, RewardType} from "../../../types";
 import {SubstrateBlock, SubstrateEvent} from "@subql/types";
+import {Codec} from "@polkadot/types/types";
 
 export interface RewardArgs {
 
@@ -12,6 +13,8 @@ export interface RewardArgs {
     chainId: string
 
     stakingType: string
+
+    poolId?: number
 }
 
 export async function handleReward(rewardProps: RewardArgs, event: SubstrateEvent) {
@@ -29,8 +32,12 @@ export async function handleReward(rewardProps: RewardArgs, event: SubstrateEven
         timestamp: timestamp(event.block),
         blockNumber: blockNumber(event),
         networkId: rewardProps.chainId,
-        stakingType: rewardProps.stakingType
+        stakingType: rewardProps.stakingType,
     });
+
+    if (rewardProps.poolId !== undefined) {
+        accountReward.poolId = rewardProps.poolId
+    }
 
     await accountReward.save()
 }
@@ -41,11 +48,13 @@ async function updateAccumulatedReward(rewardProps: RewardArgs): Promise<Accumul
 
     let accumulatedReward = await AccumulatedReward.get(id);
     if (!accumulatedReward) {
-        accumulatedReward = new AccumulatedReward(id);
-        accumulatedReward.amount = BigInt(0)
-        accumulatedReward.networkId = rewardProps.chainId
-        accumulatedReward.stakingType = rewardProps.stakingType
-        accumulatedReward.address = accountAddress
+        accumulatedReward = new AccumulatedReward(
+            id,
+            rewardProps.chainId,
+            rewardProps.stakingType,
+            accountAddress,
+            BigInt(0),
+        );
     }
 
     const newAmount = rewardProps.type == RewardType.reward ? rewardProps.amount : -rewardProps.amount
@@ -73,4 +82,15 @@ export function blockNumber(event: SubstrateEvent): number {
 
 export function timestamp(block: SubstrateBlock): bigint {
     return BigInt(Math.round(block.timestamp ? block.timestamp.getTime() / 1000 : -1))
+}
+
+export function getRewardData(event: SubstrateEvent): [Codec, Codec] {
+    const {event: {data: innerData}} = event
+    let account: Codec, amount: Codec;
+    if (innerData.length == 2) {
+        [account, amount] = innerData
+    } else {
+        [account, ,amount] = innerData
+    }
+    return [account, amount]
 }

@@ -1,6 +1,7 @@
 import {SubstrateEvent} from "@subql/types";
 import {Codec} from "@polkadot/types/types";
-import {handleReward, RewardArgs} from "./common";
+import {Balance} from "@polkadot/types/interfaces";
+import {handleReward, RewardArgs, getRewardData} from "./common";
 import {RewardType} from "../../../types";
 import {INumber} from "@polkadot/types-codec/types/interfaces";
 
@@ -9,7 +10,7 @@ export async function handleRelaychainStakingReward(
     chainId: string,
     stakingType: string
 ): Promise<void> {
-    await handleRelaychainStakingRewardType(event, RewardType.reward, chainId, stakingType)
+    await handleRelaychainDirectRewardType(event, RewardType.reward, chainId, stakingType)
 }
 
 export async function handleRelaychainStakingSlash(
@@ -17,23 +18,35 @@ export async function handleRelaychainStakingSlash(
     chainId: string,
     stakingType: string
 ): Promise<void> {
-   await handleRelaychainStakingRewardType(event, RewardType.slash, chainId, stakingType)
+   await handleRelaychainDirectRewardType(event, RewardType.slash, chainId, stakingType)
 }
 
-async function handleRelaychainStakingRewardType(
-    event: SubstrateEvent<[account: Codec, amount: INumber]>,
+async function handleRelaychainDirectRewardType(
+    event: SubstrateEvent,
     type: RewardType,
     chainId: string,
     stakingType: string
 ): Promise<void> {
-    const {event: {data: [accountId, amount]}} = event
+    const [accountId, amount] = getRewardData(event)
+    await handleRelaychainStakingRewardType(event, (amount as unknown as Balance).toBigInt(), accountId.toString(), type, chainId, stakingType)
+}
 
+export async function handleRelaychainStakingRewardType(
+    event: SubstrateEvent,
+    amount: bigint,
+    accountId: string,
+    type: RewardType,
+    chainId: string,
+    stakingType: string,
+    poolId?: number
+): Promise<void> {
     const rewardProps: RewardArgs = {
-        amount: amount.toBigInt(),
-        address: accountId.toString(),
+        amount: amount,
+        address: accountId,
         type: type,
         chainId: chainId,
-        stakingType: stakingType
+        stakingType: stakingType,
+        poolId: poolId
     }
 
     await handleReward(rewardProps, event)
