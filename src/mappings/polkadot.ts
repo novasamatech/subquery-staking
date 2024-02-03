@@ -1,8 +1,10 @@
 import {SubstrateEvent} from "@subql/types";
 import {handleNewEra, handleNewSession, POOLED_STAKING_TYPE} from "./common";
-import {RelaychainRewardCalculator} from "./rewards/Relaychain";
+import {createRewardCurveConfig, CustomRelaychainRewardCalculator} from "./rewards/Relaychain";
 import {NominationPoolRewardCalculator} from "./rewards/NominationPoolRewardCalculator";
+import {ValidatorStakingRewardCalculator} from "./rewards/ValidatorStakingRewardCalculator";
 import {ValidatorEraInfoDataSource} from "./era/ValidatorEraInfoDataSource";
+import {EraInfoDataSource} from "./era/EraInfoDataSource";
 import {Codec} from "@polkadot/types/types";
 import {INumber} from "@polkadot/types-codec/types/interfaces";
 import {handleRelaychainStakingReward, handleRelaychainStakingSlash} from "./rewards/history/relaychain";
@@ -15,12 +17,20 @@ import {
 const POLKADOT_GENESIS = "0x91b171bb158e2d3848fa23a9f1c25182fb8e20313b2c1eb49219da7a70ce90c3"
 const DIRECT_STAKING_TYPE = "relaychain"
 
+export async function PolkadotRewardCalculator(eraInfoDataSource: EraInfoDataSource): Promise<ValidatorStakingRewardCalculator> {
+    const config = await createRewardCurveConfig({
+        parachainReservedSupplyFraction: 0.2,
+    })
+    
+    return CustomRelaychainRewardCalculator(eraInfoDataSource, config)
+}
+
 export async function handlePolkadotNewEra(_: SubstrateEvent): Promise<void> {
     let validatorEraInfoDataSource = new ValidatorEraInfoDataSource();
 
     await handleNewEra(
         validatorEraInfoDataSource,
-        await RelaychainRewardCalculator(validatorEraInfoDataSource),
+        await PolkadotRewardCalculator(validatorEraInfoDataSource),
         POLKADOT_GENESIS,
         DIRECT_STAKING_TYPE
     )
@@ -28,7 +38,7 @@ export async function handlePolkadotNewEra(_: SubstrateEvent): Promise<void> {
 
 export async function handlePolkadotNewSession(_: SubstrateEvent): Promise<void> {
     let validatorEraInfoDataSource = new ValidatorEraInfoDataSource();
-    let mainRewardCalculator = await RelaychainRewardCalculator(validatorEraInfoDataSource)
+    let mainRewardCalculator = await PolkadotRewardCalculator(validatorEraInfoDataSource)
     let poolRewardCalculator = new NominationPoolRewardCalculator(validatorEraInfoDataSource, mainRewardCalculator)
 
     await handleNewSession(

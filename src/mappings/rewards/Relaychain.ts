@@ -1,15 +1,21 @@
-import {RewardCalculator, StakerNode} from "./RewardCalculator";
+import {StakerNode} from "./RewardCalculator";
 import '@polkadot/api-augment/polkadot'
 import {RewardCurveConfig, RewardCurveInflation, RewardCurveParachainAdjust} from "./inflation/RewardCurveInflation";
 import {ValidatorStakingRewardCalculator} from "./ValidatorStakingRewardCalculator";
 import {Inflation, StakedInfo} from "./inflation/Inflation";
-import {max} from "../utils";
 import Big from "big.js";
 import {EraInfoDataSource} from "../era/EraInfoDataSource";
 
 const LOWEST_PUBLIC_ID = 2000
 
-export async function RelaychainRewardCalculator(eraInfoDataSource: EraInfoDataSource): Promise<ValidatorStakingRewardCalculator> {
+export async function createRewardCurveConfig({
+    maxParachains = 60,
+    parachainReservedSupplyFraction = 0.3,
+    falloff = 0.05,
+    maxInflation = 0.1,
+    minInflation = 0.025,
+    stakeTarget = 0.75,
+} = {}): Promise<RewardCurveConfig> {
     const parasPallet = api.query.paras
     let parachainAdjust: RewardCurveParachainAdjust | null
 
@@ -21,25 +27,32 @@ export async function RelaychainRewardCalculator(eraInfoDataSource: EraInfoDataS
         ).length
 
         parachainAdjust = {
-            maxParachains: 60,
+            maxParachains: maxParachains,
             activePublicParachains: numberOfPublicParachains,
-            parachainReservedSupplyFraction: 0.3
+            parachainReservedSupplyFraction: parachainReservedSupplyFraction
         }
     } else {
         parachainAdjust = null
     }
 
     let rewardCurveConfig: RewardCurveConfig = {
-        falloff: 0.05,
-        maxInflation: 0.1,
-        minInflation: 0.025,
-        stakeTarget: 0.75,
+        falloff: falloff,
+        maxInflation: maxInflation,
+        minInflation: minInflation,
+        stakeTarget: stakeTarget,
         parachainAdjust: parachainAdjust
     }
+    return rewardCurveConfig
+}
 
+export function CustomRelaychainRewardCalculator(eraInfoDataSource: EraInfoDataSource, rewardCurveConfig: RewardCurveConfig): ValidatorStakingRewardCalculator {
     let inflation = new RewardCurveInflation(rewardCurveConfig)
 
     return new DefaultValidatorStakingRewardCalculator(inflation, eraInfoDataSource)
+}
+
+export async function RelaychainRewardCalculator(eraInfoDataSource: EraInfoDataSource): Promise<ValidatorStakingRewardCalculator> {
+    return CustomRelaychainRewardCalculator(eraInfoDataSource, await createRewardCurveConfig())
 }
 
 class DefaultValidatorStakingRewardCalculator extends ValidatorStakingRewardCalculator {
