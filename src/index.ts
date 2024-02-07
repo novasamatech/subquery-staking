@@ -1,4 +1,6 @@
 //Exports all handler functions
+export * from "./mappings/dock";
+export * from "./mappings/joystream";
 export * from "./mappings/polimec";
 export * from "./mappings/polkadot";
 export * from "./mappings/kusama";

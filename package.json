@@ -22,6 +22,7 @@
   "author": "Nova Wallet Team",
   "license": "MIT",
   "devDependencies": {
+    "@docknetwork/node-types": "0.17.0",
     "@jest/globals": "^29.3.1",
     "@polkadot/api": "^9",
     "@subql/cli": "3.6.1",
@@ -36,6 +37,7 @@
     "typescript": "^4.1.3"
   },
   "exports": {
+    "dockChaintypes": "./chainTypes/dockChaintypes.ts",
     "alephZeroChaintypes": "./chainTypes/alephZeroChaintypes.ts",
     "moonbeamChaintypes": "./chainTypes/moonbeamChaintypes.ts",
     "polkadexChaintypes": "./chainTypes/polkadexChaintypes.ts",

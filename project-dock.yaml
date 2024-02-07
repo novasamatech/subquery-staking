@@ -1,0 +1,61 @@
+specVersion: 1.0.0
+name: nova-wallet-staking
+version: 0.0.1
+runner:
+  node:
+    name: "@subql/node"
+    version: ">=1.0.0"
+  query:
+    name: "@subql/query"
+    version: "*"
+description: >-
+  Project that provides up-to-date information about on-chain staking APY
+repository: "git@github.com:nova-wallet/subquery-staking.git"
+schema:
+  file: ./schema.graphql
+network:
+  chainId: "0x6bfe24dca2a3be10f22212678ac13a6446ec764103c0f3471c71609eac384aae"
+  endpoint: "wss://mainnet-node.dock.io"
+  chaintypes:
+    file: ./dist/dockChaintypes.js
+dataSources:
+  - kind: substrate/Runtime
+    startBlock: 1
+    mapping:
+      file: ./dist/index.js
+      handlers:
+        - handler: handleDockNewEra
+          kind: substrate/EventHandler
+          filter:
+            module: staking
+            method: StakersElected
+
+        - handler: handleDockNewSession
+          kind: substrate/EventHandler
+          filter:
+            module: session
+            method: NewSession
+
+        - handler: handleDockStakingReward
+          kind: substrate/EventHandler
+          filter:
+            module: staking
+            method: Reward
+
+        - handler: handleDockStakingReward
+          kind: substrate/EventHandler
+          filter:
+            module: staking
+            method: Rewarded
+
+        - handler: handleDockStakingSlash
+          kind: substrate/EventHandler
+          filter:
+            module: staking
+            method: Slash
+
+        - handler: handleDockStakingSlash
+          kind: substrate/EventHandler
+          filter:
+            module: staking
+            method: Slashed

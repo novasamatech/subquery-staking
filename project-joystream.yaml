@@ -1,0 +1,59 @@
+specVersion: 1.0.0
+name: nova-wallet-staking
+version: 0.0.1
+runner:
+  node:
+    name: "@subql/node"
+    version: ">=1.0.0"
+  query:
+    name: "@subql/query"
+    version: "*"
+description: >-
+  Project that provides up-to-date information about on-chain staking APY
+repository: "git@github.com:nova-wallet/subquery-staking.git"
+schema:
+  file: ./schema.graphql
+network:
+  chainId: "0x6b5e488e0fa8f9821110d5c13f4c468abcd43ce5e297e62b34c53c3346465956"
+  endpoint: "wss://rpc.joystream.org"
+dataSources:
+  - kind: substrate/Runtime
+    startBlock: 1
+    mapping:
+      file: ./dist/index.js
+      handlers:
+        - handler: handleJoystreamNewEra
+          kind: substrate/EventHandler
+          filter:
+            module: staking
+            method: StakersElected
+
+        - handler: handleJoystreamNewSession
+          kind: substrate/EventHandler
+          filter:
+            module: session
+            method: NewSession
+
+        - handler: handleJoystreamStakingReward
+          kind: substrate/EventHandler
+          filter:
+            module: staking
+            method: Reward
+
+        - handler: handleJoystreamStakingReward
+          kind: substrate/EventHandler
+          filter:
+            module: staking
+            method: Rewarded
+
+        - handler: handleJoystreamStakingSlash
+          kind: substrate/EventHandler
+          filter:
+            module: staking
+            method: Slash
+
+        - handler: handleJoystreamStakingSlash
+          kind: substrate/EventHandler
+          filter:
+            module: staking
+            method: Slashed
