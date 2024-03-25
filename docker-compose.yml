@@ -17,6 +17,60 @@ services:
       timeout: 5s
       retries: 5
 
+  subquery-node-dock:
+    image: onfinality/subql-node:v2.2.1
+    depends_on:
+      "postgres":
+        condition: service_healthy
+    restart: always
+    environment:
+      DB_USER: postgres
+      DB_PASS: postgres
+      DB_DATABASE: postgres
+      DB_HOST: postgres
+      DB_PORT: 5432
+    volumes:
+      - ./:/app
+    command:
+      - -f=/app/project-dock.yaml
+      - --multi-chain
+      - --db-schema=app
+      - --disable-historical
+      - --query-limit=1000000
+      - --batch-size=30
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://subquery-node-dock:3000/ready" ]
+      interval: 3s
+      timeout: 5s
+      retries: 10
+
+  subquery-node-joystream:
+    image: onfinality/subql-node:v2.2.1
+    depends_on:
+      "postgres":
+        condition: service_healthy
+    restart: always
+    environment:
+      DB_USER: postgres
+      DB_PASS: postgres
+      DB_DATABASE: postgres
+      DB_HOST: postgres
+      DB_PORT: 5432
+    volumes:
+      - ./:/app
+    command:
+      - -f=/app/project-joystream.yaml
+      - --multi-chain
+      - --db-schema=app
+      - --disable-historical
+      - --query-limit=1000000
+      - --batch-size=30
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://subquery-node-joystream:3000/ready" ]
+      interval: 3s
+      timeout: 5s
+      retries: 10
+
   subquery-node-polimec:
     image: onfinality/subql-node:v2.2.1
     depends_on:
