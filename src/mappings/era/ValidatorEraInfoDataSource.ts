@@ -22,11 +22,19 @@ export class ValidatorEraInfoDataSource extends CachingEraInfoDataSource {
 
     protected async fetchEraStakers(): Promise<StakeTarget[]> {
         const era = await this.era()
+        let stakers: StakeTarget[]
         if (api.query.staking.erasStakersOverview) {
-            return await this.fetchEraStakersPaged(era);
-        } else {
-            return await this.fetchEraStakersClipped(era);
+            stakers = await this.fetchEraStakersPaged(era);
+            if (stakers.length > 0) {
+                return stakers
+            }
+        } 
+        
+        stakers = await this.fetchEraStakersClipped(era);
+        if (stakers.length == 0) {
+            throw new Error("Empty era stakers fetched")
         }
+        return stakers
     }
 
     private async fetchEraStakersClipped(era: number): Promise<StakeTarget[]> {
