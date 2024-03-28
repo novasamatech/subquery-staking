@@ -19,7 +19,7 @@ export class CollatorStakingRewardCalculator implements RewardCalculator {
 	async maxApy(): Promise<number> {
 		let totalIssuance = await this.fetchTotalIssuance()
 		let round = await this.eraInfoDataSource.era()
-		let totalStaked = await this.fetchTotalStaked(round)
+		let totalStaked = await this.fetchTotalStaked()
 		let collators = await this.eraInfoDataSource.eraStakers()
 		let collatorCommission = await this.fetchCommission()
 		let parachainBondPercent = await this.fetchParachainBondPercent()
@@ -72,8 +72,8 @@ export class CollatorStakingRewardCalculator implements RewardCalculator {
         }
     }
 
-    private async fetchTotalStaked(round: number): Promise<Big> {
-    	const totalStake = await api.query.parachainStaking.staked(round)
+    private async fetchTotalStaked(): Promise<Big> {
+    	const totalStake = await api.query.parachainStaking.total()
     	return BigFromINumber(totalStake)
     }
 
