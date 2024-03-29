@@ -5,9 +5,9 @@
   "main": "dist/index.js",
   "scripts": {
     "build": "subql build",
-    "codegen": "subql codegen -f project-polkadot.yaml",
+    "codegen": "subql codegen",
     "start:docker": "docker-compose pull && docker-compose up --remove-orphans",
-    "dev": "subql codegen -f project-polkadot.yaml && subql build && docker-compose pull && docker-compose up --remove-orphans",
+    "dev": "subql codegen && subql build && docker-compose pull && docker-compose up --remove-orphans",
     "prepack": "rm -rf dist && npm run build",
     "clear": "rm -r .data/postgres && mkdir .data/postgres",
     "test": "jest"
