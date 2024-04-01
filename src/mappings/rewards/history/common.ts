@@ -2,6 +2,10 @@ import {AccumulatedReward, Reward, RewardType} from "../../../types";
 import {SubstrateBlock, SubstrateEvent} from "@subql/types";
 import {Codec} from "@polkadot/types/types";
 
+type AccumulatedRewardsCacheType = Map<string, AccumulatedReward>;
+
+const accumulatedRewardsCache: AccumulatedRewardsCacheType = new Map();
+
 export interface RewardArgs {
 
     amount: bigint
@@ -43,26 +47,31 @@ export async function handleReward(rewardProps: RewardArgs, event: SubstrateEven
 }
 
 async function updateAccumulatedReward(rewardProps: RewardArgs): Promise<AccumulatedReward> {
-    let accountAddress = rewardProps.address
+    let accountAddress = rewardProps.address;
     let id = accumulatedRewardId(accountAddress, rewardProps.chainId, rewardProps.stakingType);
 
-    let accumulatedReward = await AccumulatedReward.get(id);
+    let accumulatedReward = accumulatedRewardsCache.get(id);
     if (!accumulatedReward) {
-        accumulatedReward = new AccumulatedReward(
-            id,
-            rewardProps.chainId,
-            rewardProps.stakingType,
-            accountAddress,
-            BigInt(0),
-        );
+        accumulatedReward = await AccumulatedReward.get(id);
+        if (!accumulatedReward) {
+            accumulatedReward = new AccumulatedReward(
+                id,
+                rewardProps.chainId,
+                rewardProps.stakingType,
+                accountAddress,
+                BigInt(0),
+            );
+        }
+        accumulatedRewardsCache.set(id, accumulatedReward);
     }
 
-    const newAmount = rewardProps.type == RewardType.reward ? rewardProps.amount : -rewardProps.amount
-    accumulatedReward.amount = accumulatedReward.amount + newAmount
+    const newAmount = rewardProps.type == RewardType.reward ? rewardProps.amount : -rewardProps.amount;
+    accumulatedReward.amount = accumulatedReward.amount + newAmount;
 
-    await accumulatedReward.save()
+    await accumulatedReward.save();
+    accumulatedRewardsCache.set(id, accumulatedReward);
 
-    return accumulatedReward
+    return accumulatedReward;
 }
 
 function accumulatedRewardId(accountAddress: string, chainId: string, stakingType: string): string {
