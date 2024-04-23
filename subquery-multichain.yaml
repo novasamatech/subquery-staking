@@ -5,6 +5,8 @@ query:
 projects:
   - project-aleph-zero.yaml
   - project-calamari.yaml
+  # - project-dock.yaml
+  # - project-joystream.yaml
   - project-kusama.yaml
   - project-manta.yaml
   - project-moonbeam.yaml
