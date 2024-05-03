@@ -1,4 +1,5 @@
 //Exports all handler functions
+export * from "./mappings/avail";
 export * from "./mappings/dock";
 export * from "./mappings/joystream";
 export * from "./mappings/polimec";

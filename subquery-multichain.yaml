@@ -4,6 +4,7 @@ query:
   version: "*"
 projects:
   - project-aleph-zero.yaml
+  - project-avail.yaml
   - project-calamari.yaml
   # - project-dock.yaml
   # - project-joystream.yaml
