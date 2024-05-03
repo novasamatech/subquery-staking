@@ -1,4 +1,4 @@
-name: PR
+Romeo Rosete name: PR
 on:
   pull_request:
     paths-ignore:
