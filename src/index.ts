@@ -14,4 +14,5 @@ export * from "./mappings/zeitgeist";
 export * from "./mappings/polkadex";
 export * from "./mappings/ternoa";
 export * from "./mappings/westend";
+export * from "./mappings/vara";
 import "@polkadot/api-augment";
