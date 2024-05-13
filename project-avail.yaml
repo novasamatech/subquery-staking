@@ -1,0 +1,79 @@
+specVersion: 1.0.0
+name: nova-wallet-staking
+version: 0.0.1
+runner:
+  node:
+    name: "@subql/node"
+    version: ">=1.0.0"
+  query:
+    name: "@subql/query"
+    version: "*"
+description: >-
+  Project that provides up-to-date information about on-chain staking APY
+repository: "git@github.com:nova-wallet/subquery-staking.git"
+schema:
+  file: ./schema.graphql
+network:
+  chainId: "0x128ea318539862c0a06b745981300d527c1041c6f3388a8c49565559e3ea3d10"
+  endpoint: "wss://zeref-api.slowops.xyz/ws"
+  chaintypes:
+    file: ./dist/availChainTypes.js
+dataSources:
+  - kind: substrate/Runtime
+    startBlock: 1
+    mapping:
+      file: ./dist/index.js
+      handlers:
+        - handler: handlePolkadotNewEra
+          kind: substrate/EventHandler
+          filter:
+            module: staking
+            method: StakersElected
+
+        - handler: handlePolkadotNewSession
+          kind: substrate/EventHandler
+          filter:
+            module: session
+            method: NewSession
+
+        - handler: handlePolkadotStakingReward
+          kind: substrate/EventHandler
+          filter:
+            module: staking
+            method: Reward
+
+        - handler: handlePolkadotStakingReward
+          kind: substrate/EventHandler
+          filter:
+            module: staking
+            method: Rewarded
+
+        - handler: handlePolkadotPoolStakingReward
+          kind: substrate/EventHandler
+          filter:
+            module: nominationPools
+            method: PaidOut
+
+        - handler: handlePolkadotStakingSlash
+          kind: substrate/EventHandler
+          filter:
+            module: staking
+            method: Slash
+
+        - handler: handlePolkadotStakingSlash
+          kind: substrate/EventHandler
+          filter:
+            module: staking
+            method: Slashed
+
+        - handler: handlePolkadotPoolStakingBondedSlash
+          kind: substrate/EventHandler
+          filter:
+            module: nominationPools
+            method: PoolSlashed
+
+        - handler: handlePolkadotPoolStakingUnbondingSlash
+          kind: substrate/EventHandler
+          filter:
+            module: nominationPools
+            method: UnbondingPoolSlashed
