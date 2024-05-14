@@ -19,7 +19,10 @@ const DIRECT_STAKING_TYPE = "relaychain"
 
 export async function AvailRewardCalculator(eraInfoDataSource: EraInfoDataSource): Promise<ValidatorStakingRewardCalculator> {
     const config = await createRewardCurveConfig({
-        parachainReservedSupplyFraction: 0.2,
+        falloff: 0.05,
+        maxInflation: 0.05,
+        minInflation: 0.01,
+        stakeTarget: 0.50,
     })
     
     return CustomRelaychainRewardCalculator(eraInfoDataSource, config)
