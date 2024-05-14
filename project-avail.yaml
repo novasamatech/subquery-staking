@@ -24,55 +24,55 @@ dataSources:
     mapping:
       file: ./dist/index.js
       handlers:
-        - handler: handlePolkadotNewEra
+        - handler: handleAvailNewEra
           kind: substrate/EventHandler
           filter:
             module: staking
             method: StakersElected
 
-        - handler: handlePolkadotNewSession
+        - handler: handleAvailNewSession
           kind: substrate/EventHandler
           filter:
             module: session
             method: NewSession
 
-        - handler: handlePolkadotStakingReward
+        - handler: handleAvailStakingReward
           kind: substrate/EventHandler
           filter:
             module: staking
             method: Reward
 
-        - handler: handlePolkadotStakingReward
+        - handler: handleAvailStakingReward
           kind: substrate/EventHandler
           filter:
             module: staking
             method: Rewarded
 
-        - handler: handlePolkadotPoolStakingReward
+        - handler: handleAvailPoolStakingReward
           kind: substrate/EventHandler
           filter:
             module: nominationPools
             method: PaidOut
 
-        - handler: handlePolkadotStakingSlash
+        - handler: handleAvailStakingSlash
           kind: substrate/EventHandler
           filter:
             module: staking
             method: Slash
 
-        - handler: handlePolkadotStakingSlash
+        - handler: handleAvailStakingSlash
           kind: substrate/EventHandler
           filter:
             module: staking
             method: Slashed
 
-        - handler: handlePolkadotPoolStakingBondedSlash
+        - handler: handleAvailPoolStakingBondedSlash
           kind: substrate/EventHandler
           filter:
             module: nominationPools
             method: PoolSlashed
 
-        - handler: handlePolkadotPoolStakingUnbondingSlash
+        - handler: handleAvailPoolStakingUnbondingSlash
           kind: substrate/EventHandler
           filter:
             module: nominationPools
