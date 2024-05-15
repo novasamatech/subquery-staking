@@ -1,0 +1,79 @@
+specVersion: 1.0.0
+name: nova-wallet-staking
+version: 0.0.1
+runner:
+  node:
+    name: "@subql/node"
+    version: ">=1.0.0"
+  query:
+    name: "@subql/query"
+    version: "*"
+description: >-
+  Project that provides up-to-date information about on-chain staking APY
+repository: "git@github.com:nova-wallet/subquery-staking.git"
+schema:
+  file: ./schema.graphql
+network:
+  chainId: "0x128ea318539862c0a06b745981300d527c1041c6f3388a8c49565559e3ea3d10"
+  endpoint: "wss://zeref-api.slowops.xyz/ws"
+  chaintypes:
+    file: ./dist/availChainTypes.js
+dataSources:
+  - kind: substrate/Runtime
+    startBlock: 1
+    mapping:
+      file: ./dist/index.js
+      handlers:
+        - handler: handleAvailNewEra
+          kind: substrate/EventHandler
+          filter:
+            module: staking
+            method: StakersElected
+
+        - handler: handleAvailNewSession
+          kind: substrate/EventHandler
+          filter:
+            module: session
+            method: NewSession
+
+        - handler: handleAvailStakingReward
+          kind: substrate/EventHandler
+          filter:
+            module: staking
+            method: Reward
+
+        - handler: handleAvailStakingReward
+          kind: substrate/EventHandler
+          filter:
+            module: staking
+            method: Rewarded
+
+        - handler: handleAvailPoolStakingReward
+          kind: substrate/EventHandler
+          filter:
+            module: nominationPools
+            method: PaidOut
+
+        - handler: handleAvailStakingSlash
+          kind: substrate/EventHandler
+          filter:
+            module: staking
+            method: Slash
+
+        - handler: handleAvailStakingSlash
+          kind: substrate/EventHandler
+          filter:
+            module: staking
+            method: Slashed
+
+        - handler: handleAvailPoolStakingBondedSlash
+          kind: substrate/EventHandler
+          filter:
+            module: nominationPools
+            method: PoolSlashed
+
+        - handler: handleAvailPoolStakingUnbondingSlash
+          kind: substrate/EventHandler
+          filter:
+            module: nominationPools
+            method: UnbondingPoolSlashed

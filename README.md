@@ -41,18 +41,36 @@ Last, under the project directory, run following command to install all the depe
 yarn install
 ```
 
-## Configure your project
+## Adding a New Network
 
-In the starter package, we have provided a simple example of project configuration. You will be mainly working on the following files:
+To add a new network to your SubQuery project, follow these steps:
 
-- The Manifest in `project.yaml`
-- The GraphQL Schema in `schema.graphql`
-- The Mapping functions in `src/mappings/` directory
+1. **Create a Project YAML File**:
+   - Create a new file named `project-{name}.yaml` in the root directory of your project.
+   - This file will contain the configuration specific to the new network.
 
-For more information on how to write the SubQuery,
-check out our doc section on [Define the SubQuery](https://doc.subquery.network/define_a_subquery.html)
+2. **Set Network Data**:
+   - In the newly created `project-{name}.yaml` file, set the network parameters such as `endpoint`, `genesisHash`, and other relevant details.
 
-#### Code generation
+3. **Add Separate Mapping**:
+   - Create a new mapping file in the [src/mappings/](src/mappings) directory, named `{name}.ts`.
+   - This file should include the necessary handlers and logic for the new network.
+
+4. **Include Genesis, DIRECT_STAKING_TYPE, and RewardCurveConfig**:
+   - In your new mapping file, ensure you define the `genesis`, `DIRECT_STAKING_TYPE`, and `rewardCurveConfig` specific to the new network.
+
+5. **Export in `src/index.ts`**:
+   - Update the [src/index.ts](./src/index.ts) file to export the new handlers from your `{name}.ts` mapping file.
+
+6. **Add Network Types**:
+   - If the new network requires custom types, add them to the `chainTypes` section in the appropriate configuration file. Do not forget to add new exports in [package.json](./package.json)
+
+7. **Update `@subquery-multichain.yaml`**:
+   - Add the new project file to the `projects` array in [subquery-multichain.yaml](./subquery-multichain.yaml).
+
+By following these steps, you can extend your SubQuery project to support additional networks.
+
+## Code generation
 
 In order to index your SubQuery project, it is mandatory to build your project first.
 Run this command under the project directory.
