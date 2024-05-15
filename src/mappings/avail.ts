@@ -14,7 +14,7 @@ import {
     handleRelaychainPooledStakingUnbondingSlash
 } from "./rewards/history/nomination_pools";
 
-const POLKADOT_GENESIS = "0x128ea318539862c0a06b745981300d527c1041c6f3388a8c49565559e3ea3d10"
+const AVAIL_GENESIS = "0x128ea318539862c0a06b745981300d527c1041c6f3388a8c49565559e3ea3d10"
 const DIRECT_STAKING_TYPE = "relaychain"
 
 export async function AvailRewardCalculator(eraInfoDataSource: EraInfoDataSource): Promise<ValidatorStakingRewardCalculator> {
@@ -34,7 +34,7 @@ export async function handleAvailNewEra(_: SubstrateEvent): Promise<void> {
     await handleNewEra(
         validatorEraInfoDataSource,
         await AvailRewardCalculator(validatorEraInfoDataSource),
-        POLKADOT_GENESIS,
+        AVAIL_GENESIS,
         DIRECT_STAKING_TYPE
     )
 }
@@ -47,7 +47,7 @@ export async function handleAvailNewSession(_: SubstrateEvent): Promise<void> {
     await handleNewSession(
         validatorEraInfoDataSource,
         await mainRewardCalculator,
-        POLKADOT_GENESIS,
+        AVAIL_GENESIS,
         DIRECT_STAKING_TYPE,
         poolRewardCalculator
     )
@@ -57,29 +57,29 @@ export async function handleAvailNewSession(_: SubstrateEvent): Promise<void> {
 export async function handleAvailStakingReward(
     event: SubstrateEvent<[accountId: Codec, reward: INumber]>,
 ): Promise<void> {
-    await handleRelaychainStakingReward(event, POLKADOT_GENESIS, DIRECT_STAKING_TYPE)
+    await handleRelaychainStakingReward(event, AVAIL_GENESIS, DIRECT_STAKING_TYPE)
 }
 
 export async function handleAvailStakingSlash(
     event: SubstrateEvent<[account: Codec, slash: INumber]>,
 ): Promise<void> {
-    await handleRelaychainStakingSlash(event, POLKADOT_GENESIS, DIRECT_STAKING_TYPE)
+    await handleRelaychainStakingSlash(event, AVAIL_GENESIS, DIRECT_STAKING_TYPE)
 }
 
 export async function handleAvailPoolStakingReward(
     event: SubstrateEvent<[accountId: Codec, poolId: INumber, reward: INumber]>,
 ): Promise<void> {
-    await handleRelaychainPooledStakingReward(event, POLKADOT_GENESIS, POOLED_STAKING_TYPE)
+    await handleRelaychainPooledStakingReward(event, AVAIL_GENESIS, POOLED_STAKING_TYPE)
 }
 
 export async function handleAvailPoolStakingBondedSlash(
     event: SubstrateEvent<[poolId: INumber, slash: INumber]>,
 ): Promise<void> {
-    await handleRelaychainPooledStakingBondedSlash(event, POLKADOT_GENESIS, POOLED_STAKING_TYPE)
+    await handleRelaychainPooledStakingBondedSlash(event, AVAIL_GENESIS, POOLED_STAKING_TYPE)
 }
 
 export async function handleAvailPoolStakingUnbondingSlash(
     event: SubstrateEvent<[era: INumber, poolId: INumber, slash: INumber]>,
 ): Promise<void> {
-    await handleRelaychainPooledStakingUnbondingSlash(event, POLKADOT_GENESIS, POOLED_STAKING_TYPE)
+    await handleRelaychainPooledStakingUnbondingSlash(event, AVAIL_GENESIS, POOLED_STAKING_TYPE)
 }
