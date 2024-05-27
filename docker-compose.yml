@@ -16,6 +16,60 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
+  
+  subquery-node-avail:
+    image: onfinality/subql-node:v2.2.1
+    depends_on:
+      "postgres":
+        condition: service_healthy
+    restart: always
+    environment:
+      DB_USER: postgres
+      DB_PASS: postgres
+      DB_DATABASE: postgres
+      DB_HOST: postgres
+      DB_PORT: 5432
+    volumes:
+      - ./:/app
+    command:
+      - -f=/app/project-avail.yaml
+      - --multi-chain
+      - --db-schema=app
+      - --disable-historical
+      - --query-limit=1000000
+      - --batch-size=10
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://subquery-node-dock:3000/ready" ]
+      interval: 3s
+      timeout: 5s
+      retries: 10
+
+  subquery-node-vara:
+    image: onfinality/subql-node:v2.2.1
+    depends_on:
+      "postgres":
+        condition: service_healthy
+    restart: always
+    environment:
+      DB_USER: postgres
+      DB_PASS: postgres
+      DB_DATABASE: postgres
+      DB_HOST: postgres
+      DB_PORT: 5432
+    volumes:
+      - ./:/app
+    command:
+      - -f=/app/project-vara.yaml
+      - --multi-chain
+      - --db-schema=app
+      - --disable-historical
+      - --query-limit=1000000
+      - --batch-size=10
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://subquery-node-dock:3000/ready" ]
+      interval: 3s
+      timeout: 5s
+      retries: 10
 
   subquery-node-dock:
     image: onfinality/subql-node:v2.2.1
