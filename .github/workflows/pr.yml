@@ -1,8 +1,7 @@
-name: PR
+name: PR check
 on:
   pull_request:
-    paths-ignore:
-      - ".github/workflows/**"
+
 jobs:
   pr:
     name: pr
@@ -10,10 +9,11 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Setup Node.js environment
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v4
         with:
-          node-version: 18
-      - run: yarn
+          node-version: 20
+      - name: Install
+        run: yarn install
       - name: Codegen
         run: yarn codegen
       - name: Build
