@@ -78,8 +78,22 @@ export class CollatorStakingRewardCalculator implements RewardCalculator {
     }
 
     private async fetchParachainBondPercent(): Promise<number> {
-    	const parachainBondInfo = await api.query.parachainStaking.parachainBondInfo()
-    	return PercentToNumber(parachainBondInfo.percent)
+        if (api.query.parachainStaking.parachainBondInfo) {
+            const parachainBondInfo = await api.query.parachainStaking.parachainBondInfo()
+            return PercentToNumber(parachainBondInfo.percent)
+        } else if (api.query.parachainStaking.inflationDistributionInfo) {
+            return await this.fetchInflationDistributionInfo()
+        }
+        throw new Error("No parachain info found")
+    }
+
+    private async fetchInflationDistributionInfo(): Promise<number> {
+        const inflationDistributionInfo = await api.query.parachainStaking.inflationDistributionInfo()
+        const distributionInfos = JSON.parse(inflationDistributionInfo.toString())
+        
+        return distributionInfos.reduce((total: number, info: any) => {
+            return total + PercentToNumber(info.percent)
+        }, 0)
     }
 
     private async fetchCommission(): Promise<number> {
