@@ -84,7 +84,7 @@ export class CollatorStakingRewardCalculator implements RewardCalculator {
         } else if (api.query.parachainStaking.inflationDistributionInfo) {
             return await this.fetchInflationDistributionInfo()
         }
-        throw new Error("No parachain bond info found")
+        throw new Error("No parachain info found")
     }
 
     private async fetchInflationDistributionInfo(): Promise<number> {
