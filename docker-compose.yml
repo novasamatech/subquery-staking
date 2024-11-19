@@ -18,7 +18,7 @@ services:
       retries: 5
   
   subquery-node-avail:
-    image: onfinality/subql-node:v2.2.1
+    image: onfinality/subql-node:v5.2.2
     depends_on:
       "postgres":
         condition: service_healthy
@@ -45,7 +45,7 @@ services:
       retries: 10
 
   subquery-node-vara:
-    image: onfinality/subql-node:v2.2.1
+    image: onfinality/subql-node:v5.2.2
     depends_on:
       "postgres":
         condition: service_healthy
@@ -72,7 +72,7 @@ services:
       retries: 10
 
   subquery-node-dock:
-    image: onfinality/subql-node:v2.2.1
+    image: onfinality/subql-node:v5.2.2
     depends_on:
       "postgres":
         condition: service_healthy
@@ -91,7 +91,7 @@ services:
       - --db-schema=app
       - --disable-historical
       - --query-limit=1000000
-      - --batch-size=30
+      - --batch-size=10
     healthcheck:
       test: [ "CMD", "curl", "-f", "http://subquery-node-dock:3000/ready" ]
       interval: 3s
@@ -99,7 +99,7 @@ services:
       retries: 10
 
   subquery-node-joystream:
-    image: onfinality/subql-node:v2.2.1
+    image: onfinality/subql-node:v5.2.2
     depends_on:
       "postgres":
         condition: service_healthy
@@ -118,7 +118,7 @@ services:
       - --db-schema=app
       - --disable-historical
       - --query-limit=1000000
-      - --batch-size=30
+      - --batch-size=10
     healthcheck:
       test: [ "CMD", "curl", "-f", "http://subquery-node-joystream:3000/ready" ]
       interval: 3s
@@ -126,7 +126,7 @@ services:
       retries: 10
 
   subquery-node-polimec:
-    image: onfinality/subql-node:v2.2.1
+    image: onfinality/subql-node:v5.2.2
     depends_on:
       "postgres":
         condition: service_healthy
@@ -145,7 +145,7 @@ services:
       - --db-schema=app
       - --disable-historical
       - --query-limit=1000000
-      - --batch-size=30
+      - --batch-size=10
     healthcheck:
       test: [ "CMD", "curl", "-f", "http://subquery-node-polimec:3000/ready" ]
       interval: 3s
@@ -153,7 +153,7 @@ services:
       retries: 10
 
   subquery-node-polkadot:
-    image: onfinality/subql-node:v2.2.1
+    image: onfinality/subql-node:v5.2.2
     depends_on:
       "postgres":
         condition: service_healthy
@@ -172,7 +172,7 @@ services:
       - --db-schema=app
       - --disable-historical
       - --query-limit=1000000
-      - --batch-size=30
+      - --batch-size=10
     healthcheck:
       test: ["CMD", "curl", "-f", "http://subquery-node-polkadot:3000/ready"]
       interval: 3s
@@ -180,7 +180,7 @@ services:
       retries: 10
 
   subquery-node-kusama:
-    image: onfinality/subql-node:v2.2.1
+    image: onfinality/subql-node:v5.2.2
     depends_on:
       "postgres":
         condition: service_healthy
@@ -199,7 +199,7 @@ services:
       - --db-schema=app
       - --disable-historical
       - --query-limit=1000000
-      - --batch-size=30
+      - --batch-size=10
     healthcheck:
       test: [ "CMD", "curl", "-f", "http://subquery-node-kusama:3000/ready" ]
       interval: 3s
@@ -207,7 +207,7 @@ services:
       retries: 10
 
   subquery-node-manta:
-    image: onfinality/subql-node:v2.2.1
+    image: onfinality/subql-node:v5.2.2
     depends_on:
       "postgres":
         condition: service_healthy
@@ -226,7 +226,7 @@ services:
       - --db-schema=app
       - --disable-historical
       - --query-limit=1000000
-      - --batch-size=30
+      - --batch-size=10
     healthcheck:
       test: [ "CMD", "curl", "-f", "http://subquery-node-manta:3000/ready" ]
       interval: 3s
@@ -234,7 +234,7 @@ services:
       retries: 10
 
   subquery-node-moonbeam:
-    image: onfinality/subql-node:v2.2.1
+    image: onfinality/subql-node:v5.2.2
     depends_on:
       "postgres":
         condition: service_healthy
@@ -253,7 +253,7 @@ services:
       - --db-schema=app
       - --disable-historical
       - --query-limit=1000000
-      - --batch-size=30
+      - --batch-size=10
     healthcheck:
       test: [ "CMD", "curl", "-f", "http://subquery-node-moonbeam:3000/ready" ]
       interval: 3s
@@ -261,7 +261,7 @@ services:
       retries: 10
 
   subquery-node-moonriver:
-    image: onfinality/subql-node:v2.2.1
+    image: onfinality/subql-node:v5.2.2
     depends_on:
       "postgres":
         condition: service_healthy
@@ -280,7 +280,7 @@ services:
       - --db-schema=app
       - --disable-historical
       - --query-limit=1000000
-      - --batch-size=30
+      - --batch-size=10
     healthcheck:
       test: [ "CMD", "curl", "-f", "http://subquery-node-moonriver:3000/ready" ]
       interval: 3s
@@ -288,7 +288,7 @@ services:
       retries: 10
 
   subquery-node-aleph-zero:
-    image: onfinality/subql-node:v2.2.1
+    image: onfinality/subql-node:v5.2.2
     depends_on:
       "postgres":
         condition: service_healthy
@@ -307,7 +307,7 @@ services:
       - --db-schema=app
       - --disable-historical
       - --query-limit=1000000
-      - --batch-size=30
+      - --batch-size=10
     healthcheck:
       test: [ "CMD", "curl", "-f", "http://subquery-node-aleph-zero:3000/ready" ]
       interval: 3s
@@ -315,7 +315,7 @@ services:
       retries: 10
 
   subquery-node-zeitgeist:
-    image: onfinality/subql-node:v2.2.1
+    image: onfinality/subql-node:v5.2.2
     depends_on:
       "postgres":
         condition: service_healthy
@@ -334,7 +334,7 @@ services:
       - --db-schema=app
       - --disable-historical
       - --query-limit=1000000
-      - --batch-size=30
+      - --batch-size=10
     healthcheck:
       test: [ "CMD", "curl", "-f", "http://subquery-node-zeitgeist:3000/ready" ]
       interval: 3s
@@ -342,7 +342,7 @@ services:
       retries: 10
 
   subquery-node-westend:
-    image: onfinality/subql-node:v2.2.1
+    image: onfinality/subql-node:v5.2.2
     depends_on:
       "postgres":
         condition: service_healthy
@@ -361,7 +361,7 @@ services:
       - --db-schema=app
       - --disable-historical
       - --query-limit=1000000
-      - --batch-size=30
+      - --batch-size=10
     healthcheck:
       test: [ "CMD", "curl", "-f", "http://subquery-node-westend:3000/ready" ]
       interval: 3s
@@ -369,7 +369,7 @@ services:
       retries: 10
 
   subquery-node-turing:
-    image: onfinality/subql-node:v2.2.1
+    image: onfinality/subql-node:v5.2.2
     depends_on:
       "postgres":
         condition: service_healthy
@@ -388,7 +388,7 @@ services:
       - --db-schema=app
       - --disable-historical
       - --query-limit=1000000
-      - --batch-size=30
+      - --batch-size=10
     healthcheck:
       test: [ "CMD", "curl", "-f", "http://subquery-node-turing:3000/ready" ]
       interval: 3s
@@ -396,7 +396,7 @@ services:
       retries: 10
 
   subquery-node-ternoa:
-    image: onfinality/subql-node:v2.2.1
+    image: onfinality/subql-node:v5.2.2
     depends_on:
       "postgres":
         condition: service_healthy
@@ -415,7 +415,7 @@ services:
       - --db-schema=app
       - --disable-historical
       - --query-limit=1000000
-      - --batch-size=30
+      - --batch-size=10
     healthcheck:
       test: [ "CMD", "curl", "-f", "http://subquery-node-ternoa:3000/ready" ]
       interval: 3s
@@ -423,7 +423,7 @@ services:
       retries: 10
 
   subquery-node-polkadex:
-    image: onfinality/subql-node:v2.2.1
+    image: onfinality/subql-node:v5.2.2
     depends_on:
       "postgres":
         condition: service_healthy
@@ -442,7 +442,7 @@ services:
       - --db-schema=app
       - --disable-historical
       - --query-limit=1000000
-      - --batch-size=30
+      - --batch-size=10
     healthcheck:
       test: [ "CMD", "curl", "-f", "http://subquery-node-ternoa:3000/ready" ]
       interval: 3s
@@ -450,7 +450,7 @@ services:
       retries: 10
 
   subquery-node-calamari:
-    image: onfinality/subql-node:v2.2.1
+    image: onfinality/subql-node:v5.2.2
     depends_on:
       "postgres":
         condition: service_healthy
@@ -469,7 +469,7 @@ services:
       - --db-schema=app
       - --disable-historical
       - --query-limit=1000000
-      - --batch-size=30
+      - --batch-size=10
     healthcheck:
       test: [ "CMD", "curl", "-f", "http://subquery-node-calamari:3000/ready" ]
       interval: 3s
