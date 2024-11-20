@@ -5,6 +5,7 @@ import {ValidatorStakingRewardCalculator} from "./ValidatorStakingRewardCalculat
 import {Inflation, StakedInfo} from "./inflation/Inflation";
 import Big from "big.js";
 import {EraInfoDataSource} from "../era/EraInfoDataSource";
+import {PolkadotStakingInflation} from "./inflation/PolkadotNewStakingInflation";
 
 const LOWEST_PUBLIC_ID = 2000
 
@@ -47,6 +48,12 @@ export async function createRewardCurveConfig({
 
 export function CustomRelaychainRewardCalculator(eraInfoDataSource: EraInfoDataSource, rewardCurveConfig: RewardCurveConfig): ValidatorStakingRewardCalculator {
     let inflation = new RewardCurveInflation(rewardCurveConfig)
+
+    return new DefaultValidatorStakingRewardCalculator(inflation, eraInfoDataSource)
+}
+
+export function CustomPolkadotRewardCalculator(eraInfoDataSource: EraInfoDataSource): ValidatorStakingRewardCalculator {
+    let inflation = new PolkadotStakingInflation()
 
     return new DefaultValidatorStakingRewardCalculator(inflation, eraInfoDataSource)
 }
