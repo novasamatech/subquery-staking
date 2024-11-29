@@ -46,11 +46,11 @@ export async function handleRelaychainPooledStakingBondedSlash(
 }
 
 export async function handleRelaychainPooledStakingUnbondingSlash(
-    event: SubstrateEvent<[era: INumber, poolId: INumber, slash: INumber]>,
+    event: SubstrateEvent<[poolId: INumber, era: INumber, slash: INumber]>,
     chainId: string,
     stakingType: string
 ): Promise<void> {
-    const {event: {data: [era, poolId, slash]}} = event
+    const {event: {data: [poolId, era, slash]}} = event
     const poolIdNumber = poolId.toNumber()
     const eraIdNumber = era.toNumber()
 
