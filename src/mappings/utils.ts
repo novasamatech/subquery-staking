@@ -32,6 +32,10 @@ export function BigintFromBig(number: Big): bigint {
     return BigInt(number.toString())
 }
 
+export function BigFromBigint(number: bigint): Big {
+    return Big(number.toString())
+}
+
 export function minBig(array: Big[]): Big | undefined {
     if (array.length == 0) return undefined
 

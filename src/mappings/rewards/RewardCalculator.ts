@@ -1,4 +1,3 @@
-import {StakedInfo} from "./inflation/Inflation";
 import Big from "big.js";
 
 export interface RewardCalculator {

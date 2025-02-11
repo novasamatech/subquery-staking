@@ -1,0 +1,36 @@
+specVersion: 1.0.0
+name: nova-wallet-staking
+version: 0.0.1
+runner:
+  node:
+    name: "@subql/node"
+    version: ">=1.0.0"
+  query:
+    name: "@subql/query"
+    version: "*"
+description: >-
+  Project that provides up-to-date information about on-chain staking APY
+repository: "git@github.com:nova-wallet/subquery-staking.git"
+schema:
+  file: ./schema.graphql
+network:
+  # TODO change to Mythos production configuration
+  chainId: "0x15f6788bcf1d1a3b7e1c36074584e1a3f3d07e0a46e362a102c3c3df1a93669f"
+  endpoint: "wss://paseo-muse-rpc.polkadot.io"
+dataSources:
+  - kind: substrate/Runtime
+    startBlock: 2601950
+    mapping:
+      file: ./dist/index.js
+      handlers:
+        - handler: handleMythosNewSession
+          kind: substrate/EventHandler
+          filter:
+            module: session
+            method: NewSession
+
+        - handler: handleMythosStakingReward
+          kind: substrate/EventHandler
+          filter:
+            module: collatorStaking
+            method: StakingRewardReceived

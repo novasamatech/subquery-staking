@@ -105,7 +105,7 @@ export class StakingStats {
         let oldTypeRecords = []
         let clearedCount = 0
         do {
-            const oldNetworkRecords = await ActiveStaker.getByNetworkId(this.networkId)
+            const oldNetworkRecords = await ActiveStaker.getByNetworkId(this.networkId, { limit:1000000 })
             oldTypeRecords = oldNetworkRecords.filter(record => record.stakingType == this.stakingType)
     
             // await store.bulkRemove("ActiveStaker", oldRecordIds)
