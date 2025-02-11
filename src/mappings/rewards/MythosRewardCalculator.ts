@@ -17,7 +17,6 @@ export class MythosRewardCalculator implements RewardCalculator {
         const blocksPerYear = this.blocksInYear()
         const activeCollators = await this.eraInfoDataSource.eraStakers()
         const collatorCommission = ((await api.query.collatorStaking.collatorRewardPercentage()) as unknown as Percent).toNumber()
-        logger.info(`Commission: ${collatorCommission}`)
         const minStake = (await api.query.collatorStaking.minStake()) as unknown as INumber
 
         const yearlyEmission = BigFromINumber(perBlockReward).mul(blocksPerYear)

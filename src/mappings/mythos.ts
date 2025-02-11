@@ -17,8 +17,6 @@ const STAKING_TYPE = "mythos"
 export async function handleMythosNewSession(event: SubstrateEvent): Promise<void> {
     let eraInfoDataSource = new MythosEraInfoDataSource();
 
-    logger.info(`Network id: ${MYTHOS_GENESIS}`)
-
     // In mythos, session==era in our terms
     await handleNewEra(
         eraInfoDataSource,
