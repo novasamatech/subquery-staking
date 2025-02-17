@@ -476,6 +476,33 @@ services:
       timeout: 5s
       retries: 10
 
+  subquery-node-mythos:
+    image: onfinality/subql-node:v5.6.0
+    depends_on:
+      "postgres":
+        condition: service_healthy
+    restart: always
+    environment:
+      DB_USER: postgres
+      DB_PASS: postgres
+      DB_DATABASE: postgres
+      DB_HOST: postgres
+      DB_PORT: 5432
+    volumes:
+      - ./:/app
+    command:
+      - -f=/app/project-mythos.yaml
+      - --multi-chain
+      - --db-schema=app
+      - --disable-historical
+      - --query-limit=1000000
+      - --batch-size=10
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://subquery-node-mythos:3000/ready" ]
+      interval: 3s
+      timeout: 5s
+      retries: 10
+
   graphql-engine:
     image: onfinality/subql-query:latest
     ports:

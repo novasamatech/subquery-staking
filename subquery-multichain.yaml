@@ -1,12 +1,10 @@
 specVersion: 1.0.0
 query:
-  name: "@subql/query"
-  version: "*"
+  name: '@subql/query'
+  version: '*'
 projects:
   - project-aleph-zero.yaml
   - project-calamari.yaml
-  # - project-dock.yaml
-  # - project-joystream.yaml
   - project-kusama.yaml
   - project-manta.yaml
   - project-moonbeam.yaml
@@ -20,3 +18,4 @@ projects:
   - project-zeitgeist.yaml
   - project-vara.yaml
   - project-avail.yaml
+  - project-mythos.yaml
