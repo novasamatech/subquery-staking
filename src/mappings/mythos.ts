@@ -1,10 +1,7 @@
 import {SubstrateEvent} from "@subql/types";
 import {handleNewEra} from "./common";
-import {ParachainRewardCalculator} from "./rewards/Parachain";
-import {CollatorEraInfoDataSource} from "./era/CollatorEraInfoDataSource";
 import {Codec} from "@polkadot/types/types";
 import {INumber} from "@polkadot/types-codec/types/interfaces";
-import {handleParachainStakingReward} from "./rewards/history/parachain";
 import {MythosEraInfoDataSource} from "./era/MythosEraInfoDataSource";
 import {MythosRewardCalculator} from "./rewards/MythosRewardCalculator";
 import {handleReward, RewardArgs} from "./rewards/history/common";
