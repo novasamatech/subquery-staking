@@ -9,7 +9,7 @@ import {BigFromBigint} from "../utils";
 export class MythosEraInfoDataSource extends CachingEraInfoDataSource {
 
     async eraStarted(): Promise<boolean> {
-        return true
+        return api.query.collatorStaking !== undefined
     }
 
     protected async fetchEra(): Promise<number> {
@@ -18,6 +18,8 @@ export class MythosEraInfoDataSource extends CachingEraInfoDataSource {
     }
 
     protected async fetchEraStakers(): Promise<StakeTarget[]> {
+        if (!api.query.collatorStaking) return []
+
         const sessionValidators = (await api.query.session.validators()) as unknown as Vec<AccountId20>
         const sessionValidatorsSet = new Set(sessionValidators.map(it => it.toString()))
 
