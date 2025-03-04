@@ -7,8 +7,7 @@ import {MythosRewardCalculator} from "./rewards/MythosRewardCalculator";
 import {handleReward, RewardArgs} from "./rewards/history/common";
 import {RewardType} from "../types";
 
-// TODO change to mythos production genesis
-const MYTHOS_GENESIS = "0x15f6788bcf1d1a3b7e1c36074584e1a3f3d07e0a46e362a102c3c3df1a93669f"
+const MYTHOS_GENESIS = "0xf6ee56e9c5277df5b4ce6ae9983ee88f3cbed27d31beeb98f9f84f997a1ab0b9"
 const STAKING_TYPE = "mythos"
 
 export async function handleMythosNewSession(event: SubstrateEvent): Promise<void> {
