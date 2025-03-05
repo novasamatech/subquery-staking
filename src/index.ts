@@ -17,4 +17,5 @@ export * from "./mappings/westend";
 export * from "./mappings/vara";
 export * from "./mappings/avail";
 export * from "./mappings/mythos";
+export * from "./mappings/mythos-testnet";
 import "@polkadot/api-augment";
