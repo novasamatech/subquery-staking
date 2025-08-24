@@ -59,3 +59,20 @@ dataSources:
           filter:
             module: staking
             method: Slashed
+
+        - handler: handleTernoaPoolStakingBondedSlash
+          kind: substrate/EventHandler
+          filter:
+            module: nominationPools
+            method: PoolSlashed
+
+        - handler: handleTernoaPoolStakingUnbondingSlash
+          kind: substrate/EventHandler
+          filter:
+            module: nominationPools
+
+        - handler: handleTernoaPoolStakingReward
+          kind: substrate/EventHandler
+          filter:
+            module: nominationPools
+            method: PaidOut

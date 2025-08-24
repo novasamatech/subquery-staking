@@ -15,7 +15,7 @@ schema:
 network:
   chainId: '0x3920bcb4960a1eef5580cd5367ff3f430eef052774f78468852f7b9cb39f8a3c'
   endpoint: >-
-    wss://fullnode.polkadex.trade
+    wss://so.polkadex.ee
   chaintypes:
     file: ./dist/polkadexChaintypes.js
 dataSources:
@@ -60,3 +60,20 @@ dataSources:
           filter:
             module: staking
             method: Slashed
+
+        - handler: handlePolkadexPoolStakingBondedSlash
+          kind: substrate/EventHandler
+          filter:
+            module: nominationPools
+            method: PoolSlashed
+
+        - handler: handlePolkadexPoolStakingUnbondingSlash
+          kind: substrate/EventHandler
+          filter:
+            module: nominationPools
+
+        - handler: handlePolkadexPoolStakingReward
+          kind: substrate/EventHandler
+          filter:
+            module: nominationPools
+            method: PaidOut

@@ -15,7 +15,7 @@ schema:
   file: ./schema.graphql
 network:
   chainId: "0xfe1b4c55fd4d668101126434206571a7838a8b6b93a6d1b95d607e78e6c53763"
-  endpoint: "wss://vara-mainnet.public.blastapi.io"
+  endpoint: "wss://rpc.vara.network"
 dataSources:
   - kind: substrate/Runtime
     startBlock: 4545915 # first staking.rewarded https://vara.subscan.io/extrinsic/4545915-1?event=4545915-4
@@ -46,6 +46,12 @@ dataSources:
             module: staking
             method: Rewarded
 
+        - handler: handleVaraPoolStakingReward
+          kind: substrate/EventHandler
+          filter:
+            module: nominationPools
+            method: PaidOut
+
         - handler: handleVaraStakingSlash
           kind: substrate/EventHandler
           filter:
@@ -57,3 +63,15 @@ dataSources:
           filter:
             module: staking
             method: Slashed
+
+        - handler: handleVaraPoolStakingBondedSlash
+          kind: substrate/EventHandler
+          filter:
+            module: nominationPools
+            method: PoolSlashed
+
+        - handler: handleVaraPoolStakingUnbondingSlash
+          kind: substrate/EventHandler
+          filter:
+            module: nominationPools
+

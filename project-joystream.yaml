@@ -57,3 +57,20 @@ dataSources:
           filter:
             module: staking
             method: Slashed
+
+        - handler: handleJoystreamPoolStakingBondedSlash
+          kind: substrate/EventHandler
+          filter:
+            module: nominationPools
+            method: PoolSlashed
+
+        - handler: handleJoystreamPoolStakingUnbondingSlash
+          kind: substrate/EventHandler
+          filter:
+            module: nominationPools
+
+        - handler: handleJoystreamPoolStakingReward
+          kind: substrate/EventHandler
+          filter:
+            module: nominationPools
+            method: PaidOut
