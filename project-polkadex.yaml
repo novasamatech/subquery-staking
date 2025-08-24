@@ -60,3 +60,20 @@ dataSources:
           filter:
             module: staking
             method: Slashed
+
+        - handler: handlePolkadexPoolStakingBondedSlash
+          kind: substrate/EventHandler
+          filter:
+            module: nominationPools
+            method: PoolSlashed
+
+        - handler: handlePolkadexPoolStakingUnbondingSlash
+          kind: substrate/EventHandler
+          filter:
+            module: nominationPools
+
+        - handler: handlePolkadexPoolStakingReward
+          kind: substrate/EventHandler
+          filter:
+            module: nominationPools
+            method: PaidOut
