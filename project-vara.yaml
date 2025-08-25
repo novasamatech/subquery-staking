@@ -18,7 +18,7 @@ network:
   endpoint: "wss://rpc.vara.network"
 dataSources:
   - kind: substrate/Runtime
-    startBlock: 25439950 # first staking.rewarded https://vara.subscan.io/extrinsic/4545915-1?event=4545915-4
+    startBlock: 4545915 # first staking.rewarded https://vara.subscan.io/extrinsic/4545915-1?event=4545915-4
     mapping:
       file: ./dist/index.js
       handlers:
