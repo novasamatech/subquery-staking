@@ -18,7 +18,7 @@ network:
   endpoint: "wss://asset-hub-polkadot-rpc.n.dwellir.com"
 dataSources:
   - kind: substrate/Runtime
-    startBlock: 1
+    startBlock: 9647498
     mapping:
       file: ./dist/index.js
       handlers:
