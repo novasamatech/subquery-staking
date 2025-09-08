@@ -1,0 +1,78 @@
+specVersion: 1.0.0
+name: subquery-staking-westend-ah
+version: 1.0.0
+runner:
+  node:
+    name: '@subql/node'
+    version: '*'
+  query:
+    name: '@subql/query'
+    version: v1.5.0
+description: Nova SubQuery project
+repository: https://github.com/nova-wallet/subquery-nova
+schema:
+  file: ./schema.graphql
+network:
+  chainId: '0x67f9723393ef76214df0118c34bbbd3dbebc8ed46a10973a8c969d48fe7598c9'
+  endpoint: >-
+    wss://asset-hub-westend-rpc.dwellir.com
+dataSources:
+  - name: main
+    kind: substrate/Runtime
+    startBlock: 11834375 # session rotated https://assethub-westend.subscan.io/event/11834375-7
+    mapping:
+      file: ./dist/index.js
+      handlers:
+        - handler: handleWestendAHNewEra
+          kind: substrate/EventHandler
+          filter:
+            module: staking
+            method: StakersElected
+
+        - handler: handleWestendAHNewSession
+          kind: substrate/EventHandler
+          filter:
+            module: session
+            method: NewSession
+
+        - handler: handleWestendAHStakingReward
+          kind: substrate/EventHandler
+          filter:
+            module: staking
+            method: Reward
+
+        - handler: handleWestendAHStakingReward
+          kind: substrate/EventHandler
+          filter:
+            module: staking
+            method: Rewarded
+
+        - handler: handleWestendAHPoolStakingReward
+          kind: substrate/EventHandler
+          filter:
+            module: nominationPools
+            method: PaidOut
+
+        - handler: handleWestendAHStakingSlash
+          kind: substrate/EventHandler
+          filter:
+            module: staking
+            method: Slash
+
+        - handler: handleWestendAHStakingSlash
+          kind: substrate/EventHandler
+          filter:
+            module: staking
+            method: Slashed
+
+        - handler: handleWestendAHPoolStakingBondedSlash
+          kind: substrate/EventHandler
+          filter:
+            module: nominationPools
+            method: PoolSlashed
+
+        - handler: handleWestendAHPoolStakingUnbondingSlash
+          kind: substrate/EventHandler
+          filter:
+            module: nominationPools
+            method: UnbondingPoolSlashed
