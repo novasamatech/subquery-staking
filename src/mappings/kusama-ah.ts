@@ -12,7 +12,7 @@ import {
     handleRelaychainPooledStakingUnbondingSlash
 } from "./rewards/history/nomination_pools";
 
-const KUSAMA_GENESIS = "0x48239ef607d7928874027a43a67689209727dfb3d3dc5e5b03a39bdc2eda771a"
+const KUSAMA_AH_GENESIS = "0x48239ef607d7928874027a43a67689209727dfb3d3dc5e5b03a39bdc2eda771a"
 const DIRECT_STAKING_TYPE = "relaychain"
 
 export async function handleKusamaAHNewEra(_: SubstrateEvent): Promise<void> {
@@ -21,7 +21,7 @@ export async function handleKusamaAHNewEra(_: SubstrateEvent): Promise<void> {
     await handleNewEra(
         validatorEraInfoDataSource,
         await RelaychainRewardCalculator(validatorEraInfoDataSource),
-        KUSAMA_GENESIS,
+        KUSAMA_AH_GENESIS,
         DIRECT_STAKING_TYPE
     )
 }
@@ -34,7 +34,7 @@ export async function handleKusamaAHNewSession(_: SubstrateEvent): Promise<void>
     await handleNewSession(
         validatorEraInfoDataSource,
         mainRewardCalculator,
-        KUSAMA_GENESIS,
+        KUSAMA_AH_GENESIS,
         DIRECT_STAKING_TYPE,
         poolRewardCalculator
     )
@@ -44,29 +44,29 @@ export async function handleKusamaAHNewSession(_: SubstrateEvent): Promise<void>
 export async function handleKusamaAHStakingReward(
     event: SubstrateEvent<[accountId: Codec, reward: INumber]>,
 ): Promise<void> {
-    await handleRelaychainStakingReward(event, KUSAMA_GENESIS, DIRECT_STAKING_TYPE)
+    await handleRelaychainStakingReward(event, KUSAMA_AH_GENESIS, DIRECT_STAKING_TYPE)
 }
 
 export async function handleKusamaAHStakingSlash(
     event: SubstrateEvent<[account: Codec, slash: INumber]>,
 ): Promise<void> {
-    await handleRelaychainStakingSlash(event, KUSAMA_GENESIS, DIRECT_STAKING_TYPE)
+    await handleRelaychainStakingSlash(event, KUSAMA_AH_GENESIS, DIRECT_STAKING_TYPE)
 }
 
 export async function handleKusamaAHPoolStakingReward(
     event: SubstrateEvent<[accountId: Codec, poolId: INumber, reward: INumber]>,
 ): Promise<void> {
-    await handleRelaychainPooledStakingReward(event, KUSAMA_GENESIS, POOLED_STAKING_TYPE)
+    await handleRelaychainPooledStakingReward(event, KUSAMA_AH_GENESIS, POOLED_STAKING_TYPE)
 }
 
 export async function handleKusamaAHPoolStakingBondedSlash(
     event: SubstrateEvent<[poolId: INumber, slash: INumber]>,
 ): Promise<void> {
-    await handleRelaychainPooledStakingBondedSlash(event, KUSAMA_GENESIS, POOLED_STAKING_TYPE)
+    await handleRelaychainPooledStakingBondedSlash(event, KUSAMA_AH_GENESIS, POOLED_STAKING_TYPE)
 }
 
 export async function handleKusamaAHPoolStakingUnbondingSlash(
     event: SubstrateEvent<[era: INumber, poolId: INumber, slash: INumber]>,
 ): Promise<void> {
-    await handleRelaychainPooledStakingUnbondingSlash(event, KUSAMA_GENESIS, POOLED_STAKING_TYPE)
+    await handleRelaychainPooledStakingUnbondingSlash(event, KUSAMA_AH_GENESIS, POOLED_STAKING_TYPE)
 }
