@@ -1,0 +1,77 @@
+specVersion: 1.0.0
+name: subquery-staking-kusama-ah
+version: 1.0.0
+runner:
+  node:
+    name: '@subql/node'
+    version: '*'
+  query:
+    name: '@subql/query'
+    version: v1.5.0
+description: >-
+  Project that provides up-to-date information about on-chain staking APY
+repository: "git@github.com:nova-wallet/subquery-staking.git"
+schema:
+  file: ./schema.graphql
+network:
+  chainId: "0x48239ef607d7928874027a43a67689209727dfb3d3dc5e5b03a39bdc2eda771a"
+  endpoint: "wss://asset-hub-kusama-rpc.n.dwellir.com"
+dataSources:
+  - kind: substrate/Runtime
+    startBlock: 10779919
+    mapping:
+      file: ./dist/index.js
+      handlers:
+        - handler: handleKusamaAHNewEra
+          kind: substrate/EventHandler
+          filter:
+            module: staking
+            method: StakersElected
+
+        - handler: handleKusamaAHNewSession
+          kind: substrate/EventHandler
+          filter:
+            module: session
+            method: NewSession
+
+        - handler: handleKusamaAHStakingReward
+          kind: substrate/EventHandler
+          filter:
+            module: staking
+            method: Reward
+
+        - handler: handleKusamaAHStakingReward
+          kind: substrate/EventHandler
+          filter:
+            module: staking
+            method: Rewarded
+
+        - handler: handleKusamaAHPoolStakingReward
+          kind: substrate/EventHandler
+          filter:
+            module: nominationPools
+            method: PaidOut
+
+        - handler: handleKusamaAHStakingSlash
+          kind: substrate/EventHandler
+          filter:
+            module: staking
+            method: Slash
+
+        - handler: handleKusamaAHStakingSlash
+          kind: substrate/EventHandler
+          filter:
+            module: staking
+            method: Slashed
+
+        - handler: handleKusamaAHPoolStakingBondedSlash
+          kind: substrate/EventHandler
+          filter:
+            module: nominationPools
+            method: PoolSlashed
+
+        - handler: handleKusamaAHPoolStakingUnbondingSlash
+          kind: substrate/EventHandler
+          filter:
+            module: nominationPools
+            method: UnbondingPoolSlashed
