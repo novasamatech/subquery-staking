@@ -23,55 +23,55 @@ dataSources:
     mapping:
       file: ./dist/index.js
       handlers:
-        - handler: handleWestendNewEra
+        - handler: handleWestendAHNewEra
           kind: substrate/EventHandler
           filter:
             module: staking
             method: StakersElected
 
-        - handler: handleWestendNewSession
+        - handler: handleWestendAHNewSession
           kind: substrate/EventHandler
           filter:
             module: session
             method: NewSession
 
-        - handler: handleWestendStakingReward
+        - handler: handleWestendAHStakingReward
           kind: substrate/EventHandler
           filter:
             module: staking
             method: Reward
 
-        - handler: handleWestendStakingReward
+        - handler: handleWestendAHStakingReward
           kind: substrate/EventHandler
           filter:
             module: staking
             method: Rewarded
 
-        - handler: handleWestendPoolStakingReward
+        - handler: handleWestendAHPoolStakingReward
           kind: substrate/EventHandler
           filter:
             module: nominationPools
             method: PaidOut
 
-        - handler: handleWestendStakingSlash
+        - handler: handleWestendAHStakingSlash
           kind: substrate/EventHandler
           filter:
             module: staking
             method: Slash
 
-        - handler: handleWestendStakingSlash
+        - handler: handleWestendAHStakingSlash
           kind: substrate/EventHandler
           filter:
             module: staking
             method: Slashed
 
-        - handler: handleWestendPoolStakingBondedSlash
+        - handler: handleWestendAHPoolStakingBondedSlash
           kind: substrate/EventHandler
           filter:
             module: nominationPools
             method: PoolSlashed
 
-        - handler: handleWestendPoolStakingUnbondingSlash
+        - handler: handleWestendAHPoolStakingUnbondingSlash
           kind: substrate/EventHandler
           filter:
             module: nominationPools
