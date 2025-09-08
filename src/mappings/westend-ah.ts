@@ -12,7 +12,7 @@ import {
     handleRelaychainPooledStakingUnbondingSlash
 } from "./rewards/history/nomination_pools";
 
-const WESTEND_GENESIS = "0x67f9723393ef76214df0118c34bbbd3dbebc8ed46a10973a8c969d48fe7598c9"
+const WESTEND_AH_GENESIS = "0x67f9723393ef76214df0118c34bbbd3dbebc8ed46a10973a8c969d48fe7598c9"
 const DIRECT_STAKING_TYPE = "relaychain"
 
 export async function handleWestendAHNewEra(_: SubstrateEvent): Promise<void> {
@@ -21,7 +21,7 @@ export async function handleWestendAHNewEra(_: SubstrateEvent): Promise<void> {
     await handleNewEra(
         validatorEraInfoDataSource,
         await RelaychainRewardCalculator(validatorEraInfoDataSource),
-        WESTEND_GENESIS,
+        WESTEND_AH_GENESIS,
         DIRECT_STAKING_TYPE
     )
 }
@@ -34,7 +34,7 @@ export async function handleWestendAHNewSession(_: SubstrateEvent): Promise<void
     await handleNewSession(
         validatorEraInfoDataSource,
         await mainRewardCalculator,
-        WESTEND_GENESIS,
+        WESTEND_AH_GENESIS,
         DIRECT_STAKING_TYPE,
         poolRewardCalculator
     )
@@ -43,29 +43,29 @@ export async function handleWestendAHNewSession(_: SubstrateEvent): Promise<void
 export async function handleWestendAHStakingReward(
     event: SubstrateEvent<[accountId: Codec, reward: INumber]>,
 ): Promise<void> {
-    await handleRelaychainStakingReward(event, WESTEND_GENESIS, DIRECT_STAKING_TYPE)
+    await handleRelaychainStakingReward(event, WESTEND_AH_GENESIS, DIRECT_STAKING_TYPE)
 }
 
 export async function handleWestendAHStakingSlash(
     event: SubstrateEvent<[account: Codec, slash: INumber]>,
 ): Promise<void> {
-    await handleRelaychainStakingSlash(event, WESTEND_GENESIS, DIRECT_STAKING_TYPE)
+    await handleRelaychainStakingSlash(event, WESTEND_AH_GENESIS, DIRECT_STAKING_TYPE)
 }
 
 export async function handleWestendAHPoolStakingReward(
     event: SubstrateEvent<[accountId: Codec, poolId: INumber, reward: INumber]>,
 ): Promise<void> {
-    await handleRelaychainPooledStakingReward(event, WESTEND_GENESIS, POOLED_STAKING_TYPE)
+    await handleRelaychainPooledStakingReward(event, WESTEND_AH_GENESIS, POOLED_STAKING_TYPE)
 }
 
 export async function handleWestendAHPoolStakingBondedSlash(
     event: SubstrateEvent<[poolId: INumber, slash: INumber]>,
 ): Promise<void> {
-    await handleRelaychainPooledStakingBondedSlash(event, WESTEND_GENESIS, POOLED_STAKING_TYPE)
+    await handleRelaychainPooledStakingBondedSlash(event, WESTEND_AH_GENESIS, POOLED_STAKING_TYPE)
 }
 
 export async function handleWestendAHPoolStakingUnbondingSlash(
     event: SubstrateEvent<[era: INumber, poolId: INumber, slash: INumber]>,
 ): Promise<void> {
-    await handleRelaychainPooledStakingUnbondingSlash(event, WESTEND_GENESIS, POOLED_STAKING_TYPE)
+    await handleRelaychainPooledStakingUnbondingSlash(event, WESTEND_AH_GENESIS, POOLED_STAKING_TYPE)
 }
