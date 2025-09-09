@@ -19,7 +19,7 @@ network:
 dataSources:
   - name: main
     kind: substrate/Runtime
-    startBlock: 11834375 # session rotated https://assethub-westend.subscan.io/event/11834375-7
+    startBlock: 11836800 # session rotated https://assethub-westend.subscan.io/event/11834375-7
     mapping:
       file: ./dist/index.js
       handlers:

@@ -75,8 +75,8 @@ class DefaultValidatorStakingRewardCalculator extends ValidatorStakingRewardCalc
         let inflation = await this.inflation.from(stakedInfo)
 
         // if era is very old those values can be invalid as stakedInfo.totalStaked == stakedInfo.stakedPortion == 0
-        let averageValidatorRewardPercentage = stakedInfo.stakedPortion == 0 ? 0 : inflation / stakedInfo.stakedPortion
-        let averageValidatorStake = stakedInfo.totalStaked.div(stakers.length)
+        let averageValidatorRewardPercentage = stakedInfo.stakedPortion === 0 || stakedInfo.stakedPortion < 0.000001 ? 0 : inflation / stakedInfo.stakedPortion
+        let averageValidatorStake = stakers.length === 0 ? Big(0) : stakedInfo.totalStaked.div(stakers.length)
 
         return new Map<string, number>(stakers.map(
             (staker) =>
