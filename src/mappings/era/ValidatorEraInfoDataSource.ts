@@ -36,10 +36,6 @@ export class ValidatorEraInfoDataSource extends CachingEraInfoDataSource {
                 return stakers
             }
         }
-
-        // if (stakers.length == 0) {
-        //     throw new Error("Empty era stakers fetched")
-        // }
         return stakers
     }
 
