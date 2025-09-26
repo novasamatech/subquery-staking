@@ -30,9 +30,11 @@ export class ValidatorEraInfoDataSource extends CachingEraInfoDataSource {
             }
         } 
         
-        stakers = await this.fetchEraStakersClipped(era);
-        if (stakers.length == 0) {
-            throw new Error("Empty era stakers fetched")
+        if (api.query.staking.erasStakersClipped) {
+            stakers = await this.fetchEraStakersClipped(era);
+            if (stakers.length > 0) {
+                return stakers
+            }
         }
         return stakers
     }
@@ -62,8 +64,15 @@ export class ValidatorEraInfoDataSource extends CachingEraInfoDataSource {
     }
 
     private async fetchEraStakersPaged(era: number): Promise<StakeTarget[]> {
+        logger.info(`Fetching era stakers paged for era ${era}`)
         const overview = await api.query.staking.erasStakersOverview.entries(era)
+        logger.info(`Overview length: ${overview.length}`)
         const pages = await api.query.staking.erasStakersPaged.entries(era)
+        logger.info(`Pages length: ${pages.length}`)
+
+        if (overview.length === 0 && pages.length === 0) {
+            return []
+        }
     
         const othersCounted = pages.reduce((accumulator, [key, exp]) => {
             const exposure = (exp as unknown as Option<SpStakingExposurePage>).unwrap()

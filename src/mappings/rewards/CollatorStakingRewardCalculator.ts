@@ -50,6 +50,10 @@ export class CollatorStakingRewardCalculator implements RewardCalculator {
 	}
 
 	private calculateStakingDeviation(collators: CollatorNode[]): Big {
+		if (collators.length === 0) {
+			return Big(0)
+		}
+
 		let totalCollatorStake = collators.reduce(
             (accumulator, collator) => accumulator.plus(collator.totalStake),
             Big(0)
@@ -59,11 +63,15 @@ export class CollatorStakingRewardCalculator implements RewardCalculator {
 
         let minStake = minBig(collators.map((collator) => collator.totalStake))
 
+        if (minStake === undefined || minStake.eq(0)) {
+			return Big(0)
+		}
+
         return averageStake.div(minStake)
 	}
 
 	private constructStakedInfo(totalStaked: Big, totalIssuance: Big): StakedInfo {
-        let stakedPortion = totalStaked.div(totalIssuance).toNumber()
+        let stakedPortion = totalIssuance.eq(0) ? 0 : totalStaked.div(totalIssuance).toNumber()
 
         return {
             totalStaked: totalStaked,

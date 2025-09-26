@@ -31,7 +31,8 @@ export abstract class ValidatorStakingRewardCalculator implements RewardCalculat
 
     async maxApy(): Promise<number> {
         const stakersApy = await this.getStakersApy()
-        return max([...stakersApy.values()]);
+        const maxApyValue = max([...stakersApy.values()]);
+        return maxApyValue === undefined ? 0 : maxApyValue;
     }
 
     private constructStakedInfo(stakers: StakerNode[], totalIssuance: Big): StakedInfo {
@@ -40,7 +41,7 @@ export abstract class ValidatorStakingRewardCalculator implements RewardCalculat
             Big(0)
         )
 
-        let stakedPortion = totalStaked.div(totalIssuance).toNumber()
+        let stakedPortion = totalIssuance.eq(0) ? 0 : totalStaked.div(totalIssuance).toNumber()
 
         logger.info(`Total Issuance ${totalIssuance}`)
         logger.info(`Total staked ${totalStaked}`)
