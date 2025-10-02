@@ -22,23 +22,11 @@ dataSources:
     mapping:
       file: ./dist/index.js
       handlers:
-        - handler: handlePolkadotAHNewEra
-          kind: substrate/EventHandler
-          filter:
-            module: staking
-            method: StakersElected
-
-        - handler: handlePolkadotAHNewSession
+        - handler: handlePolkadotAHEraPaid
           kind: substrate/EventHandler
           filter:
             module: staking
             method: EraPaid
-
-        - handler: handlePolkadotAHStakingReward
-          kind: substrate/EventHandler
-          filter:
-            module: staking
-            method: Reward
 
         - handler: handlePolkadotAHStakingReward
           kind: substrate/EventHandler
@@ -51,12 +39,6 @@ dataSources:
           filter:
             module: nominationPools
             method: PaidOut
-
-        - handler: handlePolkadotAHStakingSlash
-          kind: substrate/EventHandler
-          filter:
-            module: staking
-            method: Slash
 
         - handler: handlePolkadotAHStakingSlash
           kind: substrate/EventHandler

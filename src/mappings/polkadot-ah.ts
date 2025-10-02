@@ -1,5 +1,5 @@
 import {SubstrateEvent} from "@subql/types";
-import {handleNewEra, handleNewSession, POOLED_STAKING_TYPE} from "./common";
+import {handleEraAssetHub, POOLED_STAKING_TYPE} from "./common";
 import {CustomPolkadotRewardCalculator} from "./rewards/Relaychain";
 import {NominationPoolRewardCalculator} from "./rewards/NominationPoolRewardCalculator";
 import {ValidatorStakingRewardCalculator} from "./rewards/ValidatorStakingRewardCalculator";
@@ -22,32 +22,19 @@ export async function PolkadotAHRewardCalculator(eraInfoDataSource: EraInfoDataS
     return CustomPolkadotRewardCalculator(eraInfoDataSource)
 }
 
-export async function handlePolkadotAHNewEra(_: SubstrateEvent): Promise<void> {
-    let validatorEraInfoDataSource = new ValidatorEraInfoDataSource();
-
-    await handleNewEra(
-        validatorEraInfoDataSource,
-        await PolkadotAHRewardCalculator(validatorEraInfoDataSource),
-        POLKADOT_AH_GENESIS,
-        DIRECT_STAKING_TYPE
-    )
-}
-
-export async function handlePolkadotAHNewSession(_: SubstrateEvent): Promise<void> {
-    // Is used for staking.EraPaid event after asset hub migration
+export async function handlePolkadotAHEraPaid(_: SubstrateEvent): Promise<void> {
     let validatorEraInfoDataSource = new ValidatorEraInfoDataSource();
     let mainRewardCalculator = await PolkadotAHRewardCalculator(validatorEraInfoDataSource)
     let poolRewardCalculator = new NominationPoolRewardCalculator(validatorEraInfoDataSource, mainRewardCalculator)
 
-    await handleNewSession(
+    await handleEraAssetHub(
         validatorEraInfoDataSource,
-        await mainRewardCalculator,
+        mainRewardCalculator,
         POLKADOT_AH_GENESIS,
         DIRECT_STAKING_TYPE,
         poolRewardCalculator
     )
 }
-
 
 export async function handlePolkadotAHStakingReward(
     event: SubstrateEvent<[accountId: Codec, reward: INumber]>,

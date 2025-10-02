@@ -22,23 +22,11 @@ dataSources:
     mapping:
       file: ./dist/index.js
       handlers:
-        - handler: handleKusamaAHNewEra
-          kind: substrate/EventHandler
-          filter:
-            module: staking
-            method: StakersElected
-
-        - handler: handleKusamaAHNewSession
+        - handler: handleKusamaAHEraPaid
           kind: substrate/EventHandler
           filter:
             module: staking
             method: EraPaid
-
-        - handler: handleKusamaAHStakingReward
-          kind: substrate/EventHandler
-          filter:
-            module: staking
-            method: Reward
 
         - handler: handleKusamaAHStakingReward
           kind: substrate/EventHandler
@@ -51,12 +39,6 @@ dataSources:
           filter:
             module: nominationPools
             method: PaidOut
-
-        - handler: handleKusamaAHStakingSlash
-          kind: substrate/EventHandler
-          filter:
-            module: staking
-            method: Slash
 
         - handler: handleKusamaAHStakingSlash
           kind: substrate/EventHandler

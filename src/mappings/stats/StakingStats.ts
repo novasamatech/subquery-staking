@@ -29,6 +29,11 @@ export class StakingStats {
         this.poolRewardCalculator = poolRewardCalculator
     }
 
+    async indexEraAssetHub(): Promise<void> {
+        await this.updateActiveStakers()
+        await this.updateAPY()
+    }
+
     async indexEra(): Promise<void> {
         await this.updateActiveStakers()
         await this.updateAPY()

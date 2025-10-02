@@ -37,3 +37,21 @@ export async function handleNewSession(
 
     await stakingStats.indexSession()
 }
+
+export async function handleEraAssetHub(
+    eraInfoDataSource: EraInfoDataSource,
+    rewardCalculator: RewardCalculator,
+    networkId: string,
+    stakingType: string,
+    poolRewardCalculator?: RewardCalculator
+): Promise<void> {
+    const stakingStats = new StakingStats(
+        rewardCalculator,
+        eraInfoDataSource,
+        networkId,
+        stakingType,
+        poolRewardCalculator
+    )
+
+    await stakingStats.indexEraAssetHub()
+}

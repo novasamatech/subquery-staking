@@ -15,31 +15,19 @@ schema:
 network:
   chainId: '0x67f9723393ef76214df0118c34bbbd3dbebc8ed46a10973a8c969d48fe7598c9'
   endpoint: >-
-    wss://westend-asset-hub-rpc.polkadot.io
+    wss://westmint-rpc-tn.dwellir.com
 dataSources:
   - name: main
     kind: substrate/Runtime
-    startBlock: 11834375 # session rotated https://assethub-westend.subscan.io/event/11834375-7
+    startBlock: 12927094 # session rotated https://assethub-westend.subscan.io/event/11834375-7
     mapping:
       file: ./dist/index.js
       handlers:
-        - handler: handleWestendAHNewEra
-          kind: substrate/EventHandler
-          filter:
-            module: staking
-            method: StakersElected
-
-        - handler: handleWestendAHNewSession
+        - handler: handleWestendAHEraPaid
           kind: substrate/EventHandler
           filter:
             module: staking
             method: EraPaid
-
-        - handler: handleWestendAHStakingReward
-          kind: substrate/EventHandler
-          filter:
-            module: staking
-            method: Reward
 
         - handler: handleWestendAHStakingReward
           kind: substrate/EventHandler
@@ -52,12 +40,6 @@ dataSources:
           filter:
             module: nominationPools
             method: PaidOut
-
-        - handler: handleWestendAHStakingSlash
-          kind: substrate/EventHandler
-          filter:
-            module: staking
-            method: Slash
 
         - handler: handleWestendAHStakingSlash
           kind: substrate/EventHandler
