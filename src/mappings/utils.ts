@@ -37,9 +37,12 @@ export function BigFromBigint(number: bigint): Big {
 }
 
 export function minBig(array: Big[]): Big | undefined {
-    if (array.length == 0) return undefined
-
-    return Math.min.apply(null, array)
+    // Use Big.js methods directly to maintain precision and ensure type safety
+    if (array.length === 0) return undefined
+    
+    return array.reduce((min, current) => {
+        return current.lt(min) ? current : min
+    })
 }
 
 export function associate<T, K extends keyof any, V>(
