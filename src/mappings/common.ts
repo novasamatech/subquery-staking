@@ -43,7 +43,7 @@ export async function handleEraAssetHub(
     rewardCalculator: RewardCalculator,
     networkId: string,
     stakingType: string,
-    poolRewardCalculator?: RewardCalculator
+    poolRewardCalculator: RewardCalculator
 ): Promise<void> {
     const stakingStats = new StakingStats(
         rewardCalculator,
