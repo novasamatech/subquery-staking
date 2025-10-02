@@ -31,8 +31,8 @@ dataSources:
         - handler: handleKusamaAHNewSession
           kind: substrate/EventHandler
           filter:
-            module: session
-            method: NewSession
+            module: staking
+            method: EraPaid
 
         - handler: handleKusamaAHStakingReward
           kind: substrate/EventHandler
