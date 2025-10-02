@@ -66,10 +66,11 @@ export abstract class ValidatorStakingRewardCalculator implements RewardCalculat
         )
 
         return eraStakers.map(({address, totalStake}) => {
+            const commission = commissionByValidatorId[address]
             return {
                 address: address,
                 totalStake: totalStake,
-                commission: PerbillToNumber(commissionByValidatorId[address])
+                commission: commission ? PerbillToNumber(commission) : 0
             }
         })
     }
