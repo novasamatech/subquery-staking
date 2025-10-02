@@ -1,5 +1,5 @@
 import {SubstrateEvent} from "@subql/types";
-import {handleNewEra, handleNewSession, POOLED_STAKING_TYPE} from "./common";
+import {handleEraAssetHub, POOLED_STAKING_TYPE} from "./common";
 import {RelaychainRewardCalculator} from "./rewards/Relaychain";
 import {NominationPoolRewardCalculator} from "./rewards/NominationPoolRewardCalculator";
 import {ValidatorEraInfoDataSource} from "./era/ValidatorEraInfoDataSource";
@@ -15,24 +15,12 @@ import {
 const KUSAMA_AH_GENESIS = "0x48239ef607d7928874027a43a67689209727dfb3d3dc5e5b03a39bdc2eda771a"
 const DIRECT_STAKING_TYPE = "relaychain"
 
-export async function handleKusamaAHNewEra(_: SubstrateEvent): Promise<void> {
-    let validatorEraInfoDataSource = new ValidatorEraInfoDataSource();
-
-    await handleNewEra(
-        validatorEraInfoDataSource,
-        await RelaychainRewardCalculator(validatorEraInfoDataSource),
-        KUSAMA_AH_GENESIS,
-        DIRECT_STAKING_TYPE
-    )
-}
-
-export async function handleKusamaAHNewSession(_: SubstrateEvent): Promise<void> {
-    // Is used for staking.EraPaid event after asset hub migration
+export async function handleKusamaAHEraPaid(_: SubstrateEvent): Promise<void> {
     let validatorEraInfoDataSource = new ValidatorEraInfoDataSource();
     let mainRewardCalculator = await RelaychainRewardCalculator(validatorEraInfoDataSource)
     let poolRewardCalculator = new NominationPoolRewardCalculator(validatorEraInfoDataSource, mainRewardCalculator)
 
-    await handleNewSession(
+    await handleEraAssetHub(
         validatorEraInfoDataSource,
         mainRewardCalculator,
         KUSAMA_AH_GENESIS,
@@ -40,7 +28,6 @@ export async function handleKusamaAHNewSession(_: SubstrateEvent): Promise<void>
         poolRewardCalculator
     )
 }
-
 
 export async function handleKusamaAHStakingReward(
     event: SubstrateEvent<[accountId: Codec, reward: INumber]>,

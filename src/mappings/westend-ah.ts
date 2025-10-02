@@ -1,5 +1,5 @@
 import {SubstrateEvent} from "@subql/types";
-import {handleNewEra, handleNewSession, POOLED_STAKING_TYPE} from "./common";
+import {handleEraAssetHub, POOLED_STAKING_TYPE} from "./common";
 import {RelaychainRewardCalculator} from "./rewards/Relaychain";
 import {NominationPoolRewardCalculator} from "./rewards/NominationPoolRewardCalculator";
 import {ValidatorEraInfoDataSource} from "./era/ValidatorEraInfoDataSource";
@@ -15,26 +15,14 @@ import {
 const WESTEND_AH_GENESIS = "0x67f9723393ef76214df0118c34bbbd3dbebc8ed46a10973a8c969d48fe7598c9"
 const DIRECT_STAKING_TYPE = "relaychain"
 
-export async function handleWestendAHNewEra(_: SubstrateEvent): Promise<void> {
-    let validatorEraInfoDataSource = new ValidatorEraInfoDataSource();
-
-    await handleNewEra(
-        validatorEraInfoDataSource,
-        await RelaychainRewardCalculator(validatorEraInfoDataSource),
-        WESTEND_AH_GENESIS,
-        DIRECT_STAKING_TYPE
-    )
-}
-
-export async function handleWestendAHNewSession(_: SubstrateEvent): Promise<void> {
-    // Is used for staking.EraPaid event after asset hub migration
+export async function handleWestendAHEraPaid(_: SubstrateEvent): Promise<void> {
     let validatorEraInfoDataSource = new ValidatorEraInfoDataSource();
     let mainRewardCalculator = await RelaychainRewardCalculator(validatorEraInfoDataSource)
     let poolRewardCalculator = new NominationPoolRewardCalculator(validatorEraInfoDataSource, mainRewardCalculator)
 
-    await handleNewSession(
+    await handleEraAssetHub(
         validatorEraInfoDataSource,
-        await mainRewardCalculator,
+        mainRewardCalculator,
         WESTEND_AH_GENESIS,
         DIRECT_STAKING_TYPE,
         poolRewardCalculator

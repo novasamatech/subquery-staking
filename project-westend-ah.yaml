@@ -23,23 +23,11 @@ dataSources:
     mapping:
       file: ./dist/index.js
       handlers:
-        - handler: handleWestendAHNewEra
-          kind: substrate/EventHandler
-          filter:
-            module: staking
-            method: StakersElected
-
-        - handler: handleWestendAHNewSession
+        - handler: handleWestendAHEraPaid
           kind: substrate/EventHandler
           filter:
             module: staking
             method: EraPaid
-
-        - handler: handleWestendAHStakingReward
-          kind: substrate/EventHandler
-          filter:
-            module: staking
-            method: Reward
 
         - handler: handleWestendAHStakingReward
           kind: substrate/EventHandler
@@ -52,12 +40,6 @@ dataSources:
           filter:
             module: nominationPools
             method: PaidOut
-
-        - handler: handleWestendAHStakingSlash
-          kind: substrate/EventHandler
-          filter:
-            module: staking
-            method: Slash
 
         - handler: handleWestendAHStakingSlash
           kind: substrate/EventHandler
