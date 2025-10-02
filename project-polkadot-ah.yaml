@@ -31,8 +31,8 @@ dataSources:
         - handler: handlePolkadotAHNewSession
           kind: substrate/EventHandler
           filter:
-            module: session
-            method: NewSession
+            module: staking
+            method: EraPaid
 
         - handler: handlePolkadotAHStakingReward
           kind: substrate/EventHandler

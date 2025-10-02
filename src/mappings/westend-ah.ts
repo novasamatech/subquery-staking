@@ -27,6 +27,7 @@ export async function handleWestendAHNewEra(_: SubstrateEvent): Promise<void> {
 }
 
 export async function handleWestendAHNewSession(_: SubstrateEvent): Promise<void> {
+    // Is used for staking.EraPaid event after asset hub migration
     let validatorEraInfoDataSource = new ValidatorEraInfoDataSource();
     let mainRewardCalculator = await RelaychainRewardCalculator(validatorEraInfoDataSource)
     let poolRewardCalculator = new NominationPoolRewardCalculator(validatorEraInfoDataSource, mainRewardCalculator)

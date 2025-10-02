@@ -27,6 +27,7 @@ export async function handleKusamaAHNewEra(_: SubstrateEvent): Promise<void> {
 }
 
 export async function handleKusamaAHNewSession(_: SubstrateEvent): Promise<void> {
+    // Is used for staking.EraPaid event after asset hub migration
     let validatorEraInfoDataSource = new ValidatorEraInfoDataSource();
     let mainRewardCalculator = await RelaychainRewardCalculator(validatorEraInfoDataSource)
     let poolRewardCalculator = new NominationPoolRewardCalculator(validatorEraInfoDataSource, mainRewardCalculator)

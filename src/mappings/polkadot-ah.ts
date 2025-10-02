@@ -34,6 +34,7 @@ export async function handlePolkadotAHNewEra(_: SubstrateEvent): Promise<void> {
 }
 
 export async function handlePolkadotAHNewSession(_: SubstrateEvent): Promise<void> {
+    // Is used for staking.EraPaid event after asset hub migration
     let validatorEraInfoDataSource = new ValidatorEraInfoDataSource();
     let mainRewardCalculator = await PolkadotAHRewardCalculator(validatorEraInfoDataSource)
     let poolRewardCalculator = new NominationPoolRewardCalculator(validatorEraInfoDataSource, mainRewardCalculator)
