@@ -59,6 +59,6 @@ type Reward @entity {
   stakingType: String! @index
   amount: BigInt!
   accumulatedAmount: BigInt!
-  type: RewardType!
+  type: RewardType! @index
   poolId: Int
 }
