@@ -18,7 +18,7 @@ network:
   endpoint: "wss://asset-hub-kusama-rpc.n.dwellir.com"
 dataSources:
   - kind: substrate/Runtime
-    startBlock: 10779919 # TODO: set to migration block when it will be completed
+    startBlock: 11147500
     mapping:
       file: ./dist/index.js
       handlers:
