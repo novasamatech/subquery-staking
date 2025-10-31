@@ -18,6 +18,7 @@ network:
   endpoint: "wss://asset-hub-polkadot-rpc.n.dwellir.com"
 dataSources:
   - kind: substrate/Runtime
+    # AH migration start block
     startBlock: TODO: add
     mapping:
       file: ./dist/index.js
