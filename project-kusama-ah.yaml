@@ -22,11 +22,11 @@ dataSources:
     mapping:
       file: ./dist/index.js
       handlers:
-        - handler: handleKusamaAHEraPaid
+        - handler: handleKusamaAHPagedElectionProceeded
           kind: substrate/EventHandler
           filter:
             module: staking
-            method: EraPaid
+            method: PagedElectionProceeded
 
         - handler: handleKusamaAHStakingReward
           kind: substrate/EventHandler

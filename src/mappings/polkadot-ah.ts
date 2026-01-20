@@ -13,6 +13,7 @@ import {
     handleRelaychainPooledStakingBondedSlash,
     handleRelaychainPooledStakingUnbondingSlash
 } from "./rewards/history/nomination_pools";
+import {shouldProcessPageIndex} from "./utils";
 
 const POLKADOT_AH_GENESIS = "0x68d56f15f85d3136970ec16946040bc1752654e906147f7e43e9d539d7c3de2f"
 const DIRECT_STAKING_TYPE = "relaychain"
@@ -22,7 +23,10 @@ export async function PolkadotAHRewardCalculator(eraInfoDataSource: EraInfoDataS
     return CustomPolkadotRewardCalculator(eraInfoDataSource)
 }
 
-export async function handlePolkadotAHEraPaid(_: SubstrateEvent): Promise<void> {
+export async function handlePolkadotAHPagedElectionProceeded(event: SubstrateEvent): Promise<void> {
+    if (!shouldProcessPageIndex(event)) {
+        return;
+    }
     let validatorEraInfoDataSource = new ValidatorEraInfoDataSource();
     let mainRewardCalculator = await PolkadotAHRewardCalculator(validatorEraInfoDataSource)
     let poolRewardCalculator = new NominationPoolRewardCalculator(validatorEraInfoDataSource, mainRewardCalculator)

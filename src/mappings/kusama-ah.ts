@@ -11,11 +11,15 @@ import {
     handleRelaychainPooledStakingBondedSlash,
     handleRelaychainPooledStakingUnbondingSlash
 } from "./rewards/history/nomination_pools";
+import {shouldProcessPageIndex} from "./utils";
 
 const KUSAMA_AH_GENESIS = "0x48239ef607d7928874027a43a67689209727dfb3d3dc5e5b03a39bdc2eda771a"
 const DIRECT_STAKING_TYPE = "relaychain"
 
-export async function handleKusamaAHEraPaid(_: SubstrateEvent): Promise<void> {
+export async function handleKusamaAHPagedElectionProceeded(event: SubstrateEvent): Promise<void> {
+    if (!shouldProcessPageIndex(event)) {
+        return;
+    }
     let validatorEraInfoDataSource = new ValidatorEraInfoDataSource();
     let mainRewardCalculator = await RelaychainRewardCalculator(validatorEraInfoDataSource)
     let poolRewardCalculator = new NominationPoolRewardCalculator(validatorEraInfoDataSource, mainRewardCalculator)
