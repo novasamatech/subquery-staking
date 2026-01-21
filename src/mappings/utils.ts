@@ -2,6 +2,7 @@ import {INumber} from "@polkadot/types-codec/types/interfaces";
 import {Big} from "big.js"
 import {Perbill, Percent, AccountId32} from "@polkadot/types/interfaces/runtime/types";
 import {Compact, Struct, Vec} from '@polkadot/types-codec'
+import {SubstrateEvent} from "@subql/types";
 
 export function BigFromINumber(number: INumber): Big {
     return Big(number.toString())
@@ -89,4 +90,17 @@ interface SpStakingIndividualExposure extends Struct {
 export interface SpStakingExposurePage extends Struct {
     readonly pageTotal: INumber;
     readonly others: Vec<SpStakingIndividualExposure>;
+}
+
+/**
+ * Checks if the page index from PagedElectionProceeded event is 0.
+ * Returns true if page index is 0 (should process), false otherwise (should skip).
+ */
+export function shouldProcessPageIndex(event: SubstrateEvent): boolean {
+    const page_index = event.event.data[0].toString();
+    if (page_index !== "0") {
+        logger.info(`Page index is not 0, it is ${page_index}, skipping in order to process only whole data in era`);
+        return false;
+    }
+    return true;
 }

@@ -11,11 +11,15 @@ import {
     handleRelaychainPooledStakingBondedSlash,
     handleRelaychainPooledStakingUnbondingSlash
 } from "./rewards/history/nomination_pools";
+import {shouldProcessPageIndex} from "./utils";
 
 const WESTEND_AH_GENESIS = "0x67f9723393ef76214df0118c34bbbd3dbebc8ed46a10973a8c969d48fe7598c9"
 const DIRECT_STAKING_TYPE = "relaychain"
 
-export async function handleWestendAHEraPaid(_: SubstrateEvent): Promise<void> {
+export async function handleWestendAHPagedElectionProceeded(event: SubstrateEvent): Promise<void> {
+    if (!shouldProcessPageIndex(event)) {
+        return;
+    }
     let validatorEraInfoDataSource = new ValidatorEraInfoDataSource();
     let mainRewardCalculator = await RelaychainRewardCalculator(validatorEraInfoDataSource)
     let poolRewardCalculator = new NominationPoolRewardCalculator(validatorEraInfoDataSource, mainRewardCalculator)
