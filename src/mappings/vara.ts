@@ -2,8 +2,8 @@ import {SubstrateEvent} from "@subql/types";
 import {handleNewEra, handleNewSession, POOLED_STAKING_TYPE} from "./common";
 import {RelaychainRewardCalculator} from "./rewards/Relaychain";
 import {ValidatorEraInfoDataSource} from "./era/ValidatorEraInfoDataSource";
-import {Codec} from "@polkadot/types/types";
-import {INumber} from "@polkadot/types-codec/types/interfaces";
+import type {Codec} from "@polkadot/types-codec/types";
+import type {INumber} from "@polkadot/types-codec/types";
 import {handleRelaychainStakingReward, handleRelaychainStakingSlash} from "./rewards/history/relaychain";
 import { handleRelaychainPooledStakingBondedSlash, handleRelaychainPooledStakingReward, handleRelaychainPooledStakingUnbondingSlash } from "./rewards/history/nomination_pools";
 

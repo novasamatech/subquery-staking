@@ -1,7 +1,7 @@
 import {CollatorStakingRewardCalculator} from "./CollatorStakingRewardCalculator";
 import Big from "big.js";
 import "@oak-network/api-augment"
-import {INumber} from "@polkadot/types-codec/types/interfaces";
+import type {INumber} from "@polkadot/types-codec/types";
 import {BigFromINumber} from "../utils";
 import {Inflation} from "./inflation/Inflation";
 import {EraInfoDataSource} from "../era/EraInfoDataSource";

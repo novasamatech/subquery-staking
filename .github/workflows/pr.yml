@@ -18,3 +18,5 @@ jobs:
         run: yarn codegen
       - name: Build
         run: yarn build
+      - name: Build
+        run: yarn test

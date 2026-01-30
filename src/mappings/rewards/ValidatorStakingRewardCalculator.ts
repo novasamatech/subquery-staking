@@ -1,80 +1,89 @@
-import {RewardCalculator, StakerNode} from "./RewardCalculator";
-import {StakedInfo} from "./inflation/Inflation";
+import { RewardCalculator, StakerNode } from "./RewardCalculator";
+import { StakedInfo } from "./inflation/Inflation";
 import Big from "big.js";
-import {associate, BigFromINumber, PerbillToNumber} from "../utils";
-import {EraInfoDataSource} from "../era/EraInfoDataSource";
-import {max} from "../utils";
+import { associate, BigFromINumber, PerbillToNumber } from "../utils";
+import { EraInfoDataSource } from "../era/EraInfoDataSource";
+import { max } from "../utils";
+import type { Perbill } from "@polkadot/types/interfaces/runtime/types";
 
 export abstract class ValidatorStakingRewardCalculator implements RewardCalculator {
+  private readonly eraInfoDataSource: EraInfoDataSource;
 
-    private readonly eraInfoDataSource: EraInfoDataSource
+  protected stakersApy: Map<string, number> | undefined = undefined;
 
-    protected stakersApy: Map<string, number> | undefined = undefined
+  protected constructor(eraInfoDataSource: EraInfoDataSource) {
+    this.eraInfoDataSource = eraInfoDataSource;
+  }
 
-    protected constructor(eraInfoDataSource: EraInfoDataSource) {
-        this.eraInfoDataSource = eraInfoDataSource
+  async getStakersApy(): Promise<Map<string, number>> {
+    if (this.stakersApy === undefined) {
+      let stakers = await this.fetchStakers();
+      let totalIssuance = await this.fetchTotalIssuance();
+
+      let stakedInfo = this.constructStakedInfo(stakers, totalIssuance);
+
+      this.stakersApy = await this.getStakersApyImpl(stakers, stakedInfo);
     }
+    return this.stakersApy;
+  }
 
-    async getStakersApy(): Promise<Map<string, number>> {
-        if (this.stakersApy === undefined) {
-            let stakers = await this.fetchStakers()
-            let totalIssuance = await this.fetchTotalIssuance()
+  protected abstract getStakersApyImpl(
+    stakers: StakerNode[],
+    stakedInfo: StakedInfo,
+  ): Promise<Map<string, number>>;
 
-            let stakedInfo = this.constructStakedInfo(stakers, totalIssuance)
+  async maxApy(): Promise<number> {
+    const stakersApy = await this.getStakersApy();
+    const maxApyValue = max([...stakersApy.values()]);
+    return maxApyValue === undefined ? 0 : maxApyValue;
+  }
 
-            this.stakersApy = await this.getStakersApyImpl(stakers, stakedInfo)
-        }
-        return this.stakersApy
-    }
+  private constructStakedInfo(
+    stakers: StakerNode[],
+    totalIssuance: Big,
+  ): StakedInfo {
+    let totalStaked = stakers.reduce(
+      (accumulator, staker) => accumulator.plus(staker.totalStake),
+      Big(0),
+    );
 
-    protected abstract getStakersApyImpl(stakers: StakerNode[], stakedInfo: StakedInfo): Promise<Map<string, number>>
+    let stakedPortion = totalIssuance.eq(0)
+      ? 0
+      : totalStaked.div(totalIssuance).toNumber();
 
-    async maxApy(): Promise<number> {
-        const stakersApy = await this.getStakersApy()
-        const maxApyValue = max([...stakersApy.values()]);
-        return maxApyValue === undefined ? 0 : maxApyValue;
-    }
+    logger.info(`Total Issuance ${totalIssuance}`);
+    logger.info(`Total staked ${totalStaked}`);
 
-    private constructStakedInfo(stakers: StakerNode[], totalIssuance: Big): StakedInfo {
-        let totalStaked = stakers.reduce(
-            (accumulator, staker) => accumulator.plus(staker.totalStake),
-            Big(0)
-        )
+    return {
+      totalStaked: totalStaked,
+      totalIssuance: totalIssuance,
+      stakedPortion: stakedPortion,
+    };
+  }
 
-        let stakedPortion = totalIssuance.eq(0) ? 0 : totalStaked.div(totalIssuance).toNumber()
+  private async fetchStakers(): Promise<StakerNode[]> {
+    const currentEra = await this.eraInfoDataSource.era();
+    const eraStakers = await this.eraInfoDataSource.eraStakers();
 
-        logger.info(`Total Issuance ${totalIssuance}`)
-        logger.info(`Total staked ${totalStaked}`)
+    const commissions =
+      await api.query.staking.erasValidatorPrefs.entries(currentEra);
 
-        return {
-            totalStaked: totalStaked,
-            totalIssuance: totalIssuance,
-            stakedPortion: stakedPortion
-        }
-    }
+    const commissionByValidatorId = associate(
+      commissions,
+      ([storageKey]) => storageKey.args[1].toString(),
+      ([, prefs]) => (prefs as unknown as { commission: Perbill }).commission,
+    );
 
-    private async fetchStakers(): Promise<StakerNode[]> {
-        const currentEra = await this.eraInfoDataSource.era()
-        const eraStakers = await this.eraInfoDataSource.eraStakers()
+    return eraStakers.map(({ address, totalStake }) => {
+      return {
+        address: address,
+        totalStake: totalStake,
+        commission: PerbillToNumber(commissionByValidatorId[address]),
+      };
+    });
+  }
 
-        const commissions = await api.query.staking.erasValidatorPrefs.entries(currentEra)
-
-        const commissionByValidatorId = associate(
-            commissions,
-            ([storageKey]) => storageKey.args[1].toString(),
-            ([, prefs]) => prefs.commission,
-        )
-
-        return eraStakers.map(({address, totalStake}) => {
-            return {
-                address: address,
-                totalStake: totalStake,
-                commission: PerbillToNumber(commissionByValidatorId[address])
-            }
-        })
-    }
-
-    private async fetchTotalIssuance(): Promise<Big> {
-        return BigFromINumber(await api.query.balances.totalIssuance());
-    }
+  private async fetchTotalIssuance(): Promise<Big> {
+    return BigFromINumber(await api.query.balances.totalIssuance());
+  }
 }

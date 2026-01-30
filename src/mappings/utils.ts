@@ -1,4 +1,4 @@
-import {INumber} from "@polkadot/types-codec/types/interfaces";
+import type {INumber} from "@polkadot/types-codec/types";
 import {Big} from "big.js"
 import {Perbill, Percent, AccountId32} from "@polkadot/types/interfaces/runtime/types";
 import {Compact, Struct, Vec} from '@polkadot/types-codec'
