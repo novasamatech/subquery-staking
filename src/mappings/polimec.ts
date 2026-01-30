@@ -2,8 +2,8 @@ import {SubstrateEvent} from "@subql/types";
 import {handleNewEra} from "./common";
 import {ParachainRewardCalculator} from "./rewards/Parachain";
 import {CollatorEraInfoDataSource} from "./era/CollatorEraInfoDataSource";
-import {Codec} from "@polkadot/types/types";
-import {INumber} from "@polkadot/types-codec/types/interfaces";
+import type {Codec} from "@polkadot/types-codec/types";
+import type {INumber} from "@polkadot/types-codec/types";
 import {handleParachainStakingReward} from "./rewards/history/parachain";
 
 const POLIMEC_GENESIS = "0x7eb9354488318e7549c722669dcbdcdc526f1fef1420e7944667212f3601fdbd"

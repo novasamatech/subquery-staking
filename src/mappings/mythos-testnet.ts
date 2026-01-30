@@ -1,7 +1,7 @@
 import {SubstrateEvent} from "@subql/types";
 import {handleNewEra} from "./common";
-import {Codec} from "@polkadot/types/types";
-import {INumber} from "@polkadot/types-codec/types/interfaces";
+import type {Codec} from "@polkadot/types-codec/types";
+import type {INumber} from "@polkadot/types-codec/types";
 import {MythosEraInfoDataSource} from "./era/MythosEraInfoDataSource";
 import {MythosRewardCalculator} from "./rewards/MythosRewardCalculator";
 import {handleReward, RewardArgs} from "./rewards/history/common";

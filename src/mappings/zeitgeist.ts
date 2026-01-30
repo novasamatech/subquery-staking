@@ -2,8 +2,8 @@ import {SubstrateEvent} from "@subql/types";
 import {handleNewEra} from "./common";
 import {ParachainRewardCalculator} from "./rewards/Parachain";
 import {CollatorEraInfoDataSource} from "./era/CollatorEraInfoDataSource";
-import {Codec} from "@polkadot/types/types";
-import {INumber} from "@polkadot/types-codec/types/interfaces";
+import type {Codec} from "@polkadot/types-codec/types";
+import type {INumber} from "@polkadot/types-codec/types";
 import {handleParachainStakingReward} from "./rewards/history/parachain";
 
 const ZEITGEIST_GENESIS = "0x1bf2a2ecb4a868de66ea8610f2ce7c8c43706561b6476031315f6640fe38e060"

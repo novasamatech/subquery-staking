@@ -5,8 +5,8 @@ import {NominationPoolRewardCalculator} from "./rewards/NominationPoolRewardCalc
 import {ValidatorStakingRewardCalculator} from "./rewards/ValidatorStakingRewardCalculator";
 import {ValidatorEraInfoDataSource} from "./era/ValidatorEraInfoDataSource";
 import {EraInfoDataSource} from "./era/EraInfoDataSource";
-import {Codec} from "@polkadot/types/types";
-import {INumber} from "@polkadot/types-codec/types/interfaces";
+import type {Codec} from "@polkadot/types-codec/types";
+import type {INumber} from "@polkadot/types-codec/types";
 import {handleRelaychainStakingReward, handleRelaychainStakingSlash} from "./rewards/history/relaychain";
 import {
     handleRelaychainPooledStakingReward, 

@@ -22,3 +22,4 @@ export * from "./mappings/polkadot-ah";
 export * from "./mappings/kusama-ah";
 export * from "./mappings/westend-ah";
 import "@polkadot/api-augment";
+import "@polkadot/types-augment/lookup";

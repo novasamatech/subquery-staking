@@ -1,9 +1,9 @@
 import {SubstrateEvent} from "@subql/types";
-import {Codec} from "@polkadot/types/types";
+import type {Codec} from "@polkadot/types-codec/types";
 import {Balance} from "@polkadot/types/interfaces";
 import {handleReward, RewardArgs, getRewardData} from "./common";
 import {RewardType} from "../../../types";
-import {INumber} from "@polkadot/types-codec/types/interfaces";
+import type {INumber} from "@polkadot/types-codec/types";
 
 export async function handleRelaychainStakingReward(
     event: SubstrateEvent<[accountId: Codec, reward: INumber]>,

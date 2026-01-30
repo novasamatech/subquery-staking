@@ -3,8 +3,8 @@ import {handleNewEra, handleNewSession, POOLED_STAKING_TYPE} from "./common";
 import {AlephZeroRewardCalculator} from "./rewards/AlephZero";
 import {NominationPoolRewardCalculator} from "./rewards/NominationPoolRewardCalculator";
 import {ValidatorEraInfoDataSource} from "./era/ValidatorEraInfoDataSource";
-import {Codec} from "@polkadot/types/types";
-import {INumber} from "@polkadot/types-codec/types/interfaces";
+import type {Codec} from "@polkadot/types-codec/types";
+import type {INumber} from "@polkadot/types-codec/types";
 import {handleRelaychainStakingReward, handleRelaychainStakingSlash} from "./rewards/history/relaychain";
 import {
     handleRelaychainPooledStakingReward, 

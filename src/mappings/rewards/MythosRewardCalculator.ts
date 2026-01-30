@@ -1,5 +1,5 @@
 import {RewardCalculator} from "./RewardCalculator";
-import {INumber} from "@polkadot/types-codec/types/interfaces";
+import type {INumber} from "@polkadot/types-codec/types";
 import {MythosEraInfoDataSource} from "../era/MythosEraInfoDataSource";
 import {Percent} from "@polkadot/types/interfaces/runtime/types";
 import {BigFromINumber, max} from "../utils";
