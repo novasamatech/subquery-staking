@@ -119,6 +119,10 @@ export class ValidatorEraInfoDataSource extends CachingEraInfoDataSource {
       for (let i = 0; i < exposure.pageCount.toNumber(); ++i) {
         if (pageMap[i]) {
           others.push(...pageMap[i]);
+        } else {
+          logger.warn(
+            `Missing page ${i} for validator ${validatorAddress} in era ${era}`,
+          );
         }
       }
 

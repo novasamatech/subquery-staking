@@ -89,40 +89,28 @@ export async function handleRelaychainPooledStakingBondedSlash(
 }
 
 export async function handleRelaychainPooledStakingUnbondingSlash(
-  event: SubstrateEvent<[era: INumber, poolId: INumber, slash: INumber]>,
+  event: SubstrateEvent<[poolId: INumber, era: INumber, slash: INumber]>,
   chainId: string,
   stakingType: string,
 ): Promise<void> {
   const {
     event: {
-      data: [era, poolId, slash],
+      data: [poolId, era, slash],
     },
   } = event;
-  let poolIdNumber = poolId.toNumber();
-  let eraIdNumber = era.toNumber();
+  const poolIdNumber = poolId.toNumber();
+  const eraIdNumber = era.toNumber();
 
-  let unbondingPoolsOption = (await api.query.nominationPools.subPoolsStorage(
+  const unbondingPoolsOption = (await api.query.nominationPools.subPoolsStorage(
     poolIdNumber,
   )) as unknown as Option<Codec>;
-  let unbondingPools = unwrapMaybe<{
+  const unbondingPools = unwrapMaybe<{
     withEra: Map<unknown, { points: INumber }>;
     noEra: { points: INumber };
   }>(unbondingPoolsOption);
 
-  // Fallback for chains/tests emitting [poolId, era, slash]
   if (!unbondingPools) {
-    poolIdNumber = eraIdNumber;
-    eraIdNumber = poolId.toNumber();
-    unbondingPoolsOption = (await api.query.nominationPools.subPoolsStorage(
-      poolIdNumber,
-    )) as unknown as Option<Codec>;
-    unbondingPools = unwrapMaybe<{
-      withEra: Map<unknown, { points: INumber }>;
-      noEra: { points: INumber };
-    }>(unbondingPoolsOption);
-    if (!unbondingPools) {
-      return;
-    }
+    return;
   }
 
   const pool =
