@@ -19,3 +19,6 @@ projects:
   - project-vara.yaml
   - project-avail.yaml
   - project-mythos.yaml
+  - project-westend-ah.yaml
+  - project-kusama-ah.yaml
+  - project-polkadot-ah.yaml
