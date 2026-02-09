@@ -1,7 +1,7 @@
 import {Staker, StakeTarget} from "./EraInfoDataSource";
 import {CachingEraInfoDataSource} from "./CachingEraInfoDataSource";
 import {Vec} from "@polkadot/types-codec";
-import {INumber} from "@polkadot/types-codec/types/interfaces";
+import type {INumber} from "@polkadot/types-codec/types";
 import type {AccountId20} from "@polkadot/types/interfaces/runtime";
 import {groupBy} from "../../utils/utils";
 import {BigFromBigint} from "../utils";

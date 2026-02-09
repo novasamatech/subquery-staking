@@ -1,6 +1,6 @@
 import {AccumulatedReward, Reward, RewardType} from "../../../types";
 import {SubstrateBlock, SubstrateEvent} from "@subql/types";
-import {Codec} from "@polkadot/types/types";
+import type {Codec} from "@polkadot/types-codec/types";
 
 export interface RewardArgs {
 

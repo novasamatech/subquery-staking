@@ -1,50 +1,61 @@
-import {StakeTarget} from "./EraInfoDataSource";
-import {CachingEraInfoDataSource} from "./CachingEraInfoDataSource";
-import {BigFromINumber, PerbillToNumber} from "../utils";
-import '@moonbeam-network/api-augment'
-import {PalletParachainStakingBond, PalletParachainStakingCollatorSnapshot} from "@polkadot/types/lookup";
-import {Vec, Option} from "@polkadot/types-codec";
+import { StakeTarget } from "./EraInfoDataSource";
+import { CachingEraInfoDataSource } from "./CachingEraInfoDataSource";
+import { BigFromINumber, PerbillToNumber } from "../utils";
+import type {
+  PalletParachainStakingBond,
+  PalletParachainStakingCollatorSnapshot,
+} from "@polkadot/types/lookup";
+import type { Vec, Option } from "@polkadot/types-codec";
 
 export class CollatorEraInfoDataSource extends CachingEraInfoDataSource {
+  async eraStarted(): Promise<boolean> {
+    return true;
+  }
 
-    async eraStarted(): Promise<boolean> {
-        return true
-    }
+  protected async fetchEra(): Promise<number> {
+    const round = await api.query.parachainStaking.round();
+    return round.current.toNumber();
+  }
 
-    protected async fetchEra(): Promise<number> {
-        const round = (await api.query.parachainStaking.round())
-        return round.current.toNumber()
-    }
+  protected async fetchEraStakers(): Promise<StakeTarget[]> {
+    const round = await this.era();
+    const stakes =
+      (await api.query.parachainStaking.atStake.entries(round)) ?? [];
 
-    protected async fetchEraStakers(): Promise<StakeTarget[]> {
-        const round = await this.era()
-        const stakes = await api.query.parachainStaking.atStake.entries(round) ?? []
+    return stakes.map(([key, exp]) => {
+      let collatorSnapshot: PalletParachainStakingCollatorSnapshot;
+      if ("unwrap" in exp) {
+        collatorSnapshot = (
+          exp as unknown as Option<PalletParachainStakingCollatorSnapshot>
+        ).unwrap();
+      } else {
+        collatorSnapshot =
+          exp as unknown as PalletParachainStakingCollatorSnapshot;
+      }
+      const [, collatorId] = key.args;
+      let validatorAddress = collatorId.toString();
 
-        return stakes.map(([key, exp]) => {
-            let collatorSnapshot : PalletParachainStakingCollatorSnapshot;
-            if ('unwrap' in exp) {
-                collatorSnapshot = (exp as unknown as Option<PalletParachainStakingCollatorSnapshot>).unwrap()
-            } else {
-                collatorSnapshot = exp as PalletParachainStakingCollatorSnapshot
-            }
-            const [, collatorId] = key.args
-            let validatorAddress = collatorId.toString()
+      const delegations =
+        collatorSnapshot.delegations ??
+        (
+          collatorSnapshot as unknown as {
+            nominators: Vec<PalletParachainStakingBond>;
+          }
+        ).nominators;
 
-            const delegations = collatorSnapshot.delegations ?? (collatorSnapshot['nominators'] as Vec<PalletParachainStakingBond>)
+      const others = delegations.map(({ owner, amount }) => {
+        return {
+          address: owner.toString(),
+          amount: amount.toBigInt(),
+        };
+      });
 
-            const others = delegations.map(({owner, amount}) => {
-                return {
-                    address: owner.toString(),
-                    amount: amount.toBigInt()
-                }
-            })
-
-            return {
-                address: validatorAddress,
-                selfStake: collatorSnapshot.bond.toBigInt(),
-                totalStake: BigFromINumber(collatorSnapshot.total),
-                others: others
-            }
-        })
-    }
+      return {
+        address: validatorAddress,
+        selfStake: collatorSnapshot.bond.toBigInt(),
+        totalStake: BigFromINumber(collatorSnapshot.total),
+        others: others,
+      };
+    });
+  }
 }

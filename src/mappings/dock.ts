@@ -2,8 +2,8 @@ import {SubstrateEvent} from "@subql/types";
 import {handleNewEra, handleNewSession} from "./common";
 import {RelaychainRewardCalculator} from "./rewards/Relaychain";
 import {ValidatorEraInfoDataSource} from "./era/ValidatorEraInfoDataSource";
-import {Codec} from "@polkadot/types/types";
-import {INumber} from "@polkadot/types-codec/types/interfaces";
+import type {Codec} from "@polkadot/types-codec/types";
+import type {INumber} from "@polkadot/types-codec/types";
 import {handleRelaychainStakingReward, handleRelaychainStakingSlash} from "./rewards/history/relaychain";
 
 const DOCK_GENESIS = "0x6bfe24dca2a3be10f22212678ac13a6446ec764103c0f3471c71609eac384aae"
