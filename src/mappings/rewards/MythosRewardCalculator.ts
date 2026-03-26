@@ -20,10 +20,10 @@ export class MythosRewardCalculator implements RewardCalculator {
         const minStake = (await api.query.collatorStaking.minStake()) as unknown as INumber
 
         const invulnerablesRaw = await api.query.collatorStaking.invulnerables()
-        const invulnerablesSet = new Set((invulnerablesRaw as unknown as any[]).map((addr: any) => addr.toString().toLowerCase()))
+        const invulnerablesSet = new Set((invulnerablesRaw as unknown as any[]).map((addr: any) => addr.toString()))
 
         // Invulnerables do not earn staking rewards — exclude them from APR calculation
-        const rewardableCollators = allSessionCollators.filter(c => !invulnerablesSet.has(c.address.toLowerCase()))
+        const rewardableCollators = allSessionCollators.filter(c => !invulnerablesSet.has(c.address))
 
         logger.info(`[MythosAPR] perBlockReward=${perBlockReward.toString()}, blocksPerYear=${blocksPerYear}, sessionCollators=${allSessionCollators.length}, rewardable=${rewardableCollators.length}, invulnerables=${invulnerablesSet.size}, commission=${collatorCommission}, minStake=${minStake.toString()}`)
 
