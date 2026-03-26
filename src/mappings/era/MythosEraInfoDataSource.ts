@@ -21,14 +21,14 @@ export class MythosEraInfoDataSource extends CachingEraInfoDataSource {
         if (!api.query.collatorStaking) return []
 
         const sessionValidators = (await api.query.session.validators()) as unknown as Vec<AccountId20>
-        const sessionValidatorsSet = new Set(sessionValidators.map(it => it.toString()))
+        const sessionValidatorsSet = new Set(sessionValidators.map(it => it.toString().toLowerCase()))
 
         const stakes = (await api.query.collatorStaking.candidateStake.entries())
 
         const stakesByCollator = groupBy(stakes,
             ([key]) => {
                 const collatorId = key.args[0]
-                return collatorId.toString()
+                return collatorId.toString().toLowerCase()
             })
 
         return Object.entries(stakesByCollator)
