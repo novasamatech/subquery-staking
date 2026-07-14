@@ -2,7 +2,6 @@ import type {INumber} from "@polkadot/types-codec/types";
 import {Big} from "big.js"
 import {Perbill, Percent, AccountId32} from "@polkadot/types/interfaces/runtime/types";
 import {Compact, Struct, Vec} from '@polkadot/types-codec'
-import {SubstrateEvent} from "@subql/types";
 
 export function BigFromINumber(number: INumber): Big {
     return Big(number.toString())
@@ -91,9 +90,4 @@ export interface SpStakingExposurePage extends Struct {
     readonly pageTotal: INumber;
     readonly others: Vec<SpStakingIndividualExposure>;
 }
-
-/**
- * Checks if the page index from PagedElectionProceeded event is 0.
- * Returns true if page index is 0 (should process), false otherwise (should skip).
- */
 
