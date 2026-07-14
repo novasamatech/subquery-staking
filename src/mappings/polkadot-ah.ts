@@ -22,9 +22,10 @@ export async function PolkadotAHRewardCalculator(eraInfoDataSource: EraInfoDataS
     return CustomPolkadotRewardCalculator(eraInfoDataSource)
 }
 
-// staking-async: PagedElectionProceeded is not emitted for every page on the
-// success path anymore, while EraPaid still fires at every rotation and the
-// just-started active era always has complete exposures in state.
+// staking-async: PagedElectionProceeded is not emitted for every page on the success
+// path anymore, while EraPaid fires at every rotation and the just-started active era
+// always has complete exposures in state - see ActiveEraValidatorEraInfoDataSource for
+// the polkadot-sdk reference and details.
 export async function handlePolkadotAHEraPaid(_: SubstrateEvent): Promise<void> {
     let validatorEraInfoDataSource = new ActiveEraValidatorEraInfoDataSource();
     let mainRewardCalculator = await PolkadotAHRewardCalculator(validatorEraInfoDataSource)

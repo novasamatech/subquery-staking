@@ -15,9 +15,10 @@ import {
 const WESTEND_AH_GENESIS = "0x67f9723393ef76214df0118c34bbbd3dbebc8ed46a10973a8c969d48fe7598c9"
 const DIRECT_STAKING_TYPE = "relaychain"
 
-// staking-async: PagedElectionProceeded is not emitted for every page on the
-// success path anymore, while EraPaid still fires at every rotation and the
-// just-started active era always has complete exposures in state.
+// staking-async: PagedElectionProceeded is not emitted for every page on the success
+// path anymore, while EraPaid fires at every rotation and the just-started active era
+// always has complete exposures in state - see ActiveEraValidatorEraInfoDataSource for
+// the polkadot-sdk reference and details.
 export async function handleWestendAHEraPaid(_: SubstrateEvent): Promise<void> {
     let validatorEraInfoDataSource = new ActiveEraValidatorEraInfoDataSource();
     let mainRewardCalculator = await RelaychainRewardCalculator(validatorEraInfoDataSource)
