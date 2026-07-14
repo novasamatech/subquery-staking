@@ -2,7 +2,7 @@ import {SubstrateEvent} from "@subql/types";
 import {handleEraAssetHub, POOLED_STAKING_TYPE} from "./common";
 import {RelaychainRewardCalculator} from "./rewards/Relaychain";
 import {NominationPoolRewardCalculator} from "./rewards/NominationPoolRewardCalculator";
-import {ValidatorEraInfoDataSource} from "./era/ValidatorEraInfoDataSource";
+import {ActiveEraValidatorEraInfoDataSource} from "./era/ActiveEraValidatorEraInfoDataSource";
 import type {Codec} from "@polkadot/types-codec/types";
 import type {INumber} from "@polkadot/types-codec/types";
 import {handleRelaychainStakingReward, handleRelaychainStakingSlash} from "./rewards/history/relaychain";
@@ -11,16 +11,15 @@ import {
     handleRelaychainPooledStakingBondedSlash,
     handleRelaychainPooledStakingUnbondingSlash
 } from "./rewards/history/nomination_pools";
-import {shouldProcessPageIndex} from "./utils";
 
 const WESTEND_AH_GENESIS = "0x67f9723393ef76214df0118c34bbbd3dbebc8ed46a10973a8c969d48fe7598c9"
 const DIRECT_STAKING_TYPE = "relaychain"
 
-export async function handleWestendAHPagedElectionProceeded(event: SubstrateEvent): Promise<void> {
-    if (!shouldProcessPageIndex(event)) {
-        return;
-    }
-    let validatorEraInfoDataSource = new ValidatorEraInfoDataSource();
+// staking-async: PagedElectionProceeded is not emitted for every page on the
+// success path anymore, while EraPaid still fires at every rotation and the
+// just-started active era always has complete exposures in state.
+export async function handleWestendAHEraPaid(_: SubstrateEvent): Promise<void> {
+    let validatorEraInfoDataSource = new ActiveEraValidatorEraInfoDataSource();
     let mainRewardCalculator = await RelaychainRewardCalculator(validatorEraInfoDataSource)
     let poolRewardCalculator = new NominationPoolRewardCalculator(validatorEraInfoDataSource, mainRewardCalculator)
 

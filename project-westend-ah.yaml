@@ -25,11 +25,11 @@ dataSources:
     mapping:
       file: ./dist/index.js
       handlers:
-        - handler: handleWestendAHPagedElectionProceeded
+        - handler: handleWestendAHEraPaid
           kind: substrate/EventHandler
           filter:
             module: staking
-            method: PagedElectionProceeded
+            method: EraPaid
 
         - handler: handleWestendAHStakingReward
           kind: substrate/EventHandler
