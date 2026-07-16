@@ -2,7 +2,7 @@ import {SubstrateEvent} from "@subql/types";
 import {handleEraAssetHub, POOLED_STAKING_TYPE} from "./common";
 import {RelaychainRewardCalculator} from "./rewards/Relaychain";
 import {NominationPoolRewardCalculator} from "./rewards/NominationPoolRewardCalculator";
-import {ValidatorEraInfoDataSource} from "./era/ValidatorEraInfoDataSource";
+import {ActiveEraValidatorEraInfoDataSource} from "./era/ActiveEraValidatorEraInfoDataSource";
 import type {Codec} from "@polkadot/types-codec/types";
 import type {INumber} from "@polkadot/types-codec/types";
 import {handleRelaychainStakingReward, handleRelaychainStakingSlash} from "./rewards/history/relaychain";
@@ -11,16 +11,16 @@ import {
     handleRelaychainPooledStakingBondedSlash,
     handleRelaychainPooledStakingUnbondingSlash
 } from "./rewards/history/nomination_pools";
-import {shouldProcessPageIndex} from "./utils";
 
 const KUSAMA_AH_GENESIS = "0x48239ef607d7928874027a43a67689209727dfb3d3dc5e5b03a39bdc2eda771a"
 const DIRECT_STAKING_TYPE = "relaychain"
 
-export async function handleKusamaAHPagedElectionProceeded(event: SubstrateEvent): Promise<void> {
-    if (!shouldProcessPageIndex(event)) {
-        return;
-    }
-    let validatorEraInfoDataSource = new ValidatorEraInfoDataSource();
+// staking-async: PagedElectionProceeded is not emitted for every page on the success
+// path anymore, while EraPaid fires at every rotation and the just-started active era
+// always has complete exposures in state - see ActiveEraValidatorEraInfoDataSource for
+// the polkadot-sdk reference and details.
+export async function handleKusamaAHEraPaid(_: SubstrateEvent): Promise<void> {
+    let validatorEraInfoDataSource = new ActiveEraValidatorEraInfoDataSource();
     let mainRewardCalculator = await RelaychainRewardCalculator(validatorEraInfoDataSource)
     let poolRewardCalculator = new NominationPoolRewardCalculator(validatorEraInfoDataSource, mainRewardCalculator)
 

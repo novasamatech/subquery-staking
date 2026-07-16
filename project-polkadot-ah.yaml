@@ -25,11 +25,11 @@ dataSources:
     mapping:
       file: ./dist/index.js
       handlers:
-        - handler: handlePolkadotAHPagedElectionProceeded
+        - handler: handlePolkadotAHEraPaid
           kind: substrate/EventHandler
           filter:
             module: staking
-            method: PagedElectionProceeded
+            method: EraPaid
 
         - handler: handlePolkadotAHStakingReward
           kind: substrate/EventHandler
