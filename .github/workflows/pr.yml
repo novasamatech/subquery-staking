@@ -8,15 +8,20 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Load Node version
+        id: versions
+        run: |
+          source versions.env
+          echo "node=$NODE_VERSION" >> "$GITHUB_OUTPUT"
       - name: Setup Node.js environment
         uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: ${{ steps.versions.outputs.node }}
       - name: Install
-        run: yarn install
+        run: yarn install --frozen-lockfile
       - name: Codegen
         run: yarn codegen
       - name: Build
         run: yarn build
-      - name: Build
+      - name: Test
         run: yarn test

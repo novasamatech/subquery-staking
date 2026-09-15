@@ -3,6 +3,26 @@
 The Starter Package is an example that you can use as a starting point for developing your SubQuery project.
 A SubQuery package defines which data The SubQuery will index from the Substrate blockchain, and how it will store it.
 
+## Runtime and Docker
+
+`versions.env` is the shared source for Node and SubQuery image versions used by CI, Docker builds and Compose. Asset Hub General-v5 decoding requires the current runtime; the default is the same SubQuery release verified in [accounts PR #97](https://github.com/novasamatech/subquery-accounts/pull/97).
+
+Build the production image from the repository root:
+
+```bash
+source versions.env
+docker build -f docker/subql-node-Dockerfile \
+  --build-arg NODE_IMAGE="$NODE_IMAGE" \
+  --build-arg SUBQL_NODE_IMAGE="$SUBQL_PRODUCTION_IMAGE" \
+  -t subquery-staking:local .
+```
+
+The image build regenerates models and bundles, then runs the offline Jest suite in the final runtime. Local dependencies, build output, Git data and database files are excluded from the build context. CI publishes versioned image tags using the same defaults; use `workflow_dispatch` for an explicit pre-merge image build.
+
+Pass `--env-file versions.env` to direct Compose commands. The npm scripts and `local-runner.sh` already include it. Export a version or full image variable before running a command to override its default; `NODE_IMAGE` always selects build tooling, while `SUBQL_NODE_IMAGE` selects the local runtime and `SUBQL_PRODUCTION_IMAGE` selects the production runtime.
+
+See [Asset Hub regression fixtures](tests/fixtures/README.md) for decoder provenance, offline coverage and recovery instructions.
+
 ## Preparation
 
 #### Environment

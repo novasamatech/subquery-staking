@@ -11,7 +11,7 @@ fi
 
 export PROJECT_PATH=$1
 
-docker rm -f $(docker-compose ps -a -q)
+docker rm -f $(docker-compose --env-file versions.env ps -a -q)
 sudo rm -rf .data/
 sudo rm -rf dist/
 
@@ -21,4 +21,4 @@ set -e
 yarn
 yarn run codegen
 yarn run build
-docker-compose -f docker-compose-local.yml pull && docker-compose -f docker-compose-local.yml up --remove-orphans
+docker-compose --env-file versions.env -f docker-compose-local.yml pull && docker-compose --env-file versions.env -f docker-compose-local.yml up --remove-orphans
